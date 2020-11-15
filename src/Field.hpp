@@ -13,23 +13,24 @@ using namespace std;
 class Field
 {
 private:
-    Matrix<bool> field;
-    int counter;
-    Matrix<int> indexed;
+    Matrix<bool> fields; // Contains the bitvalues of which block is set
+
+    int counter; // The maximum number
+    Matrix<int> indexed; // A unique number for each block (after calculateIndex)
 public:
-    const int Rows, Cols;
+    const int Rows, Cols; // Size of the field
 
     Field(int rows, int cols);
-    void calculateIndex();
+    void calculateIndex(); // Numbers each block
     void Print();
 
 
-    inline bool &block(int r, int c) 
+    inline bool &field(int r, int c) // Reference for getting or setting a value
     {
         #ifdef DEBUG
         if (r >= Rows || c >= Cols) cerr << "Index access error (" << r << "," << c << ") out of (" << Rows << "," << Cols << ")" << endl;
         #endif
-        return field.value(r, c);
+        return fields.value(r, c);
     }
 };
 

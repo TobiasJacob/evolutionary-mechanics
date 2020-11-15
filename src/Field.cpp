@@ -2,7 +2,7 @@
 
 #define DIVSQRT2 0.70710678118
 
-Field::Field(int rows, int cols) : Rows(rows), Cols(cols), field(rows, cols, false), indexed(rows, cols, 0)
+Field::Field(int rows, int cols) : fields(rows, cols, false), indexed(rows, cols, 0), Rows(rows), Cols(cols)
 {
 }
 
@@ -13,7 +13,7 @@ void Field::calculateIndex()
     counter = 0;
     for (int r = 0; r < Rows; r++)
         for (int c = 0; c < Cols; c++)
-            if (field.value(r, c))
+            if (fields.value(r, c))
                 indexed.value(r, c) = ++counter;
 
     indexed.print();
@@ -21,7 +21,7 @@ void Field::calculateIndex()
 
 void Field::Print() 
 {
-    field.print();
+    fields.print();
 
 }
 
