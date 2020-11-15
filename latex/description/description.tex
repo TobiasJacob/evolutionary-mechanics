@@ -49,7 +49,7 @@ Each mechanical structure is represented by a 2D Boolean array, like the followi
 
 A $1$ is indicating that there is a quadratic element (consisting out of two triangles). We may fine tune the generation of triangles from the grid. The structures get evaluated on withstanding a certain force using finite elements method. We just use rectangular isosceles triangles with side length 1, simplifying the equations. Figure \ref{fig:finiteElements} shows the results of a test python implementation we created. It is based on the explanations in~\cite[p. 15-22]{Nikishkov2004}.
 
-Different models can be simulated and it can be checked if it can withstand a certain force. Then the best ones get paired and produce children that are similar but have random alterations. After a while, the structures should become more optimized.
+Different models will be evaluated if they can withstand a certain force by simulation. Then, according to the evolutionary approach we are taking, the best ones get paired and produce children that are similar, but have random mutations and alterations.
 
 Each model can be simulated on a different node. The simulation itself requires solving a linear equation system with a big sparse, symmetric and positive definite matrix. For a $R \times C$ grid, it would contain ${2RC}$ rows. Solving the equation can be parallelized across multiple cores of each node. After each model has been simulated, all workers must submit their test-scores. Then, new models have to be generated and the simulation runs again.
 
@@ -82,7 +82,7 @@ Each model can be simulated on a different node. The simulation itself requires 
         \draw[->] (evolution) |- (end);
     \end{tikzpicture}
     \caption{Our planned workflow.}
-    \label{fig:finiteElements}
+    \label{fig:workflow}
 \end{figure}
 
 \end{document}

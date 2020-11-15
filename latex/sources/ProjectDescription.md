@@ -8,11 +8,11 @@ The primary goal of the project is to obtain experience in identifying and analy
 
 You should identify some sequential application that you wish to parallelize. This may be your own code, or code written by others. Generally, it is hard to understand code written by others, and so you need to read the code before deciding to do this.
 
-You should optimize the code on a single core and then parallelize it. You should use OpenMP and MPI. You should evaluate your performance on at least hundreds of cores. 
+You should optimize the code on a single core and then parallelize it. You should use OpenMP and MPI. You should evaluate your performance on at least hundreds of cores.
 
 ## Suggested topic
 
-Identify effective optimization techniques for parallel and sequential triangular matrix multiplication and analyze their impact on performance. 
+Identify effective optimization techniques for parallel and sequential triangular matrix multiplication and analyze their impact on performance.
 
 ## Timeline
 
