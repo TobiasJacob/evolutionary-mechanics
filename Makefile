@@ -7,7 +7,7 @@ OBJBUILD = $(patsubst src/%,build/%.o, $(SRC))
 build/program: $(OBJBUILD)
 	$(CC) -o build/program $(OBJBUILD)
 
-build/%.o: %.cpp build
+build/%.o: src/%.cpp build
 	$(CC) $(CFLAG) -c -o $@ $<
 
 build:

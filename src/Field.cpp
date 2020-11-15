@@ -2,7 +2,7 @@
 
 #define DIVSQRT2 0.70710678118
 
-Field::Field(int rows, int cols) : rows(rows), cols(cols), field(rows, cols, false), supports(), forces()
+Field::Field(int rows, int cols) : rows(rows), cols(cols), field(rows, cols, false), indexed(rows, cols, 0)
 {
     field.value(1, 2) = true;
     field.value(2, 2) = true;
@@ -107,59 +107,7 @@ double Field::calculatePerformance()
 
     unique_ptr<vector<float>> epsilon = equation->solveIterative();
 
-    double totalStress = 0;
-    const double pressureFactor = 1;
-
-    for (int r = 0; r < rows; r++)
-        for (int c = 0; c < cols; c++)
-            if (int cursorI = indexed.value(r, c))
-            {
-                double stress = 0;
-                double epsionRowCursor = (*epsilon)[2 * cursorI - 2];
-                double epsionColCursor = (*epsilon)[2 * cursorI - 1];
-                if (r - 1 >= 0)
-                    if (int &otherI = indexed.value(r - 1, c))
-                    {
-                        double epsionRowOther = (*epsilon)[2 * cursorI - 2];
-                        double epsionColOther = (*epsilon)[2 * cursorI - 1];
-                        stress += pressureFactor * ()
-                        C.value(2 * cursorI - 2, 2 * cursorI - 2) -= sigma; // Pressure stress in rowIndex direction
-                        C.value(2 * cursorI - 2, 2 * otherI - 2) += sigma;
-
-                        C.value(2 * cursorI - 1, 2 * cursorI - 1) -= tau; // Shear stress in rowIndex direction
-                        C.value(2 * cursorI - 1, 2 * otherI - 1) += tau;
-                    }
-                if (r + 1 < rows)
-                    if (int &otherI = indexed.value(r + 1, c))
-                    {
-                        C.value(2 * cursorI - 2, 2 * cursorI - 2) -= sigma; // Pressure stress in colIndex direction
-                        C.value(2 * cursorI - 2, 2 * otherI - 2) += sigma;
-
-                        C.value(2 * cursorI - 1, 2 * cursorI - 1) -= tau; // Shear stress in rowIndex direction
-                        C.value(2 * cursorI - 1, 2 * otherI - 1) += tau;
-                    }
-
-                if (c - 1 >= 0)
-                    if (int &otherI = indexed.value(r, c - 1))
-                    {
-                        C.value(2 * cursorI - 1, 2 * cursorI - 1) -= sigma; // Pressure stress in colIndex direction
-                        C.value(2 * cursorI - 1, 2 * otherI - 1) += sigma;
-
-                        C.value(2 * cursorI - 2, 2 * cursorI - 2) -= tau; // Shear stress in rowIndex direction
-                        C.value(2 * cursorI - 2, 2 * otherI - 2) += tau;
-                    } 
-
-                if (c + 1 < cols)
-                    if (int &otherI = indexed.value(r, c + 1)) {
-                        C.value(2 * cursorI - 1, 2 * cursorI - 1) -= sigma; // Pressure stress in colIndex direction
-                        C.value(2 * cursorI - 1, 2 * otherI - 1) += sigma;
-
-                        C.value(2 * cursorI - 2, 2 * cursorI - 2) -= tau; // Shear stress in rowIndex direction
-                        C.value(2 * cursorI - 2, 2 * otherI - 2) += tau;
-                    }
-
-            }
-
+    return 0;
 }
 
 

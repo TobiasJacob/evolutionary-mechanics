@@ -294,4 +294,4 @@ main.pdf
 doc
 *.zip
 
-build
+build/*
