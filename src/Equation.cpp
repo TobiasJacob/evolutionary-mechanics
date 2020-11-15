@@ -5,7 +5,7 @@ Equation::Equation(int N) : N(N), K(N, N, 0), f(N, 0)
     
 }
 
-unique_ptr<vector<float>> Equation::solveIterative() 
+unique_ptr<vector<float>> Equation::SolveIterative() 
 {
     unique_ptr<vector<float>> currentSolution = make_unique<vector<float>>(N, 0);
     unique_ptr<vector<float>> nextSolution = make_unique<vector<float>>(N, 0);
@@ -19,7 +19,7 @@ unique_ptr<vector<float>> Equation::solveIterative()
         {
             (*nextSolution)[r] = 0;
             for (int c = 0; c < N; c++)
-                (*nextSolution)[r] += K.value(r, c) * (*currentSolution)[c];            
+                (*nextSolution)[r] += K.Value(r, c) * (*currentSolution)[c];            
         }
         // cout << "f_ ";
         // for (float _f: *nextSolution)
@@ -53,7 +53,7 @@ unique_ptr<vector<float>> Equation::solveIterative()
     {
         (*nextSolution)[r] = 0;
         for (int c = 0; c < N; c++)
-            (*nextSolution)[r] += K.value(r, c) * (*currentSolution)[c];            
+            (*nextSolution)[r] += K.Value(r, c) * (*currentSolution)[c];            
     }
     cout << "f_ ";
     for (float _f: *nextSolution)
@@ -63,9 +63,9 @@ unique_ptr<vector<float>> Equation::solveIterative()
     return currentSolution;
 }
 
-void Equation::print() 
+void Equation::Print() 
 {
-    K.print();
+    K.Print();
     for (float _f: f)
         cout << _f << endl;
 }

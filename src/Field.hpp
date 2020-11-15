@@ -10,35 +10,28 @@
 
 using namespace std;
 
-struct Support
-{
-    int row;
-    int col;
-};
-
-struct Force
-{
-    int row;
-    int col;
-    float forceRow;
-    float forceCol;
-};
-
 class Field
 {
 private:
-    const int rows, cols;
-    Matrix<bool> field;
-    vector<Support> supports;
-    vector<Force> forces;
-    int counter;
-    Matrix<int> indexed;
+    Matrix<bool> fields; // Contains the bitvalues of which block is set
+
+    int counter; // The maximum number
+    Matrix<int> indexed; // A unique number for each block (after calculateIndex)
 public:
+    const int Rows, Cols; // Size of the field
+
     Field(int rows, int cols);
-    void calculateIndex();
-    unique_ptr<Equation> buildEquation();
-    double calculatePerformance();
+    void CalculateIndex(); // Numbers each block
     void Print();
+
+
+    inline bool &field(int r, int c) // Reference for getting or setting a value
+    {
+        #ifdef DEBUG
+        if (r >= Rows || c >= Cols) cerr << "Index access error (" << r << "," << c << ") out of (" << Rows << "," << Cols << ")" << endl;
+        #endif
+        return fields.Value(r, c);
+    }
 };
 
 #endif

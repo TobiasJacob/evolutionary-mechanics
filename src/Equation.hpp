@@ -11,15 +11,15 @@
 
 using namespace std;
 
-struct Equation
+class Equation
 {
     int N;
     Matrix<float> K;
     vector<float> f;
 
     Equation(int N);
-    unique_ptr<vector<float>> solveIterative();
-    void print();
+    unique_ptr<vector<float>> SolveIterative();
+    void Print();
 };
 
 #endif
