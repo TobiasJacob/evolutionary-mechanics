@@ -6,7 +6,7 @@ double PerformanceEvaluator::GetPerformance(Field &field)
     double result = 0;
     for (int i = 0; i < field.Rows; i++)
         for (int j = 0; j < field.Cols; j++)
-            result += field.field(i, j);
+            result += field.Plane(i, j);
     
     return result;
 }

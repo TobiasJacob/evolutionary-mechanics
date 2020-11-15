@@ -8,8 +8,8 @@ using namespace std;
 int main()
 {
     Field field(4, 4);
-    field.field(1, 1) = true;
-    field.field(2, 1) = true;
+    field.Plane(1, 1) = true;
+    field.Plane(2, 1) = true;
     PerformanceEvaluator evaluator;
     cout << evaluator.GetPerformance(field) << endl;
 }
