@@ -37,7 +37,7 @@ unique_ptr<Equation> Field::buildEquation()
 
     float tau = 0.3, sigma = 1.0;
 
-    Matrix<float> &C = result->C;
+    Matrix<float> &K = result->K;
     for (int r = 0; r < rows; r++)
         for (int c = 0; c < cols; c++)
             if (int cursorI = indexed.value(r, c))
@@ -45,39 +45,39 @@ unique_ptr<Equation> Field::buildEquation()
                 if (r - 1 >= 0)
                     if (int &otherI = indexed.value(r - 1, c))
                     {
-                        C.value(2 * cursorI - 2, 2 * cursorI - 2) -= sigma; // Pressure stress in rowIndex direction
-                        C.value(2 * cursorI - 2, 2 * otherI - 2) += sigma;
+                        K.value(2 * cursorI - 2, 2 * cursorI - 2) -= sigma; // Pressure stress in rowIndex direction
+                        K.value(2 * cursorI - 2, 2 * otherI - 2) += sigma;
 
-                        C.value(2 * cursorI - 1, 2 * cursorI - 1) -= tau; // Shear stress in rowIndex direction
-                        C.value(2 * cursorI - 1, 2 * otherI - 1) += tau;
+                        K.value(2 * cursorI - 1, 2 * cursorI - 1) -= tau; // Shear stress in rowIndex direction
+                        K.value(2 * cursorI - 1, 2 * otherI - 1) += tau;
                     }
                 if (r + 1 < rows)
                     if (int &otherI = indexed.value(r + 1, c))
                     {
-                        C.value(2 * cursorI - 2, 2 * cursorI - 2) -= sigma; // Pressure stress in colIndex direction
-                        C.value(2 * cursorI - 2, 2 * otherI - 2) += sigma;
+                        K.value(2 * cursorI - 2, 2 * cursorI - 2) -= sigma; // Pressure stress in colIndex direction
+                        K.value(2 * cursorI - 2, 2 * otherI - 2) += sigma;
 
-                        C.value(2 * cursorI - 1, 2 * cursorI - 1) -= tau; // Shear stress in rowIndex direction
-                        C.value(2 * cursorI - 1, 2 * otherI - 1) += tau;
+                        K.value(2 * cursorI - 1, 2 * cursorI - 1) -= tau; // Shear stress in rowIndex direction
+                        K.value(2 * cursorI - 1, 2 * otherI - 1) += tau;
                     }
 
                 if (c - 1 >= 0)
                     if (int &otherI = indexed.value(r, c - 1))
                     {
-                        C.value(2 * cursorI - 1, 2 * cursorI - 1) -= sigma; // Pressure stress in colIndex direction
-                        C.value(2 * cursorI - 1, 2 * otherI - 1) += sigma;
+                        K.value(2 * cursorI - 1, 2 * cursorI - 1) -= sigma; // Pressure stress in colIndex direction
+                        K.value(2 * cursorI - 1, 2 * otherI - 1) += sigma;
 
-                        C.value(2 * cursorI - 2, 2 * cursorI - 2) -= tau; // Shear stress in rowIndex direction
-                        C.value(2 * cursorI - 2, 2 * otherI - 2) += tau;
+                        K.value(2 * cursorI - 2, 2 * cursorI - 2) -= tau; // Shear stress in rowIndex direction
+                        K.value(2 * cursorI - 2, 2 * otherI - 2) += tau;
                     } 
 
                 if (c + 1 < cols)
                     if (int &otherI = indexed.value(r, c + 1)) {
-                        C.value(2 * cursorI - 1, 2 * cursorI - 1) -= sigma; // Pressure stress in colIndex direction
-                        C.value(2 * cursorI - 1, 2 * otherI - 1) += sigma;
+                        K.value(2 * cursorI - 1, 2 * cursorI - 1) -= sigma; // Pressure stress in colIndex direction
+                        K.value(2 * cursorI - 1, 2 * otherI - 1) += sigma;
 
-                        C.value(2 * cursorI - 2, 2 * cursorI - 2) -= tau; // Shear stress in rowIndex direction
-                        C.value(2 * cursorI - 2, 2 * otherI - 2) += tau;
+                        K.value(2 * cursorI - 2, 2 * cursorI - 2) -= tau; // Shear stress in rowIndex direction
+                        K.value(2 * cursorI - 2, 2 * otherI - 2) += tau;
                     }
 
             }
@@ -85,8 +85,8 @@ unique_ptr<Equation> Field::buildEquation()
     for (Support &support: supports)
     {
         int i = indexed.value(support.row, support.col);
-        C.value(2 * i - 1, 2 * i - 1)--;
-        C.value(2 * i - 2, 2 * i - 2)--;
+        K.value(2 * i - 1, 2 * i - 1)--;
+        K.value(2 * i - 2, 2 * i - 2)--;
     }
 
     vector<float> &f = result->f; // TODO Add gravity

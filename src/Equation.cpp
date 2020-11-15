@@ -1,6 +1,6 @@
 #include "Equation.hpp"
 
-Equation::Equation(int N) : N(N), C(N, N, 0), f(N, 0)
+Equation::Equation(int N) : N(N), K(N, N, 0), f(N, 0)
 {
     
 }
@@ -19,7 +19,7 @@ unique_ptr<vector<float>> Equation::solveIterative()
         {
             (*nextSolution)[r] = 0;
             for (int c = 0; c < N; c++)
-                (*nextSolution)[r] += C.value(r, c) * (*currentSolution)[c];            
+                (*nextSolution)[r] += K.value(r, c) * (*currentSolution)[c];            
         }
         // cout << "f_ ";
         // for (float _f: *nextSolution)
@@ -53,7 +53,7 @@ unique_ptr<vector<float>> Equation::solveIterative()
     {
         (*nextSolution)[r] = 0;
         for (int c = 0; c < N; c++)
-            (*nextSolution)[r] += C.value(r, c) * (*currentSolution)[c];            
+            (*nextSolution)[r] += K.value(r, c) * (*currentSolution)[c];            
     }
     cout << "f_ ";
     for (float _f: *nextSolution)
@@ -65,7 +65,7 @@ unique_ptr<vector<float>> Equation::solveIterative()
 
 void Equation::print() 
 {
-    C.print();
+    K.print();
     for (float _f: f)
         cout << _f << endl;
 }

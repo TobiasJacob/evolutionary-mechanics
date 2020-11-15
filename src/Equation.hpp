@@ -14,7 +14,7 @@ using namespace std;
 struct Equation
 {
     int N;
-    Matrix<float> C;
+    Matrix<float> K;
     vector<float> f;
 
     Equation(int N);
