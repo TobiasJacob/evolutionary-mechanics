@@ -21,7 +21,7 @@ Matrix<T>::Matrix(int rows, int cols, T value) : rows(rows), cols(cols)
     values = (T *)malloc(sizeof(float) * rows * cols);
     for (int r = 0; r < rows; r++)
         for (int c = 0; c < cols; c++)
-            this->value(r, c) = value;
+            Value(r, c) = value;
 }
 
 template<typename T>
@@ -32,12 +32,12 @@ Matrix<T>::~Matrix()
 }
 
 template<typename T>
-void Matrix<T>::print() 
+void Matrix<T>::Print() 
 {
     for (int r = 0; r < rows; r++)
     {
         for (int c = 0; c < cols; c++)
-            cout << std::setw(5) << setprecision(2) << value(r, c);
+            cout << std::setw(5) << setprecision(2) << Value(r, c);
         cout << endl;
     }
 }

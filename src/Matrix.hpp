@@ -22,7 +22,7 @@ public:
     Matrix & operator=(const Matrix&) = delete;
     ~Matrix();
 
-    inline T &value(int r, int c) 
+    inline T &Value(int r, int c) 
     {
         #ifdef DEBUG
         if (r >= rows || c >= cols) cerr << "Index access error (" << r << "," << c << ") out of (" << rows << "," << cols << ")" << endl;
@@ -30,7 +30,7 @@ public:
         return values[r * cols + c];
     }
 
-    void print();
+    void Print();
 };
 
 #endif

@@ -11,6 +11,6 @@ int main()
     field.field(1, 1) = true;
     field.field(2, 1) = true;
     PerformanceEvaluator evaluator;
-    cout << evaluator.getPerformance(field) << endl;
+    cout << evaluator.GetPerformance(field) << endl;
 }
 

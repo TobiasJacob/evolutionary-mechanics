@@ -1,6 +1,6 @@
 #include "PerformanceEvaluator.hpp"
 
-double PerformanceEvaluator::getPerformance(Field &field)
+double PerformanceEvaluator::GetPerformance(Field &field)
 {
     // Dummy implementation that returns the number of blocks
     double result = 0;

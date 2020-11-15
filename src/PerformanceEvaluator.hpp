@@ -3,5 +3,5 @@
 class PerformanceEvaluator
 {
 public:
-    double getPerformance(Field &field);
+    double GetPerformance(Field &field);
 };

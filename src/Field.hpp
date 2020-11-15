@@ -21,7 +21,7 @@ public:
     const int Rows, Cols; // Size of the field
 
     Field(int rows, int cols);
-    void calculateIndex(); // Numbers each block
+    void CalculateIndex(); // Numbers each block
     void Print();
 
 
@@ -30,7 +30,7 @@ public:
         #ifdef DEBUG
         if (r >= Rows || c >= Cols) cerr << "Index access error (" << r << "," << c << ") out of (" << Rows << "," << Cols << ")" << endl;
         #endif
-        return fields.value(r, c);
+        return fields.Value(r, c);
     }
 };
 

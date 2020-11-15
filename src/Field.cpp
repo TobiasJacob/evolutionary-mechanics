@@ -6,22 +6,22 @@ Field::Field(int rows, int cols) : fields(rows, cols, false), indexed(rows, cols
 {
 }
 
-void Field::calculateIndex() 
+void Field::CalculateIndex() 
 {
     Matrix<int> indexed(Rows, Cols, 0);
 
     counter = 0;
     for (int r = 0; r < Rows; r++)
         for (int c = 0; c < Cols; c++)
-            if (fields.value(r, c))
-                indexed.value(r, c) = ++counter;
+            if (fields.Value(r, c))
+                indexed.Value(r, c) = ++counter;
 
-    indexed.print();
+    indexed.Print();
 }
 
 void Field::Print() 
 {
-    fields.print();
+    fields.Print();
 
 }
 
