@@ -21,6 +21,15 @@ public:
     Field(int rows, int cols);
     void calculateIndex();
     void Print();
+
+
+    inline bool &block(int r, int c) 
+    {
+        #ifdef DEBUG
+        if (r >= rows || c >= cols) cerr << "Index access error (" << r << "," << c << ") out of (" << rows << "," << cols << ")" << endl;
+        #endif
+        return field.value(r * cols, c);
+    }
 };
 
 #endif
