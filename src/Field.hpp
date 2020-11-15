@@ -13,11 +13,12 @@ using namespace std;
 class Field
 {
 private:
-    const int rows, cols;
     Matrix<bool> field;
     int counter;
     Matrix<int> indexed;
 public:
+    const int Rows, Cols;
+
     Field(int rows, int cols);
     void calculateIndex();
     void Print();
@@ -26,9 +27,9 @@ public:
     inline bool &block(int r, int c) 
     {
         #ifdef DEBUG
-        if (r >= rows || c >= cols) cerr << "Index access error (" << r << "," << c << ") out of (" << rows << "," << cols << ")" << endl;
+        if (r >= Rows || c >= Cols) cerr << "Index access error (" << r << "," << c << ") out of (" << Rows << "," << Cols << ")" << endl;
         #endif
-        return field.value(r * cols, c);
+        return field.value(r, c);
     }
 };
 
