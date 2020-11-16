@@ -25,12 +25,20 @@ public:
     void Print();
 
 
-    inline bool &field(int r, int c) // Reference for getting or setting a value
+    inline bool &Plane(int r, int c) // Reference for getting or setting a value
     {
         #ifdef DEBUG
         if (r >= Rows || c >= Cols) cerr << "Index access error (" << r << "," << c << ") out of (" << Rows << "," << Cols << ")" << endl;
         #endif
         return fields.Value(r, c);
+    }
+
+    inline int &Index(int r, int c) // Reference for getting or setting a value
+    {
+        #ifdef DEBUG
+        if (r >= Rows || c >= Cols) cerr << "Index access error (" << r << "," << c << ") out of (" << Rows << "," << Cols << ")" << endl;
+        #endif
+        return indexed.Value(r, c);
     }
 };
 
