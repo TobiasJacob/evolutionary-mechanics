@@ -31,6 +31,7 @@ public:
     }
 
     void Print();
+    void SetTo(T value);
 };
 
 #endif

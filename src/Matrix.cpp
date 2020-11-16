@@ -14,7 +14,6 @@ Matrix<bool>::Matrix(int rows, int cols, bool value) : rows(rows), cols(cols)
     memset(values, value, sizeof(float) * rows * cols);
 }
 
-
 template<typename T>
 Matrix<T>::Matrix(int rows, int cols, T value) : rows(rows), cols(cols)
 {
@@ -37,9 +36,24 @@ void Matrix<T>::Print()
     for (int r = 0; r < rows; r++)
     {
         for (int c = 0; c < cols; c++)
-            cout << std::setw(5) << setprecision(2) << Value(r, c);
+            cout << std::setw(8) << setprecision(2) << Value(r, c);
         cout << endl;
     }
+}
+
+template<>
+void Matrix<int>::SetTo(int value)
+{
+    memset(values, value, sizeof(float) * rows * cols);
+}
+
+template<typename T>
+void Matrix<T>::SetTo(T value) 
+{
+    for (int r = 0; r < rows; r++)
+        for (int c = 0; c < cols; c++)
+            Value(r, c) = value;
+    
 }
 
 template class Matrix<int>;
