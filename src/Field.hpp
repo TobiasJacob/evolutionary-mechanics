@@ -28,17 +28,11 @@ public:
 
     inline bool &Plane(int r, int c) // Reference for getting or setting a value
     {
-        #ifdef DEBUG
-        if (r >= Rows || c >= Cols) cerr << "Index access error (" << r << "," << c << ") out of (" << Rows << "," << Cols << ")" << endl;
-        #endif
         return fields.Value(r, c);
     }
 
     inline int &CornerIndex(int r, int c) // Reference for getting or setting a value
     {
-        #ifdef DEBUG
-        if (r >= Rows || c >= Cols) cerr << "Index access error (" << r << "," << c << ") out of (" << Rows << "," << Cols << ")" << endl;
-        #endif
         return cornerIndex.Value(r, c);
     }
 };

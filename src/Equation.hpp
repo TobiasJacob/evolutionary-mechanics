@@ -18,7 +18,7 @@ struct Equation
     Matrix<float> K;
     vector<float> f;
 
-    Equation(int unknowns, int conditions);
+    Equation(int conditions, int unknowns);
     unique_ptr<vector<float>> SolveIterative();
     void Print();
 };

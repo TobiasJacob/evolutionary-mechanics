@@ -10,13 +10,41 @@ const static float K[6][6] = {
     {-120, -240,  120,    0,    0,  240}
 };
 
-double PerformanceEvaluator::GetPerformance(Field &field)
+double PerformanceEvaluator::GetPerformance(Field &field, Support &supports, vector<Force> forces)
 {
+    // Refresh corner numbering
     field.CalculateIndex();
 
     // Add three constrains for global position and rotation
-    Equation equation(2 * field.GetCounter(), 2 * field.GetCounter() + 3);
+    const int conditions = 2 * field.GetCounter() + 3;
+    Equation equation(conditions, 2 * field.GetCounter());
 
+    // Set up equations for the supports. If one support is not attached to the field, field failed.
+    if (int cornerIndex = field.CornerIndex(supports.SupportCol.row, supports.SupportCol.col))
+        equation.K.Value(conditions - 3, 2 * cornerIndex - 1);
+    else
+        return INFINITY;
+
+    if (int cornerIndex = field.CornerIndex(supports.SupportRow1.row, supports.SupportRow1.col))
+        equation.K.Value(conditions - 2, 2 * cornerIndex - 2);
+    else
+        return INFINITY;
+
+    if (int cornerIndex = field.CornerIndex(supports.SupportRow2.row, supports.SupportRow2.col))
+        equation.K.Value(conditions - 1, 2 * cornerIndex - 2);
+    else
+        return INFINITY;
+
+    // Add forces to equation. If force is not attached to model, model failed.
+    for (Force &f: forces)
+    {
+        int cornerIndex = field.CornerIndex(f.attackCorner.row, f.attackCorner.col);
+        if (!cornerIndex) return INFINITY;
+        equation.f[2 * cornerIndex - 2] += f.forceRow;
+        equation.f[2 * cornerIndex - 1] += f.forceCol;
+    }
+
+    // Setup stiffness matrix
     for (int r = 0; r < field.Rows; r++)
         for (int c = 0; c < field.Cols; c++)
             if (field.Plane(r, c))
@@ -49,7 +77,7 @@ double PerformanceEvaluator::GetPerformance(Field &field)
                     for (int j = 0; j < 6; j++)
                         equation.K.Value(targetIndicesUpper[i], targetIndicesUpper[j]) += K[i][j];
             }
-    
+
     equation.Print();
     
     return 0;

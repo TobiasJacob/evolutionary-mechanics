@@ -1,6 +1,6 @@
 #include "Equation.hpp"
 
-Equation::Equation(int unknowns, int conditions) : Conditions(conditions), Unknowns(unknowns), K(conditions, unknowns, 0), f(conditions, 0)
+Equation::Equation(int conditions, int unknowns) : Conditions(conditions), Unknowns(unknowns), K(conditions, unknowns, 0), f(conditions, 0)
 {
     
 }
