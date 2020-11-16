@@ -1,25 +1,25 @@
 #include "Equation.hpp"
 
-Equation::Equation(int conditions, int unknowns) : Conditions(conditions), Unknowns(unknowns), K(conditions, unknowns, 0), f(conditions, 0)
+Equation::Equation(const int N) : N(N), K(N, N, 0), f(N, 0)
 {
     
 }
 
+// https://en.wikipedia.org/wiki/Conjugate_gradient_method
 unique_ptr<vector<float>> Equation::SolveIterative() 
 {
-    // TODO Tobi: Is currently not working
-    unique_ptr<vector<float>> currentSolution = make_unique<vector<float>>(Unknowns, 0);
-    unique_ptr<vector<float>> nextSolution = make_unique<vector<float>>(Unknowns, 0);
+    unique_ptr<vector<float>> currentSolution = make_unique<vector<float>>(N, 0);
+    unique_ptr<vector<float>> nextSolution = make_unique<vector<float>>(N, 0);
     float delta = 1.;
-    float alpha = 0.25;
+    float alpha = 0.00000001;
     int counter = 0;
     cout << setprecision(8);
-    while (delta > 0.001 && counter < 10000)
+    while (delta > 0.001 && counter < 100)
     {
-        for (int r = 0; r < Conditions; r++)
+        for (int r = 0; r < N; r++)
         {
             (*nextSolution)[r] = 0;
-            for (int c = 0; c < Unknowns; c++)
+            for (int c = 0; c < N; c++)
                 (*nextSolution)[r] += K.Value(r, c) * (*currentSolution)[c];            
         }
         // cout << "f_ ";
@@ -29,7 +29,7 @@ unique_ptr<vector<float>> Equation::SolveIterative()
 
         // cout << "delta_ ";
         delta = 0;
-        for (int r = 0; r < Conditions; r++)
+        for (int r = 0; r < N; r++)
         {
             const float curDelta = (f[r] - (*nextSolution)[r]);
             (*nextSolution)[r] = (*currentSolution)[r] - alpha * curDelta;
@@ -41,7 +41,7 @@ unique_ptr<vector<float>> Equation::SolveIterative()
         // for (float _f: *nextSolution)
         //     cout << _f << " ";
         // cout << endl;
-        // cout << delta << " ";
+        cout << delta << endl;
         currentSolution.swap(nextSolution);
         counter++;
     }
@@ -50,10 +50,10 @@ unique_ptr<vector<float>> Equation::SolveIterative()
         cout << _f << " ";
     cout << endl;
     cout << counter << "," << delta << endl;
-    for (int r = 0; r < Conditions; r++)
+    for (int r = 0; r < N; r++)
     {
         (*nextSolution)[r] = 0;
-        for (int c = 0; c < Unknowns; c++)
+        for (int c = 0; c < N; c++)
             (*nextSolution)[r] += K.Value(r, c) * (*currentSolution)[c];            
     }
     cout << "f_ ";

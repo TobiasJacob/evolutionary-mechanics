@@ -13,12 +13,11 @@ using namespace std;
 
 struct Equation
 {
-    int Conditions;
-    int Unknowns;
+    const int N;
     Matrix<float> K;
     vector<float> f;
 
-    Equation(int conditions, int unknowns);
+    Equation(const int N);
     unique_ptr<vector<float>> SolveIterative();
     void Print();
 };
