@@ -1,5 +1,6 @@
 #include "PerformanceEvaluator.hpp"
 #include "Equation.hpp"
+#include "Matrix.hpp"
 
 const static float K[6][6] = {
     { 300,  180, -240,  -60,  -60, -120},
@@ -25,7 +26,7 @@ double PerformanceEvaluator::GetPerformance(Field &field, Support &supports, vec
     int supportColIndex = 2 * field.CornerIndex(supports.SupportCol.row, supports.SupportCol.col) - 1;
     int supportRow1Index = 2 * field.CornerIndex(supports.SupportRow1.row, supports.SupportRow1.col) - 2;
     int supportRow2Index = 2 * field.CornerIndex(supports.SupportRow2.row, supports.SupportRow2.col) - 2;
-    cout << "Index" << supportColIndex << " " << supportRow1Index << " " << supportRow2Index << endl;
+    cout << "Delete Index " << supportColIndex << " " << supportRow1Index << " " << supportRow2Index << endl;
     if (supportColIndex < 0 || supportRow1Index < 0 || supportColIndex < 0)
         exit(1);
     if (supportRow1Index == supportRow2Index)
@@ -36,6 +37,7 @@ double PerformanceEvaluator::GetPerformance(Field &field, Support &supports, vec
     for (Force &f: forces)
     {
         int cornerIndex = field.CornerIndex(f.attackCorner.row, f.attackCorner.col);
+        cout << "Force Index " << 2 * cornerIndex - 2 << ": " << f.forceRow << ", " << 2 * cornerIndex - 1 << ": " << f.forceCol << endl;
         if (!cornerIndex) return INFINITY;
         equation.f[2 * cornerIndex - 2] += f.forceRow;
         equation.f[2 * cornerIndex - 1] += f.forceCol;
@@ -95,9 +97,13 @@ double PerformanceEvaluator::GetPerformance(Field &field, Support &supports, vec
         rTarget++;
     }
 
-    equation.Print();
+    // equation.Print();
+    cout << "Eqation is" << endl;
     reducedEquation.Print();
+    cout << "Eqation end" << endl;
     unique_ptr<vector<float>> solution = reducedEquation.SolveIterative();
+    cout << "Solution is" << setprecision(8) << endl;
+    printVector(*solution);
 
     vector<float> fTilde = reducedEquation.K * *solution;
     vector<float> residuum = subtract(fTilde, reducedEquation.f);

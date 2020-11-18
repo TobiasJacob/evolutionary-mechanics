@@ -132,6 +132,14 @@ float l2square(const vector<T> &a)
     return result;    
 }
 
+template<typename T>
+void printVector(const vector<T> &a) 
+{
+    for (int r = 0; r < a.size(); r++)
+        cout << a[r] << " ";
+    cout << endl;
+}
+
 template vector<int> add(const vector<int> &a, const vector<int> &b);
 template vector<float> add(const vector<float> &a, const vector<float> &b);
 template vector<int> subtract(const vector<int> &a, const vector<int> &b);
@@ -140,3 +148,5 @@ template vector<int> multiply(const int a, const vector<int> &b);
 template vector<float> multiply(const float a, const vector<float> &b);
 template float l2square(const vector<int> &a);
 template float l2square(const vector<float> &a);
+template void printVector(const vector<int> &a);
+template void printVector(const vector<float> &a);

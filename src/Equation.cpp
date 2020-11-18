@@ -19,7 +19,7 @@ unique_ptr<vector<float>> Equation::SolveIterative()
     *r_k = subtract(f, K * *x_k);
     *p_k = *r_k;
     int counter = 0;
-    while (counter < 10000)
+    while (counter < 50)
     {
         vector<float> kTimesP = K * *p_k;
 
@@ -31,7 +31,7 @@ unique_ptr<vector<float>> Equation::SolveIterative()
         vector<float> scaledP_K = multiply(alpha_k, *p_k);
         vector<float> scaledKTimesP = multiply(alpha_k, kTimesP);
         *x_k1 = add(*x_k, scaledP_K);
-        *r_k1 = subtract(*r_k, scaledP_K);
+        *r_k1 = subtract(*r_k, scaledKTimesP);
         if (l2square(*r_k1) < 1e-10)
         {
             return x_k1;

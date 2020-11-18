@@ -1,3 +1,6 @@
+#ifndef PERFORMANCEEVALUATOR
+#define PERFORMANCEEVALUATOR
+
 #include <vector>
 #include "Field.hpp"
 
@@ -23,6 +26,10 @@ struct Force
 
 class PerformanceEvaluator
 {
+private:
+    Equation SetupEquation(Field &field, Support &supports, vector<Force> forces);
 public:
     double GetPerformance(Field &field, Support &supports, vector<Force> forces);
 };
+
+#endif
