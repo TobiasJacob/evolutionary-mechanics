@@ -8,60 +8,48 @@ Equation::Equation(const int N) : N(N), K(N, N, 0), f(N, 0)
 // https://en.wikipedia.org/wiki/Conjugate_gradient_method
 unique_ptr<vector<float>> Equation::SolveIterative() 
 {
-    unique_ptr<vector<float>> currentSolution = make_unique<vector<float>>(N, 0);
-    unique_ptr<vector<float>> nextSolution = make_unique<vector<float>>(N, 0);
-    float delta = 1.;
-    float alpha = 0.00000001;
-    int counter = 0;
-    cout << setprecision(8);
-    while (delta > 0.001 && counter < 100)
-    {
-        for (int r = 0; r < N; r++)
-        {
-            (*nextSolution)[r] = 0;
-            for (int c = 0; c < N; c++)
-                (*nextSolution)[r] += K.Value(r, c) * (*currentSolution)[c];            
-        }
-        // cout << "f_ ";
-        // for (float _f: *nextSolution)
-        //     cout << _f << " ";
-        // cout << endl;
+    unique_ptr<vector<float>> x_k = make_unique<vector<float>>(N, 0);
+    unique_ptr<vector<float>> r_k = make_unique<vector<float>>(N, 0);
+    unique_ptr<vector<float>> p_k = make_unique<vector<float>>(N, 0);
 
-        // cout << "delta_ ";
-        delta = 0;
-        for (int r = 0; r < N; r++)
+    unique_ptr<vector<float>> x_k1 = make_unique<vector<float>>(N, 0);
+    unique_ptr<vector<float>> r_k1 = make_unique<vector<float>>(N, 0);
+    unique_ptr<vector<float>> p_k1 = make_unique<vector<float>>(N, 0);
+
+    *r_k = subtract(f, K * *x_k);
+    *p_k = *r_k;
+    int counter = 0;
+    while (counter < 10000)
+    {
+        vector<float> kTimesP = K * *p_k;
+
+        float alpha_k_divider = 0;
+        for (int n = 0; n < N; n++)
+            alpha_k_divider += (*p_k)[n] * kTimesP[n];
+        float alpha_k = l2square(*r_k) / alpha_k_divider;
+
+        vector<float> scaledP_K = multiply(alpha_k, *p_k);
+        vector<float> scaledKTimesP = multiply(alpha_k, kTimesP);
+        *x_k1 = add(*x_k, scaledP_K);
+        *r_k1 = subtract(*r_k, scaledP_K);
+        if (l2square(*r_k1) < 1e-10)
         {
-            const float curDelta = (f[r] - (*nextSolution)[r]);
-            (*nextSolution)[r] = (*currentSolution)[r] - alpha * curDelta;
-            delta += abs(curDelta);
-            // cout << curDelta << " ";
+            return x_k1;
         }
-        // cout << endl;
-        // cout << "epsilon_ ";
-        // for (float _f: *nextSolution)
-        //     cout << _f << " ";
-        // cout << endl;
-        cout << delta << endl;
-        currentSolution.swap(nextSolution);
+        
+        float beta_k = l2square(*r_k1) / l2square(*r_k);
+        scaledP_K = multiply(beta_k, *p_k);
+        *p_k1 = add(*r_k1, scaledP_K);
+
+        x_k.swap(x_k1);
+        r_k.swap(r_k1);
+        p_k.swap(p_k1);
         counter++;
     }
-    cout << "f ";
-    for (float _f: *nextSolution)
-        cout << _f << " ";
-    cout << endl;
-    cout << counter << "," << delta << endl;
-    for (int r = 0; r < N; r++)
-    {
-        (*nextSolution)[r] = 0;
-        for (int c = 0; c < N; c++)
-            (*nextSolution)[r] += K.Value(r, c) * (*currentSolution)[c];            
-    }
-    cout << "f_ ";
-    for (float _f: *nextSolution)
-        cout << _f << " ";
-    cout << endl;
+    
+    cerr << "Warning, EquationSolver did not converge" << endl;
 
-    return currentSolution;
+    return x_k1;
 }
 
 void Equation::Print() 

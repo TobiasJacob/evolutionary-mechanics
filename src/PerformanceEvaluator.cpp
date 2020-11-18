@@ -96,7 +96,11 @@ double PerformanceEvaluator::GetPerformance(Field &field, Support &supports, vec
 
     equation.Print();
     reducedEquation.Print();
-    reducedEquation.SolveIterative();
+    unique_ptr<vector<float>> solution = reducedEquation.SolveIterative();
+
+    vector<float> fTilde = reducedEquation.K * *solution;
+    vector<float> residuum = subtract(fTilde, reducedEquation.f);
+    cout << "Solving error is " << l2square(residuum) << endl;
     
     return 0;
 }

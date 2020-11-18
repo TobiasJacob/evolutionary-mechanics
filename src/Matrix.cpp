@@ -56,6 +56,85 @@ void Matrix<T>::SetTo(T value)
     
 }
 
+template<>
+vector<bool> Matrix<bool>::operator *(const vector<bool> &vec) 
+{
+    #ifdef DEBUG
+    if (vec.size() != cols) cerr << "Invalid matrix multiplication, has " << cols << " cols and vector has " << vec.size() << " rows" << endl;
+    #endif
+    vector<bool> result(rows, 0);
+    for (int r = 0; r < rows; r++)
+        for (int c = 0; c < cols; c++)
+            if (Value(r, c) * vec[c])
+                result[r] = !result[r];
+    return result;    
+}
+
+
+template<typename T>
+vector<T> Matrix<T>::operator *(const vector<T> &vec) 
+{
+    #ifdef DEBUG
+    if (vec.size() != cols) cerr << "Invalid matrix multiplication, has " << cols << " cols and vector has " << vec.size() << " rows" << endl;
+    #endif
+    vector<T> result(rows, 0);
+    for (int r = 0; r < rows; r++)
+        for (int c = 0; c < cols; c++)
+            result[r] += Value(r, c) * vec[c];
+    return result;    
+}
+
 template class Matrix<int>;
 template class Matrix<bool>;
 template class Matrix<float>;
+
+template<typename T>
+vector<T> add(const vector<T> &a, const vector<T> &b) 
+{
+    #ifdef DEBUG
+    if (a.size() != b.size()) cerr << "Invalid vector addtion, first has " << a.size() << " rows and second has " << b.size() << " rows" << endl;
+    #endif
+    vector<T> result(a.size(), 0);
+    for (int r = 0; r < a.size(); r++)
+        result[r] = a[r] + b[r];
+    return result;    
+}
+
+template<typename T>
+vector<T> subtract(const vector<T> &a, const vector<T> &b) 
+{
+    #ifdef DEBUG
+    if (a.size() != b.size()) cerr << "Invalid vector subtract, first has " << a.size() << " rows and second has " << b.size() << " rows" << endl;
+    #endif
+    vector<T> result(a.size(), 0);
+    for (int r = 0; r < a.size(); r++)
+        result[r] = a[r] - b[r];
+    return result;    
+}
+
+template<typename T>
+vector<T> multiply(const T a, const vector<T> &b) 
+{
+    vector<T> result(b.size(), 0);
+    for (int r = 0; r < b.size(); r++)
+        result[r] = a * b[r];
+    return result;    
+}
+
+template<typename T>
+float l2square(const vector<T> &a) 
+{
+    float result = 0;
+    for (int r = 0; r < a.size(); r++)
+        result += a[r] * a[r];
+    return result;    
+}
+
+template vector<int> add(const vector<int> &a, const vector<int> &b);
+template vector<float> add(const vector<float> &a, const vector<float> &b);
+template vector<int> subtract(const vector<int> &a, const vector<int> &b);
+template vector<float> subtract(const vector<float> &a, const vector<float> &b);
+template vector<int> multiply(const int a, const vector<int> &b);
+template vector<float> multiply(const float a, const vector<float> &b);
+template float l2square(const vector<int> &a);
+template float l2square(const vector<float> &a);

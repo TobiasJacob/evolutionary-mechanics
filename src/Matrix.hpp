@@ -5,6 +5,7 @@
 #include <string.h>
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 using namespace std;
 
@@ -32,6 +33,20 @@ public:
 
     void Print();
     void SetTo(T value);
+    vector<T> operator *(const vector<T> &vec);
+
 };
+
+template<typename T>
+vector<T> add(const vector<T> &a, const vector<T> &b);
+
+template<typename T>
+vector<T> subtract(const vector<T> &a, const vector<T> &b);
+
+template<typename T>
+vector<T> multiply(const T a, const vector<T> &b);
+
+template<typename T>
+float l2square(const vector<T> &a);
 
 #endif
