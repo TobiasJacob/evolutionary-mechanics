@@ -11,8 +11,9 @@ const static float K[6][6] = {
     {-120, -240,  120,    0,    0,  240}
 };
 
-double PerformanceEvaluator::GetPerformance(Field &field, Support &supports, vector<Force> forces)
+Equation PerformanceEvaluator::SetupEquation(Field &field, Support &supports, vector<Force> forces) 
 {
+    
     // Refresh corner numbering
     field.CalculateIndex();
 
@@ -38,7 +39,7 @@ double PerformanceEvaluator::GetPerformance(Field &field, Support &supports, vec
     {
         int cornerIndex = field.CornerIndex(f.attackCorner.row, f.attackCorner.col);
         cout << "Force Index " << 2 * cornerIndex - 2 << ": " << f.forceRow << ", " << 2 * cornerIndex - 1 << ": " << f.forceCol << endl;
-        if (!cornerIndex) return INFINITY;
+        if (!cornerIndex) throw INFINITY;
         equation.f[2 * cornerIndex - 2] += f.forceRow;
         equation.f[2 * cornerIndex - 1] += f.forceCol;
     }
@@ -97,18 +98,33 @@ double PerformanceEvaluator::GetPerformance(Field &field, Support &supports, vec
         rTarget++;
     }
 
-    // equation.Print();
-    cout << "Eqation is" << endl;
-    reducedEquation.Print();
-    cout << "Eqation end" << endl;
-    unique_ptr<vector<float>> solution = reducedEquation.SolveIterative();
-    cout << "Solution is" << setprecision(8) << endl;
-    printVector(*solution);
-
-    vector<float> fTilde = reducedEquation.K * *solution;
-    vector<float> residuum = subtract(fTilde, reducedEquation.f);
-    cout << "Solving error is " << l2square(residuum) << endl;
-    
-    return 0;
+    return reducedEquation;
 }
+
+double PerformanceEvaluator::GetPerformance(Field &field, Support &supports, vector<Force> forces)
+{
+    try
+    {
+        Equation reducedEquation = SetupEquation(field, supports, forces);
+
+        // equation.Print();
+        cout << "Eqation is" << endl;
+        reducedEquation.Print();
+        cout << "Eqation end" << endl;
+        unique_ptr<vector<float>> solution = reducedEquation.SolveIterative();
+        cout << "Solution is" << setprecision(8) << endl;
+        printVector(*solution);
+
+        vector<float> fTilde = reducedEquation.K * *solution;
+        vector<float> residuum = subtract(fTilde, reducedEquation.f);
+        cout << "Solving error is " << l2square(residuum) << endl;
+        
+        return 0;
+    }
+    catch(const float val)
+    {
+        return val;
+    }
+}
+
 

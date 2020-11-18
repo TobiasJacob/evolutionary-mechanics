@@ -19,8 +19,10 @@ private:
 
 public:
     Matrix(int rows, int cols, T value);
-    Matrix(const Matrix&) = delete;
+    Matrix(const Matrix&) = delete; // Disallow copy
     Matrix & operator=(const Matrix&) = delete;
+    Matrix(Matrix&&) = default; // Allow move
+    Matrix & operator=(Matrix&&) = default;
     ~Matrix();
 
     inline T &Value(int r, int c) 
