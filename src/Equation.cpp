@@ -6,7 +6,7 @@ Equation::Equation(const int N) : N(N), K(N, N, 0), f(N, 0)
 }
 
 // https://en.wikipedia.org/wiki/Conjugate_gradient_method
-unique_ptr<vector<float>> Equation::SolveIterative() 
+pair<unique_ptr<vector<float>>, int> Equation::SolveIterative() 
 {
     unique_ptr<vector<float>> x_k = make_unique<vector<float>>(N, 0);
     unique_ptr<vector<float>> r_k = make_unique<vector<float>>(N, 0);
@@ -19,7 +19,7 @@ unique_ptr<vector<float>> Equation::SolveIterative()
     *r_k = subtract(f, K * *x_k);
     *p_k = *r_k;
     int counter = 0;
-    while (counter < 50)
+    while (counter < 10000)
     {
         vector<float> kTimesP = K * *p_k;
 
@@ -34,7 +34,7 @@ unique_ptr<vector<float>> Equation::SolveIterative()
         *r_k1 = subtract(*r_k, scaledKTimesP);
         if (l2square(*r_k1) < 1e-10)
         {
-            return x_k1;
+            return pair<unique_ptr<vector<float>>, int>(move(x_k1), counter);
         }
         
         float beta_k = l2square(*r_k1) / l2square(*r_k);
@@ -49,7 +49,7 @@ unique_ptr<vector<float>> Equation::SolveIterative()
     
     cerr << "Warning, EquationSolver did not converge" << endl;
 
-    return x_k1;
+    return pair<unique_ptr<vector<float>>, int>(move(x_k1), counter);
 }
 
 void Equation::Print() 

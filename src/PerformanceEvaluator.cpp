@@ -28,7 +28,6 @@ Equation PerformanceEvaluator::SetupEquation(Field &field, const Support &suppor
     for (const Force &f: forces)
     {
         int cornerIndex = field.CornerIndex(f.attackCorner.row, f.attackCorner.col);
-        cout << "Force Index " << 2 * cornerIndex - 2 << ": " << f.forceRow << ", " << 2 * cornerIndex - 1 << ": " << f.forceCol << endl;
         if (!cornerIndex) throw INFINITY;
         equation.f[2 * cornerIndex - 2] += f.forceRow;
         equation.f[2 * cornerIndex - 1] += f.forceCol;
@@ -116,8 +115,6 @@ float PerformanceEvaluator::calculateMaxStress(Field &field, const vector<float>
                 float squaredStressUpper = sigmaUpper[0] * sigmaUpper[0] + sigmaUpper[1] * sigmaUpper[1] + sigmaUpper[0] * sigmaUpper[1] + 3 * sigmaUpper[2] * sigmaUpper[2];
                 if (squaredStressLower > maxStressSquared) maxStressSquared = squaredStressLower;
                 if (squaredStressUpper > maxStressSquared) maxStressSquared = squaredStressUpper;
-                cout << squaredStressLower << " " << endl;
-                cout << squaredStressUpper << endl;
             }
     return maxStressSquared;
 }
@@ -128,19 +125,19 @@ float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports
     field.CalculateIndex();
     const int conditions = 2 * field.GetCounter();
     // Set up equations for the supports. If one support is not attached to the field, field failed.
-    // Supports are no unkown values anymore.
+    // Supports Q is set to fixed zero.
     // Support values must be different from each other.
     int supportColIndex = 2 * field.CornerIndex(supports.SupportCol.row, supports.SupportCol.col) - 1;
     int supportRow1Index = 2 * field.CornerIndex(supports.SupportRow1.row, supports.SupportRow1.col) - 2;
     int supportRow2Index = 2 * field.CornerIndex(supports.SupportRow2.row, supports.SupportRow2.col) - 2;
-    cout << "Delete Index " << supportColIndex << " " << supportRow1Index << " " << supportRow2Index << endl;
-    if (supportColIndex < 0 || supportRow1Index < 0 || supportColIndex < 0)
-        return INFINITY;
-    if (supportRow1Index == supportRow2Index)
+
+    // Make sure support index are valid, especially the row supports are different
+    if (supportColIndex < 0 || supportRow1Index < 0 || supportColIndex < 0 || supportRow1Index == supportRow2Index)
         return INFINITY;
 
     try
     {
+        // Generates an equation system from the mesh
         Equation equation = SetupEquation(field, supports, forces);
         Equation reducedEquation(conditions - 3);
 
@@ -162,18 +159,13 @@ float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports
             rTarget++;
         }
         
-        // Show solution
-        cout << "Eqation is" << endl;
-        reducedEquation.Print();
-        cout << "Eqation end" << endl;
-        unique_ptr<vector<float>> qReduced = reducedEquation.SolveIterative();
-        cout << "Solution is" << setprecision(8) << endl;
-        printVector(*qReduced);
+        // Solve equation
+        pair<unique_ptr<vector<float>>, int> solution = reducedEquation.SolveIterative();
 
         // Calculate residum
-        vector<float> fTilde = reducedEquation.K * *qReduced;
+        vector<float> fTilde = reducedEquation.K * *(solution.first);
         vector<float> residuum = subtract(fTilde, reducedEquation.f);
-        cout << "Solving error is " << l2square(residuum) << endl;
+        cout << "Solved after " << solution.second << " steps with residuum " << l2square(residuum) << endl;
         
         // Make qReduced to q again
         vector<float> q(conditions, 0);
@@ -182,15 +174,12 @@ float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports
         {
             if (r == supportColIndex || r == supportRow1Index || r == supportRow2Index)
                 continue;
-            q[r] = (*qReduced)[rSource];
+            q[r] = (*(solution.first))[rSource];
             rSource++;
         }
 
         // Calculate stress
-        printVector(q);
-        cout << "Stresses" << endl;
         float maxStress = calculateMaxStress(field, q);
-        cout << "Finshed Stresses" << endl;
         return maxStress;
     }
     catch(const float val)

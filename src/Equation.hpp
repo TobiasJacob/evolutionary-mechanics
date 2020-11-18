@@ -18,7 +18,7 @@ struct Equation
     vector<float> f;
 
     Equation(const int N);
-    unique_ptr<vector<float>> SolveIterative();
+    pair<unique_ptr<vector<float>>, int> SolveIterative();
     void Print();
 };
 

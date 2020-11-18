@@ -20,7 +20,6 @@ void Field::CalculateIndex()
                 if (!cornerIndex.Value(r + 1, c + 1)) cornerIndex.Value(r + 1, c + 1) = ++counter;
                 if (!cornerIndex.Value(r, c + 1)) cornerIndex.Value(r, c + 1) = ++counter;
             }
-    cornerIndex.Print();
 }
 
 void Field::Print() 
