@@ -25,6 +25,7 @@ double PerformanceEvaluator::GetPerformance(Field &field, Support &supports, vec
     int supportColIndex = 2 * field.CornerIndex(supports.SupportCol.row, supports.SupportCol.col) - 1;
     int supportRow1Index = 2 * field.CornerIndex(supports.SupportRow1.row, supports.SupportRow1.col) - 2;
     int supportRow2Index = 2 * field.CornerIndex(supports.SupportRow2.row, supports.SupportRow2.col) - 2;
+    cout << "Index" << supportColIndex << " " << supportRow1Index << " " << supportRow2Index << endl;
     if (supportColIndex < 0 || supportRow1Index < 0 || supportColIndex < 0)
         exit(1);
     if (supportRow1Index == supportRow2Index)
@@ -77,21 +78,21 @@ double PerformanceEvaluator::GetPerformance(Field &field, Support &supports, vec
     // The values of the supports are certain, and can therefore be removed.
     Equation reducedEquation(conditions - 3);
 
-    int rSource = 0;
-    for (int r = 0; r < conditions - 3; r++)
+    int rTarget = 0;
+    for (int r = 0; r < conditions; r++)
     {
-        if (rSource == supportColIndex || rSource == supportRow1Index || rSource == supportRow2Index)
-            rSource++;
-        reducedEquation.f[r] = equation.f[r];
-        int cSource = 0;
-        for (int c = 0; c < conditions - 3; c++)
+        if (r == supportColIndex || r == supportRow1Index || r == supportRow2Index)
+            continue;
+        reducedEquation.f[rTarget] = equation.f[r];
+        int cTarget = 0;
+        for (int c = 0; c < conditions; c++)
         {
-            if (cSource == supportColIndex || cSource == supportRow1Index || cSource == supportRow2Index)
-                cSource++;
-            reducedEquation.K.Value(r, c) = equation.K.Value(r, c);
-            cSource++;
+            if (c == supportColIndex || c == supportRow1Index || c == supportRow2Index)
+                continue;
+            reducedEquation.K.Value(rTarget, cTarget) = equation.K.Value(r, c);
+            cTarget++;
         }
-        rSource++;
+        rTarget++;
     }
 
     equation.Print();
