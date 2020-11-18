@@ -88,9 +88,6 @@ float PerformanceEvaluator::calculateMaxStress(Field &field, const vector<float>
                     2 * field.CornerIndex(r, c + 1) - 2,
                     2 * field.CornerIndex(r, c + 1) - 1
                 };
-                for (int j = 0; j < 6; j++)
-                    cout << q[targetIndicesLower[j]] << " ";
-                cout << endl;
 
                 float sigmaLower[3] = {0, 0, 0};
 
@@ -119,7 +116,7 @@ float PerformanceEvaluator::calculateMaxStress(Field &field, const vector<float>
                 float squaredStressUpper = sigmaUpper[0] * sigmaUpper[0] + sigmaUpper[1] * sigmaUpper[1] + sigmaUpper[0] * sigmaUpper[1] + 3 * sigmaUpper[2] * sigmaUpper[2];
                 if (squaredStressLower > maxStressSquared) maxStressSquared = squaredStressLower;
                 if (squaredStressUpper > maxStressSquared) maxStressSquared = squaredStressUpper;
-                cout << sigmaLower[0] << " " << sigmaLower[1] << " " << sigmaLower[2] << " " << endl;
+                cout << squaredStressLower << " " << endl;
                 cout << squaredStressUpper << endl;
             }
     return maxStressSquared;
@@ -185,13 +182,14 @@ float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports
         {
             if (r == supportColIndex || r == supportRow1Index || r == supportRow2Index)
                 continue;
-            q[r] = rSource;
+            q[r] = (*qReduced)[rSource];
             rSource++;
         }
 
         // Calculate stress
+        printVector(q);
         cout << "Stresses" << endl;
-        float maxStress = calculateMaxStress(field, *qReduced);
+        float maxStress = calculateMaxStress(field, q);
         cout << "Finshed Stresses" << endl;
         return maxStress;
     }
