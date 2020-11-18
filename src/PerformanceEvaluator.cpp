@@ -38,7 +38,7 @@ Equation PerformanceEvaluator::SetupEquation(Field &field, const Support &suppor
         for (int c = 0; c < field.Cols; c++)
             if (field.Plane(r, c))
             {
-                // Lower left triangle
+                // Lower left triangle, get the index of each corner in the global equation system
                 const int targetIndicesLower[6] = {
                     2 * field.CornerIndex(r, c) - 2,
                     2 * field.CornerIndex(r, c) - 1,
@@ -48,11 +48,12 @@ Equation PerformanceEvaluator::SetupEquation(Field &field, const Support &suppor
                     2 * field.CornerIndex(r, c + 1) - 1
                 };
 
+                // Add the stiffness values to global equation
                 for (int i = 0; i < 6; i++)
                     for (int j = 0; j < 6; j++)
                         equation.K.Value(targetIndicesLower[i], targetIndicesLower[j]) += K[i][j];
 
-                // Upper right triangle
+                // Upper right triangle, get the index of each corner in the global equation system
                 const int targetIndicesUpper[6] = {
                     2 * field.CornerIndex(r + 1, c + 1) - 2,
                     2 * field.CornerIndex(r + 1, c + 1) - 1,
@@ -62,6 +63,7 @@ Equation PerformanceEvaluator::SetupEquation(Field &field, const Support &suppor
                     2 * field.CornerIndex(r + 1, c) - 1
                 };
 
+                // Add the stiffness values to global equation
                 for (int i = 0; i < 6; i++)
                     for (int j = 0; j < 6; j++)
                         equation.K.Value(targetIndicesUpper[i], targetIndicesUpper[j]) += K[i][j];
@@ -78,7 +80,7 @@ float PerformanceEvaluator::calculateMaxStress(Field &field, const vector<float>
         for (int c = 0; c < field.Cols; c++)
             if (field.Plane(r, c))
             {
-                // Lower left triangle
+                // Lower left triangle, get the index of each corner in the global equation system
                 const int targetIndicesLower[6] = {
                     2 * field.CornerIndex(r, c) - 2,
                     2 * field.CornerIndex(r, c) - 1,
@@ -87,14 +89,16 @@ float PerformanceEvaluator::calculateMaxStress(Field &field, const vector<float>
                     2 * field.CornerIndex(r, c + 1) - 2,
                     2 * field.CornerIndex(r, c + 1) - 1
                 };
-
+                
+                // Store stress
                 float sigmaLower[3] = {0, 0, 0};
 
+                // Calculate compressive and shear stress
                 for (int i = 0; i < 3; i++)
                     for (int j = 0; j < 6; j++)
                         sigmaLower[i] += ETimesB[i][j] * q[targetIndicesLower[j]];
 
-                // Upper right triangle
+                // Upper right triangle, get the index of each corner in the global equation system
                 const int targetIndicesUpper[6] = {
                     2 * field.CornerIndex(r + 1, c + 1) - 2,
                     2 * field.CornerIndex(r + 1, c + 1) - 1,
@@ -104,8 +108,10 @@ float PerformanceEvaluator::calculateMaxStress(Field &field, const vector<float>
                     2 * field.CornerIndex(r + 1, c) - 1
                 };
 
+                // Store stress
                 float sigmaUpper[3] = {0, 0, 0};
 
+                // Calculate compressive and shear stress
                 for (int i = 0; i < 3; i++)
                     for (int j = 0; j < 6; j++)
                         sigmaUpper[i] += ETimesB[i][j] * q[targetIndicesUpper[j]];
@@ -121,7 +127,7 @@ float PerformanceEvaluator::calculateMaxStress(Field &field, const vector<float>
 
 float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports, const vector<Force> forces)
 {
-    // Refresh corner numbering
+    // Refresh corner numbering, so each corner of a tile has a determined index, starting at 1
     field.CalculateIndex();
     const int conditions = 2 * field.GetCounter();
     // Set up equations for the supports. If one support is not attached to the field, field failed.
@@ -137,11 +143,11 @@ float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports
 
     try
     {
-        // Generates an equation system from the mesh
+        // Generates an equation system from the field / mesh
         Equation equation = SetupEquation(field, supports, forces);
         Equation reducedEquation(conditions - 3);
 
-        // The values of the supports are certain, and can therefore be removed.
+        // The values of the supports are zero, and can therefore be removed.
         int rTarget = 0;
         for (int r = 0; r < conditions; r++)
         {
@@ -167,7 +173,7 @@ float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports
         vector<float> residuum = subtract(fTilde, reducedEquation.f);
         cout << "Solved after " << solution.second << " steps with residuum " << l2square(residuum) << endl;
         
-        // Make qReduced to q again
+        // Add the values of the supports again, which are zero
         vector<float> q(conditions, 0);
         int rSource = 0;
         for (int r = 0; r < conditions; r++)
@@ -178,7 +184,7 @@ float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports
             rSource++;
         }
 
-        // Calculate stress
+        // Calculate maximum stress
         float maxStress = calculateMaxStress(field, q);
         return maxStress;
     }

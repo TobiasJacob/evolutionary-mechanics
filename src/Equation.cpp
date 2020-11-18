@@ -6,6 +6,7 @@ Equation::Equation(const int N) : N(N), K(N, N, 0), f(N, 0)
 }
 
 // https://en.wikipedia.org/wiki/Conjugate_gradient_method
+// The details of the algorithm are complicated, but the important thing is, that it can solve a quadratic, symmetric and positive definite matrix in a short time.
 pair<unique_ptr<vector<float>>, int> Equation::SolveIterative() 
 {
     unique_ptr<vector<float>> x_k = make_unique<vector<float>>(N, 0);
