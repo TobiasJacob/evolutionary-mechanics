@@ -16,30 +16,26 @@ private:
     Matrix<bool> fields; // Contains the bitvalues of which block is set
 
     int counter; // The maximum number
-    Matrix<int> indexed; // A unique number for each block (after calculateIndex)
+    Matrix<int> cornerIndex; // A unique number for each corner (after calculateIndex)
 public:
     const int Rows, Cols; // Size of the field
 
     Field(int rows, int cols);
     void CalculateIndex(); // Numbers each block
-    void Print();
+    int GetCounter();
 
 
     inline bool &Plane(int r, int c) // Reference for getting or setting a value
     {
-        #ifdef DEBUG
-        if (r >= Rows || c >= Cols) cerr << "Index access error (" << r << "," << c << ") out of (" << Rows << "," << Cols << ")" << endl;
-        #endif
         return fields.Value(r, c);
     }
 
-    inline int &Index(int r, int c) // Reference for getting or setting a value
+    inline int &CornerIndex(int r, int c) // Reference for getting or setting a value
     {
-        #ifdef DEBUG
-        if (r >= Rows || c >= Cols) cerr << "Index access error (" << r << "," << c << ") out of (" << Rows << "," << Cols << ")" << endl;
-        #endif
-        return indexed.Value(r, c);
+        return cornerIndex.Value(r, c);
     }
+    friend ostream& operator<<(ostream& os, const Field& field);
 };
+
 
 #endif

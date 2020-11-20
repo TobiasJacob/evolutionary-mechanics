@@ -1,71 +1,62 @@
 #include "Equation.hpp"
 
-Equation::Equation(int N) : N(N), K(N, N, 0), f(N, 0)
+Equation::Equation(const int N) : N(N), K(N, N, 0), f(N, 0)
 {
     
 }
 
-unique_ptr<vector<float>> Equation::SolveIterative() 
+// https://en.wikipedia.org/wiki/Conjugate_gradient_method
+// The details of the algorithm are complicated, but the important thing is, that it can solve a quadratic, symmetric and positive definite matrix in a short time.
+pair<unique_ptr<vector<float>>, int> Equation::SolveIterative() 
 {
-    unique_ptr<vector<float>> currentSolution = make_unique<vector<float>>(N, 0);
-    unique_ptr<vector<float>> nextSolution = make_unique<vector<float>>(N, 0);
-    float delta = 1.;
-    float alpha = 0.25;
-    int counter = 0;
-    cout << setprecision(8);
-    while (delta > 0.001 && counter < 10000)
-    {
-        for (int r = 0; r < N; r++)
-        {
-            (*nextSolution)[r] = 0;
-            for (int c = 0; c < N; c++)
-                (*nextSolution)[r] += K.Value(r, c) * (*currentSolution)[c];            
-        }
-        // cout << "f_ ";
-        // for (float _f: *nextSolution)
-        //     cout << _f << " ";
-        // cout << endl;
+    unique_ptr<vector<float>> x_k = make_unique<vector<float>>(N, 0);
+    unique_ptr<vector<float>> r_k = make_unique<vector<float>>(N, 0);
+    unique_ptr<vector<float>> p_k = make_unique<vector<float>>(N, 0);
 
-        // cout << "delta_ ";
-        delta = 0;
-        for (int r = 0; r < N; r++)
+    unique_ptr<vector<float>> x_k1 = make_unique<vector<float>>(N, 0);
+    unique_ptr<vector<float>> r_k1 = make_unique<vector<float>>(N, 0);
+    unique_ptr<vector<float>> p_k1 = make_unique<vector<float>>(N, 0);
+
+    *r_k = subtract(f, K * *x_k);
+    *p_k = *r_k;
+    int counter = 0;
+    while (counter < 10000)
+    {
+        vector<float> kTimesP = K * *p_k;
+
+        float alpha_k_divider = 0;
+        for (int n = 0; n < N; n++)
+            alpha_k_divider += (*p_k)[n] * kTimesP[n];
+        float alpha_k = l2square(*r_k) / alpha_k_divider;
+
+        vector<float> scaledP_K = multiply(alpha_k, *p_k);
+        vector<float> scaledKTimesP = multiply(alpha_k, kTimesP);
+        *x_k1 = add(*x_k, scaledP_K);
+        *r_k1 = subtract(*r_k, scaledKTimesP);
+        if (l2square(*r_k1) < 1e-10)
         {
-            const float curDelta = (f[r] - (*nextSolution)[r]);
-            (*nextSolution)[r] = (*currentSolution)[r] - alpha * curDelta;
-            delta += abs(curDelta);
-            // cout << curDelta << " ";
+            return pair<unique_ptr<vector<float>>, int>(move(x_k1), counter);
         }
-        // cout << endl;
-        // cout << "epsilon_ ";
-        // for (float _f: *nextSolution)
-        //     cout << _f << " ";
-        // cout << endl;
-        // cout << delta << " ";
-        currentSolution.swap(nextSolution);
+        
+        float beta_k = l2square(*r_k1) / l2square(*r_k);
+        scaledP_K = multiply(beta_k, *p_k);
+        *p_k1 = add(*r_k1, scaledP_K);
+
+        x_k.swap(x_k1);
+        r_k.swap(r_k1);
+        p_k.swap(p_k1);
         counter++;
     }
-    cout << "f ";
-    for (float _f: *nextSolution)
-        cout << _f << " ";
-    cout << endl;
-    cout << counter << "," << delta << endl;
-    for (int r = 0; r < N; r++)
-    {
-        (*nextSolution)[r] = 0;
-        for (int c = 0; c < N; c++)
-            (*nextSolution)[r] += K.Value(r, c) * (*currentSolution)[c];            
-    }
-    cout << "f_ ";
-    for (float _f: *nextSolution)
-        cout << _f << " ";
-    cout << endl;
+    
+    cerr << "Warning, EquationSolver did not converge" << endl;
 
-    return currentSolution;
+    return pair<unique_ptr<vector<float>>, int>(move(x_k1), counter);
 }
 
-void Equation::Print() 
+ostream& operator<<(ostream& os, const Equation& equation) 
 {
-    K.Print();
-    for (float _f: f)
-        cout << _f << endl;
+    os << equation.K;
+    for (float _f: equation.f)
+        os << _f << " ";
+    return os << endl;
 }

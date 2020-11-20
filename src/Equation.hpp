@@ -11,15 +11,16 @@
 
 using namespace std;
 
-class Equation
+struct Equation
 {
-    int N;
+    const int N;
     Matrix<float> K;
     vector<float> f;
 
-    Equation(int N);
-    unique_ptr<vector<float>> SolveIterative();
+    Equation(const int N);
+    pair<unique_ptr<vector<float>>, int> SolveIterative();
     void Print();
+    friend ostream& operator<<(ostream& os, const Equation& equation);
 };
 
 #endif
