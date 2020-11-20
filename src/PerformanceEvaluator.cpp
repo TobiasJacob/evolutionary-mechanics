@@ -193,5 +193,3 @@ float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports
         return INFINITY;
     }
 }
-
-

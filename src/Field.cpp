@@ -32,4 +32,3 @@ int Field::GetCounter()
 {
     return counter;
 }
-
