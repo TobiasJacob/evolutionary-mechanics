@@ -1,21 +1,26 @@
 CXX = g++
 CXXFLAGS = -Wall -I.. -I. -O3 -std=c++17 -DDEBUG
 
-# SRC are the object files, that are included by tests and by the program. You do not need a ending
+# SRC are the object files, that are included by tests and by the program. Do not include src/Program.cpp here!
 SRC = src/Field.cpp src/Matrix.cpp src/Equation.cpp src/PerformanceEvaluator.cpp
-# Those are the test files. Note that they provide a custom main function
+# Those are the test files. Note that they provide a custom main function. Do not include src/test/test.cpp here!
 TESTS = src/test/testing-test.cpp
+
 # patsubst maps the source files to their object files
 OBJSRC = $(patsubst %.cpp,build/%.o, $(SRC))
 OBJHEADERS = $(patsubst %.cpp,%.hpp, $(SRC))
 OBJTESTS = $(patsubst %.cpp,build/%.o, $(TESTS))
 
+# This default target keeps everything up to date.
+.PHONY: all
 all: build/test build/program
 
-build/program: $(OBJSRC) build/src/Program.o # Program provides the main function, OBJSRC all other object files
+# Program provides the main function, OBJSRC all other object files
+build/program: $(OBJSRC) build/src/Program.o
 	$(CXX) $(CXXFLAGS) -o build/program $(OBJSRC) build/src/Program.o
 
-build/test: build/src/test/test.o $(OBJTESTS) $(OBJSRC) # Link all test and source objects
+# Link all test and source objects
+build/test: build/src/test/test.o $(OBJTESTS) $(OBJSRC)
 	$(CXX) $(CXXFLAGS) -o build/test $(OBJTESTS) $(OBJSRC) build/src/test/test.o
 
 # Special rule, so that catch has not to be rebuild when a header changes
