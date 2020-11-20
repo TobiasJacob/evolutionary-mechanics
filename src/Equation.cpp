@@ -53,9 +53,10 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
     return pair<unique_ptr<vector<float>>, int>(move(x_k1), counter);
 }
 
-void Equation::Print() 
+ostream& operator<<(ostream& os, const Equation& equation) 
 {
-    K.Print();
-    for (float _f: f)
-        cout << _f << endl;
+    os << equation.K;
+    for (float _f: equation.f)
+        os << _f << " ";
+    return os << endl;
 }

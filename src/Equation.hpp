@@ -20,6 +20,7 @@ struct Equation
     Equation(const int N);
     pair<unique_ptr<vector<float>>, int> SolveIterative();
     void Print();
+    friend ostream& operator<<(ostream& os, const Equation& equation);
 };
 
 #endif

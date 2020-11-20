@@ -22,7 +22,6 @@ public:
 
     Field(int rows, int cols);
     void CalculateIndex(); // Numbers each block
-    void Print();
     int GetCounter();
 
 
@@ -35,6 +34,8 @@ public:
     {
         return cornerIndex.Value(r, c);
     }
+    friend ostream& operator<<(ostream& os, const Field& field);
 };
+
 
 #endif

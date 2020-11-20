@@ -33,10 +33,31 @@ public:
         return values[r * cols + c];
     }
 
-    void Print();
+    // If this class is marked as const, this const overload method will return a const (read only) reference
+    inline const T &Value(int r, int c) const
+    {
+        #ifdef DEBUG
+        if (r >= rows || c >= cols) cerr << "Index access error (" << r << "," << c << ") out of (" << rows << "," << cols << ")" << endl;
+        #endif
+        return values[r * cols + c];
+    }
+
     void SetTo(T value);
     vector<T> operator *(const vector<T> &vec);
 
+    // This one should be declared inline because matrix is a template class.
+    friend ostream& operator<<(ostream& os, const Matrix<T>& matrix) 
+    {
+        for (int r = 0; r < matrix.rows; r++)
+        {
+            os << "[";
+            for (int c = 0; c < matrix.cols; c++)
+                os << std::setw(8) << setprecision(2) << matrix.Value(r, c) << ",";
+            os << "],";
+            os << endl;
+        }
+        return os;
+    }
 };
 
 template<typename T>

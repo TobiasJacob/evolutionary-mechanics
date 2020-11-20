@@ -30,19 +30,6 @@ Matrix<T>::~Matrix()
         free(values);
 }
 
-template<typename T>
-void Matrix<T>::Print() 
-{
-    for (int r = 0; r < rows; r++)
-    {
-        cout << "[";
-        for (int c = 0; c < cols; c++)
-            cout << std::setw(8) << setprecision(2) << Value(r, c) << ",";
-        cout << "],";
-        cout << endl;
-    }
-}
-
 template<>
 void Matrix<int>::SetTo(int value)
 {
