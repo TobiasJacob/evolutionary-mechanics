@@ -6,10 +6,23 @@ struct sorting_element{
     struct sorting_element *nextElement;
 };
 
-EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve(EvolutionaryOptimizator::evolutionary_algorithm ea)
+void copyOrganism(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizator::organism org2, int rows, int cols, int startingRow, int startingCol)
+{   
+    for(int r = startingRow; r < rows; r++){
+
+        for(int c = startingCol; c < cols; c++){
+
+            org2.field->Plane(r,c) = org1.field->Plane(r,c);
+        }
+    }
+    
+    return;
+}
+
+EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
 {   
     try{
-        float rest = ea.organismsCount % 2;
+        float rest = this->organismsCount % 2;
 
         if(rest){
             throw(rest);
@@ -41,24 +54,24 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve(EvolutionaryOp
     unsigned long long totalFitness = 0;
 
     //current generation organisms buffer
-    EvolutionaryOptimizator::organism *currentGeneration = new EvolutionaryOptimizator::organism[ea.organismsCount];
+    EvolutionaryOptimizator::organism *currentGeneration = new EvolutionaryOptimizator::organism[this->organismsCount];
 
-    memcpy(currentGeneration, ea.organisms, ea.organismsCount * sizeof(EvolutionaryOptimizator::organism));
+    memcpy(currentGeneration, this->organisms, this->organismsCount * sizeof(EvolutionaryOptimizator::organism));
 
     //next generation organisms buffer
 
-    EvolutionaryOptimizator::organism *newGeneration = new EvolutionaryOptimizator::organism[ea.organismsCount];
+    EvolutionaryOptimizator::organism *newGeneration = new EvolutionaryOptimizator::organism[this->organismsCount];
 
-    int totalChildren = ea.organismsCount;
+    int totalChildren = this->organismsCount;
 
     //Counters
     int i,j;
 
-    //Used to sort the organisms from most to least fit
+    //Used to sort the organisms from most to lthis->t fit
     //First element is for placholding(?)
 
     //Check this
-    struct sorting_element *elements = (struct sorting_element *) malloc(sizeof(struct sorting_element) * (ea.organismsCount + 1));
+    struct sorting_element *elements = (struct sorting_element *) malloc(sizeof(struct sorting_element) * (this->organismsCount + 1));
     
     elements[0].fitness = 0.0;
     elements[0].nextElement = NULL;
@@ -73,15 +86,15 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve(EvolutionaryOp
         for(i=0; i < totalChildren; i++){
             PerformanceEvaluator evaluator;
 
-            orgFitness = evaluator.GetPerformance(*ea.organisms[i].field, this->supports, this->forces);
-            orgFitness = ea.fitnessTest(ea.organisms[i]);
+            orgFitness = evaluator.GetPerformance(*this->organisms[i].field, this->supports, this->forces);
+            orgFitness = this->fitnessTest(this->organisms[i]);
 
             //if org found with satysfactory fitness
-            if(orgFitness >= ea.desiredFitness){
-                orgToReturn = ea.organisms[i];
+            if(orgFitness >= this->desiredFitness){
+                orgToReturn = this->organisms[i];
                 //check we need to save the new field s
-	            orgToReturn.field = new Field(ea.orgRows, ea.orgCols);
-                copyOrganism(ea.organisms[i], orgToReturn, ea.orgRows, ea.orgCols, 0, 0);    
+	            orgToReturn.field = new Field(this->orgRows, this->orgCols);
+                copyOrganism(this->organisms[i], orgToReturn, this->orgRows, this->orgCols, 0, 0);    
             }
 
             elements[i + 1].fitness = orgFitness;
@@ -116,7 +129,7 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve(EvolutionaryOp
             }
         }
 
-        ea.progress(elements[0].nextElement->fitness);
+        this->progress(elements[0].nextElement->fitness);
 
         if(orgToReturn.field == NULL){
             break;
@@ -146,7 +159,7 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve(EvolutionaryOp
 
         while(elementToReplicate != NULL){
             EvolutionaryOptimizator::organism *orgToReplicate = 
-                &ea.organisms[(int) (elementToReplicate - elements) -1];
+                &this->organisms[(int) (elementToReplicate - elements) -1];
             previousMate = NULL;
 
             if(!elementToReplicate->state){
@@ -176,17 +189,17 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve(EvolutionaryOp
                 }
             }
 
-            mate = &ea.organisms[(int) (nextMate - elements) - 1];
+            mate = &this->organisms[(int) (nextMate - elements) - 1];
             nextMate->state = 0;
 
             //Calculates number of children based on both parents fitness
-            children = (int) (ea.organismsCount * (double) 
+            children = (int) (this->organismsCount * (double) 
                     (elementToReplicate->fitness + nextMate->fitness)/totalFitness);
             
             totalChildren += children;
             for(j = 0; j<children; j++){
 
-                newGeneration[newGenerationIndex] = reproduce(*orgToReplicate, *mate, ea);
+                newGeneration[newGenerationIndex] = reproduce(*orgToReplicate, *mate);
                 newGenerationIndex++;
             }
 
@@ -195,7 +208,7 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve(EvolutionaryOp
             elementToReplicate = elementToReplicate->nextElement;
         }
         
-        //This is just some clean-up. It makes sure there are an even number of organisms in the population, so each one has a mate. It also frees allocated DNA and buffer memory.
+        //This is just some clthis->-up. It makes sure there are an even number of organisms in the population, so this->h one has a mate. It also frees allocated DNA and buffer memory.
         if((totalChildren % 2)){
 
             EvolutionaryOptimizator::organism dummyOrg;
@@ -220,7 +233,7 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve(EvolutionaryOp
     while(elementFreeingPointer != NULL){
 
         elementFreeingBuffer = elementFreeingPointer;
-        free(ea.organisms[(int) (elementFreeingPointer - elements) - 1].field);
+        free(this->organisms[(int) (elementFreeingPointer - elements) - 1].field);
         elementFreeingPointer = elementFreeingBuffer->nextElement;
     }
 
@@ -231,20 +244,7 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve(EvolutionaryOp
     return orgToReturn;
 }
 
-void copyOrganism(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizator::organism org2, int rows, int cols, int startingRow, int startingCol)
-{   
-    for(int r = startingRow; r < rows; r++){
-
-        for(int c = startingCol; c < cols; c++){
-
-            org2.field->Plane(r,c) = org1.field->Plane(r,c);
-        }
-    }
-    
-    return;
-}
-
-EvolutionaryOptimizator::organism reproduce(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizator::organism org2, EvolutionaryOptimizator::evolutionary_algorithm alg)
+EvolutionaryOptimizator::organism EvolutionaryOptimizator::reproduce(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizator::organism org2)
 {
     EvolutionaryOptimizator::organism child;
     //Decides at which index to start crossing with other parent
@@ -264,38 +264,38 @@ EvolutionaryOptimizator::organism reproduce(EvolutionaryOptimizator::organism or
     copyOrganism(child, org1, org1.field->Rows, org1.field->Cols, 0, 0);
 
     //Crossing over
-    crossingCols = rand() % (alg.orgCols + 1);
-    crossingRows = rand() % (alg.orgRows + 1);
+    crossingCols = rand() % (this->orgCols + 1);
+    crossingRows = rand() % (this->orgRows + 1);
 
-    int rowsOffset = alg.orgRows - crossingRows >= (int)round((double)alg.orgRows / 2.0) ?
-	                    (int)round((double)alg.orgRows / 2.0) : alg.orgRows - crossingRows;
+    int rowsOffset = this->orgRows - crossingRows >= (int)round((double)this->orgRows / 2.0) ?
+	                    (int)round((double)this->orgRows / 2.0) : this->orgRows - crossingRows;
     
-    int colsOffset = alg.orgCols - crossingCols >= (int)round((double)alg.orgCols / 2.0) ?
-	                    (int)round((double)alg.orgCols / 2.0) : alg.orgCols - crossingCols;
+    int colsOffset = this->orgCols - crossingCols >= (int)round((double)this->orgCols / 2.0) ?
+	                    (int)round((double)this->orgCols / 2.0) : this->orgCols - crossingCols;
 
 
     //Copying from somewhere in middle of dna to end, or half of the dna length
     copyOrganism(child, org2, rowsOffset, colsOffset, crossingRows, crossingCols);
 
-    //If half of the dna length isn't copied already, the remaining amount is copied from the beginning (wraps around)
-    rowsOffset =  alg.orgRows - crossingRows >= (int)round((double)alg.orgRows / 2.0) ?
-        0 : ((int)round((double)alg.orgRows/ 2.0) - (alg.orgRows - crossingRows)); 
-    colsOffset =  alg.orgCols - crossingCols >= (int)round((double)alg.orgCols / 2.0) ?
-        0 : ((int)round((double)alg.orgCols/ 2.0) - (alg.orgCols - crossingCols)); 
+    //If half of the dna length isn't copied alrthis->y, the remaining amount is copied from the beginning (wraps around)
+    rowsOffset =  this->orgRows - crossingRows >= (int)round((double)this->orgRows / 2.0) ?
+        0 : ((int)round((double)this->orgRows/ 2.0) - (this->orgRows - crossingRows)); 
+    colsOffset =  this->orgCols - crossingCols >= (int)round((double)this->orgCols / 2.0) ?
+        0 : ((int)round((double)this->orgCols/ 2.0) - (this->orgCols - crossingCols)); 
 
     copyOrganism(child, org2, rowsOffset, colsOffset, crossingRows, crossingCols);
 
     //Mutating
 
-    mutationCount = rand() % (2 * (int)round(MUTATIONS_PER_BASE_PAIR_CONSTANT * (double)alg.orgRows * (double)alg.orgCols * 8.0));
+    mutationCount = rand() % (2 * (int)round(MUTATIONS_PER_BASE_PAIR_CONSTANT * (double)this->orgRows * (double)this->orgCols * 8.0));
 
     for (i = 0; i < mutationCount; i++) {
 
         //Chooses a random Col and a random row to execute the mutation
-        int mutationCol = (rand() % (alg.orgCols));
-        int mutationRow = (rand() % (alg.orgRows));
+        int mutationCol = (rand() % (this->orgCols));
+        int mutationRow = (rand() % (this->orgRows));
 
-        if(mutationRow != (0 || alg.orgRows) && mutationCol != (0 || alg.orgCols) ){
+        if(mutationRow != (0 || this->orgRows) && mutationCol != (0 || this->orgCols) ){
         
             //If there are not elements mutate only if there is an element as neighbour 
             if(!child.field->Plane(mutationRow, mutationCol)) {
