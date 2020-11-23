@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -Wall -I.. -I. -O3 -std=c++17 -DDEBUG
 
 # SRC are the object files, that are included by tests and by the program. Do not include src/Program.cpp here!
-SRC = src/Field.cpp src/Matrix.cpp src/Equation.cpp src/PerformanceEvaluator.cpp
+SRC = src/Field.cpp src/Matrix.cpp src/Equation.cpp src/PerformanceEvaluator.cpp src/SparseMatrix.cpp
 # Those are the test files. Note that they provide a custom main function. Do not include src/test/test.cpp here!
 TESTS = src/test/testing-test.cpp
 

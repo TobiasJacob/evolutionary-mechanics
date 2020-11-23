@@ -297,3 +297,4 @@ doc
 build/*
 .DS_Store
 .vscode
+build
