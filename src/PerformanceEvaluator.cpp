@@ -17,7 +17,7 @@ const static float ETimesB[3][6] = {
     {-60,  -60,    0,   60,   60,    0}
 };
 
-Equation PerformanceEvaluator::SetupEquation(Field &field, const Support &supports, const vector<Force> forces) 
+Equation PerformanceEvaluator::setupEquation(Field &field, const Support &supports, const vector<Force> forces) 
 {
     // Add three constrains for global position and rotation
     const int conditions = 2 * field.GetCounter();
@@ -144,7 +144,7 @@ float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports
     try
     {
         // Generates an equation system from the field / mesh
-        Equation equation = SetupEquation(field, supports, forces);
+        Equation equation = setupEquation(field, supports, forces);
         Equation reducedEquation(conditions - 3);
 
         // The values of the supports are zero, and can therefore be removed.
