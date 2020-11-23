@@ -225,3 +225,96 @@ unsigned int EvolutionaryOptimizator::fitnessTest(EvolutionaryOptimizator::organ
     return evaluator.GetPerformance(orgToTest.field, this->supports, this->forces);
 }
 
+void copyOrganism(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizator::organism org2, int rows, int cols, int startingRow, int startingCol)
+{   
+    for(int r = startingRow; r < rows; r++){
+
+        for(int c = startingCol; c < cols; c++){
+
+            org2.field->Plane(r,c) = org1.field->Plane(r,c);
+        }
+    }
+    
+    return;
+}
+
+EvolutionaryOptimizator::organism reproduce(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizator::organism org2, EvolutionaryOptimizator::evolutionary_algorithm alg)
+{
+    EvolutionaryOptimizator::organism child;
+    //Decides at which index to start crossing with other parent
+    int crossingCols;
+    int crossingRows;
+    //Number of mutations (in base pairs) in child
+    int mutationCount;
+    //Base pair to mutate
+    int mutatedBasePair;
+    //Mutation base pair buffer
+    unsigned char basePairBuffer;
+    //Counter
+    int i;
+
+    //Child starts with first parent's dna then crosses with the other
+    child.field = new Field(org1.field->Rows, org1.field->Cols);
+    copyOrganism(child, org1, org1.field->Rows, org1.field->Cols, 0, 0);
+
+    //Crossing over
+    //Last index ≥ a random index ≥ 0
+    crossingCols = rand() % (alg.orgCols + 1);
+    crossingRows = rand() % (alg.orgRows + 1);
+
+    int rowsOffset = alg.orgRows - crossingRows >= (int)round((double)alg.orgRows / 2.0) ?
+	                    (int)round((double)alg.orgRows / 2.0) : alg.orgRows - crossingRows;
+    
+    int colsOffset = alg.orgCols - crossingCols >= (int)round((double)alg.orgCols / 2.0) ?
+	                    (int)round((double)alg.orgCols / 2.0) : alg.orgCols - crossingCols;
+
+
+    //Copying from somewhere in middle of dna to end, or half of the dna length
+    copyOrganism(child, org2, rowsOffset, colsOffset, crossingRows, crossingCols);
+
+    //If half of the dna length isn't copied already, the remaining amount is copied from the beginning (wraps around)
+    rowsOffset =  alg.orgRows - crossingRows >= (int)round((double)alg.orgRows / 2.0) ?
+        0 : ((int)round((double)alg.orgRows/ 2.0) - (alg.orgRows - crossingRows)); 
+    colsOffset =  alg.orgCols - crossingCols >= (int)round((double)alg.orgCols / 2.0) ?
+        0 : ((int)round((double)alg.orgCols/ 2.0) - (alg.orgCols - crossingCols)); 
+
+    copyOrganism(child, org2, rowsOffset, colsOffset, crossingRows, crossingCols);
+
+    //Mutating
+
+    mutationCount = rand() % (2 * (int)round(MUTATIONS_PER_BASE_PAIR_CONSTANT * (double)alg.orgRows * (double)alg.orgCols * 8.0));
+
+    for (i = 0; i < mutationCount; i++) {
+
+        //Chooses a random Col and a random row to execute the mutation
+        int mutationCol = (rand() % (alg.orgCols));
+        int mutationRow = (rand() % (alg.orgRows));
+
+        if(mutationRow != (0 || alg.orgRows) && mutationCol != (0 || alg.orgCols) ){
+        
+            //If there are not elements mutate only if there is an element as neighbour 
+            if(!child.field->Plane(mutationRow, mutationCol)) {
+               if(child.field->Plane(mutationRow, mutationCol - 1) || 
+                       child.field->Plane(mutationRow, mutationCol + 1) ||
+                       child.field->Plane(mutationRow - 1, mutationCol) ||
+                       child.field->Plane(mutationRow + 1, mutationCol)){
+
+                   child.field->Plane(mutationRow, mutationCol) = true;
+               }
+            }
+        
+           //If there is an element mutate only if its not in the middle of two neighbours
+           else{
+
+               if(!(child.field->Plane(mutationRow, mutationCol -1) && (child.field->Plane(mutationRow, mutationCol + 1))) &&
+                           !((child.field->Plane(mutationRow -1, mutationCol) || (child.field->Plane(mutationRow + 1, mutationCol))))){
+                   
+                   child.field->Plane(mutationRow, mutationCol) = false;
+               }
+           }
+        }
+
+    }
+    return child;
+}
+

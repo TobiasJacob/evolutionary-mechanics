@@ -54,7 +54,7 @@ class EvolutionaryOptimizator
         const Support &supports;
         const vector<Force> forces;
         unsigned int fitnessTest(EvolutionaryOptimizator::organism orgToTest);
-
+        void copyOrganism(organism org1, organism org2, int rows, int cols, int startingRow, int startingCol);
 };
 
 #endif
