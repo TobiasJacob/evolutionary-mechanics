@@ -16,11 +16,11 @@ class SparseMatrix
 private:
     const int rows;
     const int cols;
-    T defaultValue;
+    const T defaultValue;
     list<pair<int, T>> *values;
 
 public:
-    SparseMatrix(int rows, int cols, T defaultValue);
+    SparseMatrix(int rows, int cols);
     SparseMatrix(const SparseMatrix&) = delete; // Disallow copy
     SparseMatrix & operator=(const SparseMatrix&) = delete;
     SparseMatrix(SparseMatrix&&) = default; // Allow move
@@ -31,20 +31,6 @@ public:
     const T& GetValue(size_t row, size_t col);
 
     vector<T> operator *(const vector<T> &vec);
-
-    // This one should be declared inline because matrix is a template class.
-    friend ostream& operator<<(ostream& os, const SparseMatrix<T>& matrix) 
-    {
-        for (int r = 0; r < matrix.rows; r++)
-        {
-            os << "[";
-            for (int c = 0; c < matrix.cols; c++)
-                os << std::setw(8) << setprecision(2) << matrix.Value(r, c) << ",";
-            os << "],";
-            os << endl;
-        }
-        return os;
-    }
 };
 
 #endif

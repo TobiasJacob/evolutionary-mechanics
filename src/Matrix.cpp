@@ -56,7 +56,7 @@ vector<bool> Matrix<bool>::operator *(const vector<bool> &vec)
         for (int c = 0; c < cols; c++)
             if (Value(r, c) * vec[c])
                 result[r] = !result[r];
-    return result;    
+    return result;
 }
 
 
@@ -86,7 +86,7 @@ vector<T> add(const vector<T> &a, const vector<T> &b)
     vector<T> result(a.size(), 0);
     for (int r = 0; r < a.size(); r++)
         result[r] = a[r] + b[r];
-    return result;    
+    return result;
 }
 
 template<typename T>

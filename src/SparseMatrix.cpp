@@ -1,7 +1,7 @@
 #include "SparseMatrix.hpp"
 
 template<typename T>
-SparseMatrix<T>::SparseMatrix(int rows, int cols, T defaultValue) : rows(rows), cols(cols), defaultValue(defaultValue)
+SparseMatrix<T>::SparseMatrix(int rows, int cols) : rows(rows), cols(cols), defaultValue(0)
 {
     values = (list<pair<int, T>> *)malloc(rows * sizeof(list<pair<int, T>>));
     new (values) list<pair<int, T>>[rows]; // Use replacement new to construct vectors in already allocated (and later also aligned) memory
@@ -53,7 +53,22 @@ const T& SparseMatrix<T>::GetValue(size_t row, size_t col)
         cursorIterator++;
     }
 
-    return defaultValue;    
+    return defaultValue;
+}
+
+template<typename T>
+vector<T> SparseMatrix<T>::operator *(const vector<T> &vec) 
+{
+    #ifdef DEBUG
+    if (vec.size() != cols) throw invalid_argument("Vec has wrong size");
+    #endif
+    vector<T> result(rows, 0);
+    for (int r = 0; r < rows; r++)
+        for (pair<int, T> &element: values[r])
+        {
+            result[r] += element.second * vec[element.first];
+        }
+    return result;
 }
 
 template class SparseMatrix<int>;
