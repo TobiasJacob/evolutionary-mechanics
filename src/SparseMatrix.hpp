@@ -27,8 +27,8 @@ public:
     SparseMatrix & operator=(SparseMatrix&&) = default;
     ~SparseMatrix();
 
-    void SetValue(int row, int col, T value);
-    const T& GetValue(int row, int col);
+    void SetValue(size_t row, size_t col, T value);
+    const T& GetValue(size_t row, size_t col);
 
     vector<T> operator *(const vector<T> &vec);
 
