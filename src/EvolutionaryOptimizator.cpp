@@ -294,8 +294,8 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::reproduce(Evolutionar
            //If there is an element mutate only if its not in the middle of two neighbours
            else{
 
-               if(!(child.field->Plane(mutationRow, mutationCol -1) && (child.field->Plane(mutationRow, mutationCol + 1))) &&
-                           !((child.field->Plane(mutationRow -1, mutationCol) || (child.field->Plane(mutationRow + 1, mutationCol))))){
+               if(!(child.field->Plane(mutationRow, mutationCol -1) && (child.field->Plane(mutationRow, mutationCol + 1))) ||
+                           !((child.field->Plane(mutationRow -1, mutationCol) && (child.field->Plane(mutationRow + 1, mutationCol))))){
                    
                    child.field->Plane(mutationRow, mutationCol) = false;
                }
