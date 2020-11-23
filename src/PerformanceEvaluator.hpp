@@ -27,7 +27,7 @@ struct Force
 class PerformanceEvaluator
 {
 private:
-    Equation SetupEquation(Field &field, const Support &supports, const vector<Force> forces);
+    Equation setupEquation(Field &field, const Support &supports, const vector<Force> forces);
     float calculateMaxStress(Field &field, const vector<float> &q);
 public:
     float GetPerformance(Field &field, const Support &supports, const vector<Force> forces);

@@ -30,19 +30,6 @@ Matrix<T>::~Matrix()
         free(values);
 }
 
-template<typename T>
-void Matrix<T>::Print() 
-{
-    for (int r = 0; r < rows; r++)
-    {
-        cout << "[";
-        for (int c = 0; c < cols; c++)
-            cout << std::setw(8) << setprecision(2) << Value(r, c) << ",";
-        cout << "],";
-        cout << endl;
-    }
-}
-
 template<>
 void Matrix<int>::SetTo(int value)
 {
@@ -69,7 +56,7 @@ vector<bool> Matrix<bool>::operator *(const vector<bool> &vec)
         for (int c = 0; c < cols; c++)
             if (Value(r, c) * vec[c])
                 result[r] = !result[r];
-    return result;    
+    return result;
 }
 
 
@@ -91,6 +78,24 @@ template class Matrix<bool>;
 template class Matrix<float>;
 
 template<typename T>
+ostream& operator<<(ostream& os, const Matrix<T>& matrix) 
+{
+    for (int r = 0; r < matrix.rows; r++)
+    {
+        os << "[";
+        for (int c = 0; c < matrix.cols; c++)
+            os << std::setw(8) << setprecision(2) << matrix.Value(r, c) << ",";
+        os << "],";
+        os << endl;
+    }
+    return os;
+}
+
+template ostream& operator<<(ostream& os, const Matrix<int>& matrix);
+template ostream& operator<<(ostream& os, const Matrix<bool>& matrix);
+template ostream& operator<<(ostream& os, const Matrix<float>& matrix);
+
+template<typename T>
 vector<T> add(const vector<T> &a, const vector<T> &b) 
 {
     #ifdef DEBUG
@@ -99,7 +104,7 @@ vector<T> add(const vector<T> &a, const vector<T> &b)
     vector<T> result(a.size(), 0);
     for (int r = 0; r < a.size(); r++)
         result[r] = a[r] + b[r];
-    return result;    
+    return result;
 }
 
 template<typename T>

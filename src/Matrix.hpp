@@ -9,6 +9,10 @@
 
 using namespace std;
 
+// Forward declare for marking the << operator as friend
+template<typename T> class Matrix;
+template <typename T> ostream& operator<<(ostream& os, const Matrix<T>& matrix);
+
 template<typename T>
 class Matrix
 {
@@ -33,10 +37,19 @@ public:
         return values[r * cols + c];
     }
 
-    void Print();
+    // If this class is marked as const, this const overload method will return a const (read only) reference
+    inline const T &Value(int r, int c) const
+    {
+        #ifdef DEBUG
+        if (r >= rows || c >= cols) cerr << "Index access error (" << r << "," << c << ") out of (" << rows << "," << cols << ")" << endl;
+        #endif
+        return values[r * cols + c];
+    }
+
     void SetTo(T value);
     vector<T> operator *(const vector<T> &vec);
 
+    friend ostream& operator<<<T>(ostream& os, const Matrix<T>& matrix);
 };
 
 template<typename T>

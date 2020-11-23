@@ -17,7 +17,7 @@ const static float ETimesB[3][6] = {
     {-60,  -60,    0,   60,   60,    0}
 };
 
-Equation PerformanceEvaluator::SetupEquation(Field &field, const Support &supports, const vector<Force> forces) 
+Equation PerformanceEvaluator::setupEquation(Field &field, const Support &supports, const vector<Force> forces) 
 {
     // Add three constrains for global position and rotation
     const int conditions = 2 * field.GetCounter();
@@ -51,7 +51,7 @@ Equation PerformanceEvaluator::SetupEquation(Field &field, const Support &suppor
                 // Add the stiffness values to global equation
                 for (int i = 0; i < 6; i++)
                     for (int j = 0; j < 6; j++)
-                        equation.K.Value(targetIndicesLower[i], targetIndicesLower[j]) += K[i][j];
+                        equation.K.GetOrAllocateValue(targetIndicesLower[i], targetIndicesLower[j]) += K[i][j];
 
                 // Upper right triangle, get the index of each corner in the global equation system
                 const int targetIndicesUpper[6] = {
@@ -66,7 +66,7 @@ Equation PerformanceEvaluator::SetupEquation(Field &field, const Support &suppor
                 // Add the stiffness values to global equation
                 for (int i = 0; i < 6; i++)
                     for (int j = 0; j < 6; j++)
-                        equation.K.Value(targetIndicesUpper[i], targetIndicesUpper[j]) += K[i][j];
+                        equation.K.GetOrAllocateValue(targetIndicesUpper[i], targetIndicesUpper[j]) += K[i][j];
             }
     
     return equation;
@@ -144,7 +144,7 @@ float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports
     try
     {
         // Generates an equation system from the field / mesh
-        Equation equation = SetupEquation(field, supports, forces);
+        Equation equation = setupEquation(field, supports, forces);
         Equation reducedEquation(conditions - 3);
 
         // The values of the supports are zero, and can therefore be removed.
@@ -159,7 +159,7 @@ float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports
             {
                 if (c == supportColIndex || c == supportRow1Index || c == supportRow2Index)
                     continue;
-                reducedEquation.K.Value(rTarget, cTarget) = equation.K.Value(r, c);
+                reducedEquation.K.SetValue(rTarget, cTarget, equation.K.GetValue(r, c));
                 cTarget++;
             }
             rTarget++;
@@ -193,5 +193,3 @@ float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports
         return INFINITY;
     }
 }
-
-

@@ -44,4 +44,3 @@ int main()
     PerformanceEvaluator evaluator;
     cout << evaluator.GetPerformance(field, support, forces) << endl;
 }
-

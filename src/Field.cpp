@@ -22,14 +22,12 @@ void Field::CalculateIndex()
             }
 }
 
-void Field::Print() 
-{
-    fields.Print();
-
-}
-
 int Field::GetCounter() 
 {
     return counter;
 }
 
+ostream& operator<<(ostream& os, const Field& field) 
+{
+    return os << field.fields;
+}
