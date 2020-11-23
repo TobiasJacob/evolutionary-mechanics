@@ -9,6 +9,7 @@ Following the [Project Description](latex/sources/ProjectDescription.md)
 - Tobi: Make heavier use of move semantics for vector calculations
 - Tobi: Make sure that in equation checker all planes are connected, and not two disting bodies can emerge.
 - Tobi: Try out hashmap or BST instead of list container.
+- Tobi: Check the indexes of supports and forces to make sure they are valid
 - Create a overload for const Matrix::Value, so that it can be used as a const reference in if type is const Matrix.
 - Create a Sparse Matrix implementation / class
 - Use a floodfilling algorithm to make sure that the planes are connected
