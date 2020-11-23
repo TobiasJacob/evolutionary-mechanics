@@ -9,6 +9,10 @@
 
 using namespace std;
 
+// Forward declare for marking the << operator as friend
+template<typename T> class Matrix;
+template <typename T> ostream& operator<<(ostream& os, const Matrix<T>& matrix);
+
 template<typename T>
 class Matrix
 {
@@ -45,19 +49,7 @@ public:
     void SetTo(T value);
     vector<T> operator *(const vector<T> &vec);
 
-    // This one should be declared inline because matrix is a template class.
-    friend ostream& operator<<(ostream& os, const Matrix<T>& matrix) 
-    {
-        for (int r = 0; r < matrix.rows; r++)
-        {
-            os << "[";
-            for (int c = 0; c < matrix.cols; c++)
-                os << std::setw(8) << setprecision(2) << matrix.Value(r, c) << ",";
-            os << "],";
-            os << endl;
-        }
-        return os;
-    }
+    friend ostream& operator<<<T>(ostream& os, const Matrix<T>& matrix);
 };
 
 template<typename T>

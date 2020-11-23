@@ -95,5 +95,21 @@ vector<T> SparseMatrix<T>::operator *(const vector<T> &vec)
     return result;
 }
 
+template<typename T>
+ostream& operator<<(ostream& os, const SparseMatrix<T>& matrix)
+{
+    for (int r = 0; r < matrix.rows; r++)
+    {
+        os << "[";
+        for (int c = 0; c < matrix.cols; c++)
+            os << std::setw(8) << setprecision(2) << matrix.GetValue(r, c) << ","; // Not the most efficent way to do it, but we are not going to print big matricies. 
+        os << "],";
+        os << endl;
+    }
+    return os;
+}
+
 template class SparseMatrix<int>;
 template class SparseMatrix<float>;
+template ostream& operator<<(ostream& os, const SparseMatrix<int>& matrix);
+template ostream& operator<<(ostream& os, const SparseMatrix<float>& matrix);

@@ -78,6 +78,24 @@ template class Matrix<bool>;
 template class Matrix<float>;
 
 template<typename T>
+ostream& operator<<(ostream& os, const Matrix<T>& matrix) 
+{
+    for (int r = 0; r < matrix.rows; r++)
+    {
+        os << "[";
+        for (int c = 0; c < matrix.cols; c++)
+            os << std::setw(8) << setprecision(2) << matrix.Value(r, c) << ",";
+        os << "],";
+        os << endl;
+    }
+    return os;
+}
+
+template ostream& operator<<(ostream& os, const Matrix<int>& matrix);
+template ostream& operator<<(ostream& os, const Matrix<bool>& matrix);
+template ostream& operator<<(ostream& os, const Matrix<float>& matrix);
+
+template<typename T>
 vector<T> add(const vector<T> &a, const vector<T> &b) 
 {
     #ifdef DEBUG

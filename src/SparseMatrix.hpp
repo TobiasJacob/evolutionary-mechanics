@@ -10,6 +10,10 @@
 
 using namespace std;
 
+// Forward declare for marking the << operator as friend
+template<typename T> class SparseMatrix;
+template <typename T> ostream& operator<<(ostream& os, const SparseMatrix<T>& matrix);
+
 template<typename T>
 class SparseMatrix
 {
@@ -32,19 +36,7 @@ public:
     T& GetOrAllocateValue(size_t row, size_t col);
 
     vector<T> operator *(const vector<T> &vec);
-
-    friend ostream& operator<<(ostream& os, const SparseMatrix<T>& matrix)
-    {
-        for (int r = 0; r < matrix.rows; r++)
-        {
-            os << "[";
-            for (int c = 0; c < matrix.cols; c++)
-                os << std::setw(8) << setprecision(2) << matrix.GetValue(r, c) << ","; // Not the most efficent way to do it, but we are not going to print big matricies. 
-            os << "],";
-            os << endl;
-        }
-        return os;
-    }
+    friend ostream& operator<< <T>(ostream& os, const SparseMatrix<T>& matrix);
 };
 
 #endif
