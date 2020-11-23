@@ -21,27 +21,10 @@ void copyOrganism(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizato
 
 EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
 {   
-    try{
-        float rest = this->organismsCount % 2;
+    float rest = this->organismsCount % 2;
 
-        if(rest){
-            throw(rest);
-        }
-
-        else{
-            std::cout << "Even number of organisms. Continuing with evolutionary optimization" << std::endl; 
-        }
-    }
-    catch(float rest){
-        std::cerr << "Error in evolve: Cannot have an odd number of organisms. Got: " << rest << std::endl;
-        EvolutionaryOptimizator::organism nullOrg;
-
-        //We should return a null invalid Field
-        nullOrg.field = new Field(0,0); 
-        nullOrg.rows = 0;
-        nullOrg.cols = 0;
-        
-        return nullOrg;
+    if(rest){
+        throw "Odd number of organisms. Check.";
     }
     
     //Seed random number generator

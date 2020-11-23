@@ -13,14 +13,9 @@ class EvolutionaryOptimizator
 {   
     public:
         typedef struct{
-
             Field* field;
             int rows, cols;
         }organism;
-
-        typedef struct{
-
-       }evolutionary_algorithm;
 
         EvolutionaryOptimizator();
         EvolutionaryOptimizator(const Field &field, const Support &supports, const vector<Force> forces);
