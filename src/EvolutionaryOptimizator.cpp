@@ -6,7 +6,7 @@ struct sorting_element{
     struct sorting_element *nextElement;
 };
 
-EvolutionaryOptimizator::organism evolve(EvolutionaryOptimizator::evolutionary_algorithm ea)
+EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve(EvolutionaryOptimizator::evolutionary_algorithm ea)
 {
     if(ea.organismsCount % 2){
         std::cout << "Error in evolve: Cannot have an odd number of organisms" << std::endl;
@@ -60,16 +60,19 @@ EvolutionaryOptimizator::organism evolve(EvolutionaryOptimizator::evolutionary_a
         //Loops thru organisms and tests fitness + sorting
 
         for(i=0; i < totalChildren; i++){
+            PerformanceEvaluator evaluator;
+
+            orgFitness = evaluator.GetPerformance(ea.organisms[i].field, this->supports, this->forces);
             orgFitness = ea.fitnessTest(ea.organisms[i]);
 
             //if org found with satysfactory fitness
             if(orgFitness >= ea.desiredFitness){
                 orgToReturn = ea.organisms[i];
                 //check we need to save the new field s
-	            //orgToReturn.field = new Field(ea.orgRows, ea.orgCols);
-
-                //orgToReturn.field = ea.organisms[i].field;
+	            orgToReturn.field = new Field(ea.orgRows, ea.orgCols);
+                copyOrganism(ea.organisms[i], orgToReturn, ea.orgRows, ea.orgCols, 0, 0);    
             }
+
             elements[i + 1].fitness = orgFitness;
             elements[i + 1].nextElement = NULL;
             elements[i + 1].state = 1;
@@ -82,7 +85,6 @@ EvolutionaryOptimizator::organism evolve(EvolutionaryOptimizator::evolutionary_a
             }
 
             //Used to iterate thru array of organism fitnesses
-            //Watch out here for the poitner, implementation different
             struct sorting_element *next = &elements[0];
             
             for(j = 0; j < i+1; j++){
@@ -218,13 +220,6 @@ EvolutionaryOptimizator::organism evolve(EvolutionaryOptimizator::evolutionary_a
     return orgToReturn;
 }
 
-unsigned int EvolutionaryOptimizator::fitnessTest(EvolutionaryOptimizator::organism orgToTest)
-{
-    PerformanceEvaluator evaluator;
-
-    return evaluator.GetPerformance(orgToTest.field, this->supports, this->forces);
-}
-
 void copyOrganism(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizator::organism org2, int rows, int cols, int startingRow, int startingCol)
 {   
     for(int r = startingRow; r < rows; r++){
@@ -258,7 +253,6 @@ EvolutionaryOptimizator::organism reproduce(EvolutionaryOptimizator::organism or
     copyOrganism(child, org1, org1.field->Rows, org1.field->Cols, 0, 0);
 
     //Crossing over
-    //Last index ≥ a random index ≥ 0
     crossingCols = rand() % (alg.orgCols + 1);
     crossingRows = rand() % (alg.orgRows + 1);
 
