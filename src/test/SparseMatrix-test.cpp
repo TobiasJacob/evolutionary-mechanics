@@ -53,7 +53,37 @@ TEST_CASE("SparseMatrixInsert", "[SparseMatrix]")
     REQUIRE(matrix.GetValue(100, 102) == value);
 }
 
-TEST_CASE("Multiplication", "[SparseMatrix]")
+TEST_CASE("SparseMatrixGetOrAllocate", "[SparseMatrix]")
+{
+    SparseMatrix<float> matrix(314, 221);
+
+    int testRows[4] = {123, 0, 14, 313};
+    int testCols[3] = {0, 103, 220};
+    float value = -302.10e-2;
+    for (const int row : testRows)
+    {
+        for (const int col : testCols)
+        {
+            INFO("Testing " << row << ", " << col);
+            REQUIRE(matrix.GetValue(row, col) == 0);
+            matrix.GetOrAllocateValue(row, col) = value;
+            REQUIRE(matrix.GetValue(row, col) == value);
+            value += 1;
+        }
+    }
+
+    matrix.GetOrAllocateValue(100, 101) = value;
+    REQUIRE(matrix.GetValue(100, 100) == 0);
+    REQUIRE(matrix.GetValue(100, 101) == value);
+    REQUIRE(matrix.GetValue(100, 102) == 0);
+    matrix.GetOrAllocateValue(100, 100) = value;
+    matrix.GetOrAllocateValue(100, 102) = value;
+    REQUIRE(matrix.GetValue(100, 100) == value);
+    REQUIRE(matrix.GetValue(100, 101) == value);
+    REQUIRE(matrix.GetValue(100, 102) == value);
+}
+
+TEST_CASE("SparseMatrixMultiplication", "[SparseMatrix]")
 {
     SparseMatrix<float> matrix(5, 8);
 

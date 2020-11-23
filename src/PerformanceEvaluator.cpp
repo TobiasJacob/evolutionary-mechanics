@@ -51,7 +51,7 @@ Equation PerformanceEvaluator::setupEquation(Field &field, const Support &suppor
                 // Add the stiffness values to global equation
                 for (int i = 0; i < 6; i++)
                     for (int j = 0; j < 6; j++)
-                        equation.K.Value(targetIndicesLower[i], targetIndicesLower[j]) += K[i][j];
+                        equation.K.GetOrAllocateValue(targetIndicesLower[i], targetIndicesLower[j]) += K[i][j];
 
                 // Upper right triangle, get the index of each corner in the global equation system
                 const int targetIndicesUpper[6] = {
@@ -66,7 +66,7 @@ Equation PerformanceEvaluator::setupEquation(Field &field, const Support &suppor
                 // Add the stiffness values to global equation
                 for (int i = 0; i < 6; i++)
                     for (int j = 0; j < 6; j++)
-                        equation.K.Value(targetIndicesUpper[i], targetIndicesUpper[j]) += K[i][j];
+                        equation.K.GetOrAllocateValue(targetIndicesUpper[i], targetIndicesUpper[j]) += K[i][j];
             }
     
     return equation;
@@ -159,7 +159,7 @@ float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports
             {
                 if (c == supportColIndex || c == supportRow1Index || c == supportRow2Index)
                     continue;
-                reducedEquation.K.Value(rTarget, cTarget) = equation.K.Value(r, c);
+                reducedEquation.K.SetValue(rTarget, cTarget, equation.K.GetValue(r, c));
                 cTarget++;
             }
             rTarget++;

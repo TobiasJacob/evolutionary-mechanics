@@ -8,13 +8,14 @@
 #include <math.h>
 #include <iomanip>
 #include "Matrix.hpp"
+#include "SparseMatrix.hpp"
 
 using namespace std;
 
 struct Equation
 {
     const int N;
-    Matrix<float> K;
+    SparseMatrix<float> K;
     vector<float> f;
 
     Equation(const int N);

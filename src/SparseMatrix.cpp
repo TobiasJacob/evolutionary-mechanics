@@ -37,7 +37,7 @@ void SparseMatrix<T>::SetValue(size_t row, size_t col, T value)
 }
 
 template<typename T>
-const T& SparseMatrix<T>::GetValue(size_t row, size_t col) 
+const T& SparseMatrix<T>::GetValue(size_t row, size_t col) const
 {
     #if DEBUG
     if (row >= rows || col >= cols) throw new out_of_range("SparseMatrix");
@@ -54,6 +54,30 @@ const T& SparseMatrix<T>::GetValue(size_t row, size_t col)
     }
 
     return defaultValue;
+}
+
+template<typename T>
+T& SparseMatrix<T>::GetOrAllocateValue(size_t row, size_t col) 
+{
+    #if DEBUG
+    if (row >= rows || col >= cols) throw new out_of_range("SparseMatrix");
+    #endif
+
+    list<pair<int, T>> &rowVals = values[row];
+
+    // Find end or first value bigger than cursor
+    auto cursorIterator = rowVals.begin();
+    while (cursorIterator != rowVals.end())
+    {
+        if (cursorIterator->first >= col) break;
+        cursorIterator++;
+    }
+
+    if (cursorIterator != rowVals.end() && cursorIterator->first == col)
+        return cursorIterator->second; // Get this value
+    else
+        rowVals.insert(cursorIterator, pair<int, T>(col, 0)); // Insert new value before cursorIterator
+        return (--cursorIterator)->second;
 }
 
 template<typename T>

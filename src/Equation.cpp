@@ -1,6 +1,6 @@
 #include "Equation.hpp"
 
-Equation::Equation(const int N) : N(N), K(N, N, 0), f(N, 0)
+Equation::Equation(const int N) : N(N), K(N, N), f(N, 0)
 {
     
 }
