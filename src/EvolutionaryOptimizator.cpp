@@ -62,7 +62,7 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve(EvolutionaryOp
         for(i=0; i < totalChildren; i++){
             PerformanceEvaluator evaluator;
 
-            orgFitness = evaluator.GetPerformance(ea.organisms[i].field, this->supports, this->forces);
+            orgFitness = evaluator.GetPerformance(*ea.organisms[i].field, this->supports, this->forces);
             orgFitness = ea.fitnessTest(ea.organisms[i]);
 
             //if org found with satysfactory fitness
