@@ -1,5 +1,5 @@
-#ifndef MATRIX
-#define MATRIX
+#ifndef SPARSEMATRIX
+#define SPARSEMATRIX
 
 #include <stdlib.h>
 #include <string.h>
