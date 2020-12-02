@@ -8,6 +8,11 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+    if (argc != 2) 
+    {
+        cout << "Usage: " << argv[0] << " <N>" << endl;
+        exit(1);
+    }
     int N = stoi(argv[1]);
 
     // Support and Forces should remain unchanged during the remaining part of the program
@@ -43,8 +48,8 @@ int main(int argc, char **argv)
             field.Plane(i, i2) = true;
     
 
-    PerformanceEvaluator evaluator;
-    float perf = evaluator.GetPerformance(field, support, forces);
+    PerformanceEvaluator evaluator(N, N, support, forces);
+    float perf = evaluator.GetPerformance(field);
 
     cout << perf << endl;
 }

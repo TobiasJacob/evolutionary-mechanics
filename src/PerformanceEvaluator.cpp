@@ -3,6 +3,7 @@
 #include "Matrix.hpp"
 #include "Microtime.hpp"
 #include <fstream>
+#include <algorithm>
 
 const static float K[6][6] = {
     { 300,  180, -240,  -60,  -60, -120},
@@ -19,35 +20,41 @@ const static float ETimesB[3][6] = {
     {-60,  -60,    0,   60,   60,    0}
 };
 
-Equation PerformanceEvaluator::setupEquation(Field &field, const Support &supports, const vector<Force> forces) 
+PerformanceEvaluator::PerformanceEvaluator(const int rows, const int cols, const Support &supports, const vector<Force> &forces) : rows(rows), cols(cols), supports(supports), forces(forces), cornerCounter(0), cornerIndex(rows + 1, cols + 1, 0)
+{
+    
+}
+
+
+Equation PerformanceEvaluator::setupEquation(Field &field) 
 {
     // Add three constrains for global position and rotation
-    const int conditions = 2 * field.GetCounter();
+    const int conditions = 2 * cornerCounter;
     Equation equation(conditions);
 
     // Add forces to equation. If force is not attached to model, model failed.
     // Forces on supports are automatically removed later
     for (const Force &f: forces)
     {
-        int cornerIndex = field.CornerIndex(f.attackCorner.row, f.attackCorner.col);
-        if (!cornerIndex) throw INFINITY;
-        equation.f[2 * cornerIndex - 2] += f.forceRow;
-        equation.f[2 * cornerIndex - 1] += f.forceCol;
+        int forceIndex = cornerIndex.Value(f.attackCorner.row, f.attackCorner.col);
+        if (!forceIndex) throw INFINITY;
+        equation.f[2 * forceIndex - 2] += f.forceRow;
+        equation.f[2 * forceIndex - 1] += f.forceCol;
     }
 
     // Setup stiffness matrix
-    for (int r = 0; r < field.Rows; r++)
-        for (int c = 0; c < field.Cols; c++)
+    for (int r = 0; r < rows; r++)
+        for (int c = 0; c < cols; c++)
             if (field.Plane(r, c))
             {
                 // Lower left triangle, get the index of each corner in the global equation system
                 const int targetIndicesLower[6] = {
-                    2 * field.CornerIndex(r, c) - 2,
-                    2 * field.CornerIndex(r, c) - 1,
-                    2 * field.CornerIndex(r + 1, c) - 2,
-                    2 * field.CornerIndex(r + 1, c) - 1,
-                    2 * field.CornerIndex(r, c + 1) - 2,
-                    2 * field.CornerIndex(r, c + 1) - 1
+                    2 * cornerIndex.Value(r, c) - 2,
+                    2 * cornerIndex.Value(r, c) - 1,
+                    2 * cornerIndex.Value(r + 1, c) - 2,
+                    2 * cornerIndex.Value(r + 1, c) - 1,
+                    2 * cornerIndex.Value(r, c + 1) - 2,
+                    2 * cornerIndex.Value(r, c + 1) - 1
                 };
 
                 // Add the stiffness values to global equation
@@ -57,12 +64,12 @@ Equation PerformanceEvaluator::setupEquation(Field &field, const Support &suppor
 
                 // Upper right triangle, get the index of each corner in the global equation system
                 const int targetIndicesUpper[6] = {
-                    2 * field.CornerIndex(r + 1, c + 1) - 2,
-                    2 * field.CornerIndex(r + 1, c + 1) - 1,
-                    2 * field.CornerIndex(r, c + 1) - 2,
-                    2 * field.CornerIndex(r, c + 1) - 1,
-                    2 * field.CornerIndex(r + 1, c) - 2,
-                    2 * field.CornerIndex(r + 1, c) - 1
+                    2 * cornerIndex.Value(r + 1, c + 1) - 2,
+                    2 * cornerIndex.Value(r + 1, c + 1) - 1,
+                    2 * cornerIndex.Value(r, c + 1) - 2,
+                    2 * cornerIndex.Value(r, c + 1) - 1,
+                    2 * cornerIndex.Value(r + 1, c) - 2,
+                    2 * cornerIndex.Value(r + 1, c) - 1
                 };
 
                 // Add the stiffness values to global equation
@@ -78,18 +85,18 @@ float PerformanceEvaluator::calculateMaxStress(Field &field, const vector<float>
 {
     float maxStressSquared = 0;
     // For every tile
-    for (int r = 0; r < field.Rows; r++)
-        for (int c = 0; c < field.Cols; c++)
+    for (int r = 0; r < rows; r++)
+        for (int c = 0; c < cols; c++)
             if (field.Plane(r, c))
             {
                 // Lower left triangle, get the index of each corner in the global equation system
                 const int targetIndicesLower[6] = {
-                    2 * field.CornerIndex(r, c) - 2,
-                    2 * field.CornerIndex(r, c) - 1,
-                    2 * field.CornerIndex(r + 1, c) - 2,
-                    2 * field.CornerIndex(r + 1, c) - 1,
-                    2 * field.CornerIndex(r, c + 1) - 2,
-                    2 * field.CornerIndex(r, c + 1) - 1
+                    2 * cornerIndex.Value(r, c) - 2,
+                    2 * cornerIndex.Value(r, c) - 1,
+                    2 * cornerIndex.Value(r + 1, c) - 2,
+                    2 * cornerIndex.Value(r + 1, c) - 1,
+                    2 * cornerIndex.Value(r, c + 1) - 2,
+                    2 * cornerIndex.Value(r, c + 1) - 1
                 };
                 
                 // Store stress
@@ -98,16 +105,17 @@ float PerformanceEvaluator::calculateMaxStress(Field &field, const vector<float>
                 // Calculate compressive and shear stress
                 for (int i = 0; i < 3; i++)
                     for (int j = 0; j < 6; j++)
-                        sigmaLower[i] += ETimesB[i][j] * q[targetIndicesLower[j]];
+                        if (targetIndicesLower[j] != -1)
+                            sigmaLower[i] += ETimesB[i][j] * q[targetIndicesLower[j]];
 
                 // Upper right triangle, get the index of each corner in the global equation system
                 const int targetIndicesUpper[6] = {
-                    2 * field.CornerIndex(r + 1, c + 1) - 2,
-                    2 * field.CornerIndex(r + 1, c + 1) - 1,
-                    2 * field.CornerIndex(r, c + 1) - 2,
-                    2 * field.CornerIndex(r, c + 1) - 1,
-                    2 * field.CornerIndex(r + 1, c) - 2,
-                    2 * field.CornerIndex(r + 1, c) - 1
+                    2 * cornerIndex.Value(r + 1, c + 1) - 2,
+                    2 * cornerIndex.Value(r + 1, c + 1) - 1,
+                    2 * cornerIndex.Value(r, c + 1) - 2,
+                    2 * cornerIndex.Value(r, c + 1) - 1,
+                    2 * cornerIndex.Value(r + 1, c) - 2,
+                    2 * cornerIndex.Value(r + 1, c) - 1
                 };
 
                 // Store stress
@@ -116,7 +124,8 @@ float PerformanceEvaluator::calculateMaxStress(Field &field, const vector<float>
                 // Calculate compressive and shear stress
                 for (int i = 0; i < 3; i++)
                     for (int j = 0; j < 6; j++)
-                        sigmaUpper[i] += ETimesB[i][j] * q[targetIndicesUpper[j]];
+                        if (targetIndicesUpper[j] != -1)
+                            sigmaUpper[i] += ETimesB[i][j] * q[targetIndicesUpper[j]];
 
                 // Van Mises Equation https://en.wikipedia.org/wiki/Von_Mises_yield_criterion
                 float squaredStressLower = sigmaLower[0] * sigmaLower[0] + sigmaLower[1] * sigmaLower[1] + sigmaLower[0] * sigmaLower[1] + 3 * sigmaLower[2] * sigmaLower[2];
@@ -127,17 +136,36 @@ float PerformanceEvaluator::calculateMaxStress(Field &field, const vector<float>
     return maxStressSquared;
 }
 
-float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports, const vector<Force> forces)
+void PerformanceEvaluator::refreshCornerIndex(Field &field) 
 {
-    // Refresh corner numbering, so each corner of a tile has a determined index, starting at 1
-    field.CalculateIndex();
-    const int conditions = 2 * field.GetCounter();
+    cornerIndex.SetTo(0);
+    cornerCounter = 0;
+    for (int r = 0; r < rows; r++)
+        for (int c = 0; c < cols; c++)
+            if (field.Plane(r, c))
+            {
+                if (!cornerIndex.Value(r, c)) cornerIndex.Value(r, c) = ++cornerCounter;
+                if (!cornerIndex.Value(r + 1, c)) cornerIndex.Value(r + 1, c) = ++cornerCounter;
+                if (!cornerIndex.Value(r + 1, c + 1)) cornerIndex.Value(r + 1, c + 1) = ++cornerCounter;
+                if (!cornerIndex.Value(r, c + 1)) cornerIndex.Value(r, c + 1) = ++cornerCounter;
+            }
+}
+
+float PerformanceEvaluator::GetPerformance(Field &field)
+{
+    if (field.Rows != rows || field.Cols != cols)
+        throw new exception();
+
+    // Get corner numbering, so each corner of a tile has a determined index, starting at 1
+    refreshCornerIndex(field);
+
+    const int conditions = 2 * cornerCounter;
     // Set up equations for the supports. If one support is not attached to the field, field failed.
     // Supports Q is set to fixed zero.
     // Support values must be different from each other.
-    int supportColIndex = 2 * field.CornerIndex(supports.SupportCol.row, supports.SupportCol.col) - 1;
-    int supportRow1Index = 2 * field.CornerIndex(supports.SupportRow1.row, supports.SupportRow1.col) - 2;
-    int supportRow2Index = 2 * field.CornerIndex(supports.SupportRow2.row, supports.SupportRow2.col) - 2;
+    int supportColIndex = 2 * cornerIndex.Value(supports.SupportCol.row, supports.SupportCol.col) - 1;
+    int supportRow1Index = 2 * cornerIndex.Value(supports.SupportRow1.row, supports.SupportRow1.col) - 2;
+    int supportRow2Index = 2 * cornerIndex.Value(supports.SupportRow2.row, supports.SupportRow2.col) - 2;
 
     // Make sure support index are valid, especially the row supports are different
     if (supportColIndex < 0 || supportRow1Index < 0 || supportColIndex < 0 || supportRow1Index == supportRow2Index)
@@ -147,7 +175,7 @@ float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports
     {
         double start = microtime();
         // Generates an equation system from the field / mesh
-        Equation equation = setupEquation(field, supports, forces);
+        Equation equation = setupEquation(field);
         double stop = microtime();
         cout << "Equation setup time: " << stop - start << endl;
         Equation reducedEquation(conditions - 3);
