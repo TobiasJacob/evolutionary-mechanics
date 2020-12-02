@@ -34,6 +34,7 @@ public:
     void SetValue(size_t row, size_t col, T value);
     const T& GetValue(size_t row, size_t col) const;
     T& GetOrAllocateValue(size_t row, size_t col);
+    const list<pair<int, T>> &getRow(size_t row);
 
     vector<T> operator *(const vector<T> &vec);
     friend ostream& operator<< <T>(ostream& os, const SparseMatrix<T>& matrix);
