@@ -84,10 +84,16 @@ Equation PerformanceEvaluator::setupEquation(Field &field)
     return equation;
 }
 
-float PerformanceEvaluator::calculateMaxStress(Field &field, const vector<float> &q) 
+vector<float> PerformanceEvaluator::calculateStress(Field &field, const vector<float> &q) 
 {
-    float maxStressSquared = 0;
+    int planes = 0;
+    for (int r = 0; r < rows; r++)
+        for (int c = 0; c < cols; c++)
+            if (field.Plane(r, c))
+                planes++;
+    vector<float> stress(planes * 2);
     // For every tile
+    int i = 0;
     for (int r = 0; r < rows; r++)
         for (int c = 0; c < cols; c++)
             if (field.Plane(r, c))
@@ -133,10 +139,10 @@ float PerformanceEvaluator::calculateMaxStress(Field &field, const vector<float>
                 // Van Mises Equation https://en.wikipedia.org/wiki/Von_Mises_yield_criterion
                 float squaredStressLower = sigmaLower[0] * sigmaLower[0] + sigmaLower[1] * sigmaLower[1] + sigmaLower[0] * sigmaLower[1] + 3 * sigmaLower[2] * sigmaLower[2];
                 float squaredStressUpper = sigmaUpper[0] * sigmaUpper[0] + sigmaUpper[1] * sigmaUpper[1] + sigmaUpper[0] * sigmaUpper[1] + 3 * sigmaUpper[2] * sigmaUpper[2];
-                if (squaredStressLower > maxStressSquared) maxStressSquared = squaredStressLower;
-                if (squaredStressUpper > maxStressSquared) maxStressSquared = squaredStressUpper;
+                stress[i++] = squaredStressLower;
+                stress[i++] = squaredStressUpper;
             }
-    return maxStressSquared;
+    return stress;
 }
 
 void PerformanceEvaluator::refreshCornerIndex(Field &field) 
@@ -185,21 +191,23 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         stop = microtime();
         cout << "Solving time: " << stop - start << endl;
 
+        // Calculate residum
+        vector<float> fTilde = equation.K * *(solution.first);
+        vector<float> resids = subtract(fTilde, equation.f);
+        float residuum = l2square(resids);
+        cout << "Solved " << conditions << " equations after " << solution.second << " steps with residuum " << residuum << endl;
+
+        // Calculate maximum stress
+        vector<float> stress = calculateStress(field, *solution.first);
+        float maxStress = *max_element(stress.begin(), stress.end());
+
         // Maybe put out debug view
         if (outputFileName.has_value())
         {
             Plotter plotter(*outputFileName);
-            plotter.plot(field, *solution.first, cornerIndexRow, cornerIndexCol, supports, forces);
+            plotter.plot(field, *solution.first, cornerIndexRow, cornerIndexCol, supports, forces, solution.second, residuum, stress); // steps, residum, sigma
         }
-        
 
-        // Calculate residum
-        vector<float> fTilde = equation.K * *(solution.first);
-        vector<float> residuum = subtract(fTilde, equation.f);
-        cout << "Solved " << conditions << " equations after " << solution.second << " steps with residuum " << l2square(residuum) << endl;
-        
-        // Calculate maximum stress
-        float maxStress = calculateMaxStress(field, *solution.first);
         return maxStress;
     }
     catch(const float val)

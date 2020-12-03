@@ -18,7 +18,7 @@ private:
     Matrix<int> cornerIndexCol; // A unique number for each corner for force in col direction
 
     Equation setupEquation(Field &field);
-    float calculateMaxStress(Field &field, const vector<float> &q);
+    vector<float> calculateStress(Field &field, const vector<float> &q);
     void refreshCornerIndex(Field &field);
     bool isUnused(int equationRow);
 public:
