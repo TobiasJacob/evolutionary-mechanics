@@ -30,23 +30,26 @@ int main(int argc, char **argv)
             .col = 0
         }
     };
-    vector<Force> forces = {
-        {
+    vector<Force> forces(N);
+    for (int i = 0; i < N; i++)
+    {
+        forces[i] = {
             .attackCorner = {
                 .row = N,
-                .col = N
+                .col = i
             },
-            .forceRow = 10,
+            .forceRow = .001,
             .forceCol = 0
-        }
-    };
+        };
+    }
+    
 
     // Field defines the structural layout
     Field field(N, N);
     for (int i = 0; i < N; i++)
         for (int i2 = 0; i2 < N; i2++)
             if (i < N / 3 || i > 2 * N / 3 || i2 < N / 3)
-            field.Plane(i, i2) = true;
+                field.Plane(i, i2) = true;
     
 
     PerformanceEvaluator evaluator(N, N, support, forces);

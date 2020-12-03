@@ -36,10 +36,18 @@ Equation PerformanceEvaluator::setupEquation(Field &field)
     for (const Force &f: forces)
     {
         int forceIndexRow = cornerIndexRow.Value(f.attackCorner.row, f.attackCorner.col);
-        if (!forceIndexRow) throw INFINITY;
+        if (!forceIndexRow)
+        {
+            // cout << f.attackCorner.row << ", " << f.attackCorner.col << " out of bounds" << endl;
+            throw INFINITY;
+        }
         equation.f[forceIndexRow - 1] += f.forceRow;
         int forceIndexCol = cornerIndexCol.Value(f.attackCorner.row, f.attackCorner.col);
-        if (!forceIndexCol) throw INFINITY;
+        if (!forceIndexCol)
+        {
+            // cout << f.attackCorner.row << ", " << f.attackCorner.col << " out of bounds" << endl;
+            throw INFINITY;
+        }
         equation.f[forceIndexCol - 1] += f.forceCol;
     }
 

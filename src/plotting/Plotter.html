@@ -32,7 +32,7 @@
         const movementScale = 1;
 
         function coordsToView(x, y) {
-          return [offsetX + rectSize * x, offsetY + rectSize * y];
+          return [offsetY + rectSize * y, offsetX + rectSize * x];
         }
 
         let stressI = 0;
@@ -108,7 +108,7 @@
           const c = force.attackCorner.col;
           const [x, y] = coordsToView(r + movementScale * u[cornerIndexRow[r][c]], c + movementScale * u[cornerIndexCol[r][c]]);
           ctx.beginPath();
-          arrow(x, y, x + force.forceRow * forceSize, y + force.forceCol * forceSize);
+          arrow(x, y, x + force.forceCol * forceSize, y + force.forceRow * forceSize);
           ctx.closePath();
           ctx.stroke();
         }
