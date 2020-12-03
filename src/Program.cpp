@@ -17,18 +17,17 @@ int main(int argc, char **argv)
 
     // Support and Forces should remain unchanged during the remaining part of the program
     Support support = {
-        .SupportRow1 = { // Define vertical-blocking support on bottom left corner
-            .row = 0,
-            .col = 0
-        },
-        .SupportRow2 = { // Define vertical-blocking support on bottom, second from left corner
+        .RowSupports = {{ // Define vertical-blocking support on bottom, second from left corner
             .row = 0,
             .col = N
-        },
-        .SupportCol = { // Define horizontal-blocking support  on bottom left corner
+        }, { // Define horizontal-blocking support  on bottom left corner
             .row = 0,
             .col = 0
-        }
+        }},
+        .ColSupports = {{ // Define vertical-blocking support on bottom left corner
+            .row = 0,
+            .col = 0
+        }}
     };
     vector<Force> forces(N + 1);
     for (int i = 0; i < forces.size(); i++)
