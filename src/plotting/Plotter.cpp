@@ -8,7 +8,7 @@ Plotter::Plotter(string fileName): output(fileName)
 void Plotter::plot(Field &field, vector<float> &u, Matrix<int> &cornerIndexRow, Matrix<int> &cornerIndexCol) 
 {
     // field
-    output << "field = [";
+    output << "const field = [";
     output << "[" << field.Plane(0, 0);
     for (int c = 1; c < field.Cols; c++)
         output << ", " << field.Plane(0, c);
@@ -23,14 +23,14 @@ void Plotter::plot(Field &field, vector<float> &u, Matrix<int> &cornerIndexRow, 
     output << "];" << endl;
 
     // u
-    output << "u = [" << u[0];
-    for (int i = 1; i < field.Cols; i++)
+    output << "const u = [" << u[0];
+    for (int i = 1; i < u.size(); i++)
         output << ", " << u[i];
     output << "];" << endl;
 
     
     // cornerIndexRow
-    output << "cornerIndexRow = [";
+    output << "const cornerIndexRow = [";
     output << "[" << cornerIndexRow.Value(0, 0);
     for (int c = 1; c < cornerIndexRow.getCols(); c++)
         output << ", " << cornerIndexRow.Value(0, c);
@@ -45,7 +45,7 @@ void Plotter::plot(Field &field, vector<float> &u, Matrix<int> &cornerIndexRow, 
     output << "];" << endl;
     
     // cornerIndexCol
-    output << "cornerIndexCol = [";
+    output << "const cornerIndexCol = [";
     output << "[" << cornerIndexCol.Value(0, 0);
     for (int c = 1; c < cornerIndexCol.getCols(); c++)
         output << ", " << cornerIndexCol.Value(0, c);
