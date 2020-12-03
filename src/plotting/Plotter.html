@@ -80,10 +80,11 @@
           ctx.closePath();
           ctx.stroke();
         }
-        for (let i = 0; i < supports.RowSupports.length; i++) {
+        for (let i = 0; i < supports.ColSupports.length; i++) {
+          const colSupport = supports.ColSupports[i];
           ctx.beginPath();
-          ctx.moveTo(...coordsToView(supports.RowSupports.row - supportSize, supports.RowSupports.col));
-          ctx.lineTo(...coordsToView(supports.RowSupports.row + supportSize, supports.RowSupports.col));
+          ctx.moveTo(...coordsToView(colSupport.row - supportSize, colSupport.col));
+          ctx.lineTo(...coordsToView(colSupport.row + supportSize, colSupport.col));
           ctx.closePath();
           ctx.stroke();
         }

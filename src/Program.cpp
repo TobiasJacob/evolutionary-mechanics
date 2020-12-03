@@ -20,15 +20,19 @@ int main(int argc, char **argv)
         .RowSupports = {{ // Define vertical-blocking support on bottom, second from left corner
             .row = 0,
             .col = N
-        }, { // Define horizontal-blocking support  on bottom left corner
-            .row = 0,
-            .col = 0
         }},
         .ColSupports = {{ // Define vertical-blocking support on bottom left corner
             .row = 0,
             .col = 0
         }}
     };
+    for (int i = 0; i < N; i++) {
+        support.RowSupports.push_back({
+            .row = 0,
+            .col = i
+        });
+    }
+
     vector<Force> forces(N + 1);
     for (int i = 0; i < forces.size(); i++)
     {
