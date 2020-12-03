@@ -30,6 +30,18 @@ Matrix<T>::~Matrix()
         free(values);
 }
 
+template<typename T>
+int Matrix<T>::getRows() const
+{
+    return rows;
+}
+
+template<typename T>
+int Matrix<T>::getCols() const
+{
+    return cols;
+}
+
 template<>
 void Matrix<int>::SetTo(int value)
 {

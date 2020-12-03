@@ -49,7 +49,7 @@ int main(int argc, char **argv)
     
 
     PerformanceEvaluator evaluator(N, N, support, forces);
-    float perf = evaluator.GetPerformance(field);
+    float perf = evaluator.GetPerformance(field, "debug.html");
 
     cout << perf << endl;
 }

@@ -163,7 +163,7 @@ void PerformanceEvaluator::refreshCornerIndex(Field &field)
             }
 }
 
-float PerformanceEvaluator::GetPerformance(Field &field)
+float PerformanceEvaluator::GetPerformance(Field &field, optional<string> outputFileName)
 {
     // TODO: Check that structure is connected, and that supports are connected and row supports not in same column
     if (field.Rows != rows || field.Cols != cols)
@@ -184,6 +184,14 @@ float PerformanceEvaluator::GetPerformance(Field &field)
         pair<unique_ptr<vector<float>>, int> solution = equation.SolveIterative();
         stop = microtime();
         cout << "Solving time: " << stop - start << endl;
+
+        // Maybe put out debug view
+        if (outputFileName.has_value())
+        {
+            Plotter plotter(*outputFileName);
+            plotter.plot(field, *solution.first, cornerIndexRow, cornerIndexCol);
+        }
+        
 
         // Calculate residum
         vector<float> fTilde = equation.K * *(solution.first);

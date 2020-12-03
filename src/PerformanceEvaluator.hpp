@@ -2,7 +2,9 @@
 #define PERFORMANCEEVALUATOR
 
 #include <vector>
+#include <optional>
 #include "Field.hpp"
+#include "plotting/Plotter.hpp"
 
 struct Point
 {
@@ -41,7 +43,7 @@ private:
     bool isUnused(int equationRow);
 public:
     PerformanceEvaluator(const int rows, const int cols, const Support &supports, const vector<Force> &forces);
-    float GetPerformance(Field &field);
+    float GetPerformance(Field &field, optional<string> outputFileName);
 };
 
 #endif
