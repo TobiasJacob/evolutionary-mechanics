@@ -30,15 +30,15 @@ int main(int argc, char **argv)
             .col = 0
         }
     };
-    vector<Force> forces(N);
-    for (int i = 0; i < N; i++)
+    vector<Force> forces(N + 1);
+    for (int i = 0; i < forces.size(); i++)
     {
         forces[i] = {
             .attackCorner = {
                 .row = N,
                 .col = i
             },
-            .forceRow = .001,
+            .forceRow = .1,
             .forceCol = 0
         };
     }

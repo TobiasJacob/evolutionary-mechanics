@@ -14,6 +14,8 @@ class Plotter
 {
 private:
     ofstream output;
+    string head;
+    string tail;
 public:
     Plotter(string fileName);
     void plot(const Field &field, const vector<float> &u, const Matrix<int> &cornerIndexRow, const Matrix<int> &cornerIndexCol, const Support &supports, const vector<Force> &forces, const int solutionSteps, const float residum, const vector<float> &stress, float time);
