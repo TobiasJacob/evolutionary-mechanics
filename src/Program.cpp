@@ -48,7 +48,7 @@ int main(int argc, char **argv)
     Field field(N, N);
     for (int i = 0; i < N; i++)
         for (int i2 = 0; i2 < N; i2++)
-            if (i < N / 3 || i > 2 * N / 3 || i2 < N / 3)
+            if (i < N / 3 || i > 2 * N / 3 || (i2 > N / 3 && i2 < 2 * N / 3))
                 field.Plane(i, i2) = true;
     
 

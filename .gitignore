@@ -300,4 +300,4 @@ build/*
 build
 debug.out
 
-debug.html
+debug*.html

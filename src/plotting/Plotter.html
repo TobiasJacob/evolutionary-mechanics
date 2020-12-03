@@ -114,7 +114,7 @@
         }
 
         var statusP = document.getElementById('statusText');
-        statusP.innerHTML = "Converged after " + solutionSteps + " with residum " + residum + " after " + time / 1e6 + " seconds.";
+        statusP.innerHTML = "Converged after " + solutionSteps + " with residum " + residum + " after " + time / 1e6 + " seconds.<br />Max stress is " + Math.max(...stress);
       }
     </script>
     <style type="text/css">
