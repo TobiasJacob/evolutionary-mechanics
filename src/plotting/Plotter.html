@@ -49,7 +49,7 @@
               ctx.closePath();
               ctx.stroke();
 
-              ctx.fillStyle = 'rgb(255, ' + (255 - stress[stressI] * stressScale) + ', 255)';
+              ctx.fillStyle = 'rgb(255, ' + (255 - stress[stressI] * stressScale) + ', ' + (255 - stress[stressI] * stressScale) + ')';
               ctx.beginPath();
               ctx.moveTo(...coordsToView(r + movementScale * u[cornerIndexRow[r][c]], c + movementScale * u[cornerIndexCol[r][c]]));
               ctx.lineTo(...coordsToView((r + 1) + movementScale * u[cornerIndexRow[r + 1][c]], c + movementScale * u[cornerIndexCol[r + 1][c]]));
@@ -57,7 +57,7 @@
               ctx.closePath();
               ctx.fill();
 
-              ctx.fillStyle = 'rgb(255, ' + (255 - stress[stressI + 1] * stressScale) + ', 255)';
+              ctx.fillStyle = 'rgb(255, ' + (255 - stress[stressI + 1] * stressScale) + ', ' + (255 - stress[stressI + 1] * stressScale) + ')';
               ctx.beginPath();
               ctx.moveTo(...coordsToView((r + 1) + movementScale * u[cornerIndexRow[r + 1][c + 1]], (c + 1) + movementScale * u[cornerIndexCol[r + 1][c + 1]]));
               ctx.lineTo(...coordsToView(r + movementScale * u[cornerIndexRow[r][c + 1]], (c + 1) + movementScale * u[cornerIndexCol[r][c + 1]]));
@@ -70,7 +70,7 @@
           }
         }
 
-        ctx.strokeStyle = '#C00';
+        ctx.strokeStyle = '#00C';
         const supportSize = 2 / Math.max(rows, cols);
         ctx.beginPath();
         ctx.moveTo(...coordsToView(supports.SupportRow1.row, supports.SupportRow1.col - supportSize));
@@ -100,7 +100,7 @@
           ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
         }
 
-        ctx.strokeStyle = '#070';
+        ctx.strokeStyle = '#00C';
         const forceSize = 500;
         for (let i = 0; i < forces.length; i++) {
           const force = forces[i];
