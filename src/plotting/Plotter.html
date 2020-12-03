@@ -112,6 +112,9 @@
           ctx.closePath();
           ctx.stroke();
         }
+
+        var statusP = document.getElementById('statusText');
+        statusP.innerHTML = "Converged after " + solutionSteps + " with residum " + residum;
       }
     </script>
     <style type="text/css">
@@ -119,5 +122,6 @@
   </head>
   <body onload="draw();">
     <canvas id="tutorial" width="1000" height="1000"></canvas>
+    <p id="statusText">Converged after ...</p>
   </body>
 </html>
