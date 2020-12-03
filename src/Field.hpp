@@ -25,7 +25,32 @@ public:
         return fields.Value(r, c);
     }
 
+    const inline bool &Plane(int r, int c) const // Reference for getting or setting a value
+    {
+        return fields.Value(r, c);
+    }
+
     friend ostream& operator<<(ostream& os, const Field& field);
+};
+
+struct Point
+{
+    int row;
+    int col;
+};
+
+struct Support
+{
+    Point SupportRow1; // Sets the row displacement at cornerPoint to zero
+    Point SupportRow2; // Sets the row displacement at cornerPoint to zero
+    Point SupportCol; // Sets the col displacement at cornerPoint to zero
+};
+
+struct Force
+{
+    Point attackCorner;
+    float forceRow;
+    float forceCol;
 };
 
 

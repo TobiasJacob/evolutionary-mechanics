@@ -189,7 +189,7 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         if (outputFileName.has_value())
         {
             Plotter plotter(*outputFileName);
-            plotter.plot(field, *solution.first, cornerIndexRow, cornerIndexCol);
+            plotter.plot(field, *solution.first, cornerIndexRow, cornerIndexCol, supports, forces);
         }
         
 

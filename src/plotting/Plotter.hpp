@@ -16,7 +16,7 @@ private:
     ofstream output;
 public:
     Plotter(string fileName);
-    void plot(Field &field, vector<float> &u, Matrix<int> &cornerIndexRow, Matrix<int> &cornerIndexCol);
+    void plot(const Field &field, const vector<float> &u, const Matrix<int> &cornerIndexRow, const Matrix<int> &cornerIndexCol, const Support &supports, const vector<Force> &forces);
     ~Plotter();
 };
 

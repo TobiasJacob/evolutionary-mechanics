@@ -5,7 +5,7 @@ Plotter::Plotter(string fileName): output(fileName)
 }
 
 // Requires not empty fields, etc.
-void Plotter::plot(Field &field, vector<float> &u, Matrix<int> &cornerIndexRow, Matrix<int> &cornerIndexCol) 
+void Plotter::plot(const Field &field, const vector<float> &u, const Matrix<int> &cornerIndexRow, const Matrix<int> &cornerIndexCol, const Support &supports, const vector<Force> &forces) 
 {
     // field
     output << "const field = [";
@@ -58,6 +58,22 @@ void Plotter::plot(Field &field, vector<float> &u, Matrix<int> &cornerIndexRow, 
         output << "]";
     }
     output << "];" << endl;
+
+    output << "const supports = {"
+            << "SupportRow1: { row: " << supports.SupportRow1.row << ", col: " << supports.SupportRow1.col << "}, "
+            << "SupportRow2: { row: " << supports.SupportRow2.row << ", col: " << supports.SupportRow2.col << "}, "
+            << "SupportCol: { row: " << supports.SupportCol.row << ", col: " << supports.SupportCol.col << "}}; " << endl;
+
+
+    output << "const forces = [";
+    output << "{ attackCorner: { row: " << forces[0].attackCorner.row << ", col: " << forces[0].attackCorner.col << "}, "
+            << "forceRow: " << forces[0].forceRow << ", forceCol:" << forces[0].forceCol << "}";
+    for (int i = 1; i < forces.size(); i++)
+    {
+        output << ", { attackCorner: { row: " << forces[0].attackCorner.row << ", col: " << forces[0].attackCorner.col << "}, "
+                << "forceRow: " << forces[0].forceRow << ", forceCol:" << forces[0].forceCol << "}";
+    }
+    output << "]" << endl;
 }
 
 Plotter::~Plotter()
