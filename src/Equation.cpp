@@ -24,7 +24,6 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
     vector<float> kTimesx_k(N, 0);
     vector<float> scaledP_K(N, 0);
     vector<float> scaledKTimesP(N, 0);
-    float beta_k = 1;
     float r_k1_squared = 0;
     float alpha_k_divider = 0;
     float alpha_k = 0;
@@ -42,7 +41,6 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
         scalarProduct(*p_k, kTimesP, alpha_k_divider);
         l2square(*r_k, alpha_k);
 
-        #pragma omp barrier
         if (alpha_k_divider < 1e-12) // Appears if f = 0
             break;
 
@@ -51,15 +49,14 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
         add(*x_k, scaledP_K, *x_k1);
         subtract(*r_k, scaledKTimesP, *r_k1);
         l2square(*r_k1, r_k1_squared);
-        #pragma omp barrier // TODO: Has reduction an implicit barrier?
 
         if (r_k1_squared < 1e-10)
             break;
-        beta_k = r_k1_squared / alpha_k; // TODO: Do not recalculate this
-        multiply(beta_k, *p_k, scaledP_K);
-        add(*r_k1, scaledP_K, *p_k1);
-        #pragma omp barrier
 
+        multiply(r_k1_squared / alpha_k, *p_k, scaledP_K);
+        add(*r_k1, scaledP_K, *p_k1);
+
+        #pragma omp barrier
         #pragma omp single
         {
             alpha_k = 0;
