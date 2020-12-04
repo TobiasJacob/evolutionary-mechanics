@@ -18,13 +18,13 @@ template<typename T>
 class SparseMatrix
 {
 private:
-    const int rows;
-    const int cols;
+    const size_t rows;
+    const size_t cols;
     const T defaultValue;
-    list<pair<int, T>> *values;
+    list<pair<size_t, T>> *values;
 
 public:
-    SparseMatrix(int rows, int cols);
+    SparseMatrix(size_t rows, size_t cols);
     SparseMatrix(const SparseMatrix&) = delete; // Disallow copy
     SparseMatrix & operator=(const SparseMatrix&) = delete;
     SparseMatrix(SparseMatrix&&) = default; // Allow move
@@ -34,7 +34,6 @@ public:
     void SetValue(size_t row, size_t col, T value);
     const T& GetValue(size_t row, size_t col) const;
     T& GetOrAllocateValue(size_t row, size_t col);
-    const list<pair<int, T>> &getRow(size_t row);
 
     vector<T> operator *(const vector<T> &vec);
     friend ostream& operator<< <T>(ostream& os, const SparseMatrix<T>& matrix);

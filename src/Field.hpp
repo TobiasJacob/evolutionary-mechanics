@@ -16,16 +16,16 @@ private:
     Matrix<bool> fields; // Contains the bitvalues of which block is set
 
 public:
-    const int Rows, Cols; // Size of the field
+    const size_t Rows, Cols; // Size of the field
 
-    Field(int rows, int cols);
+    Field(size_t rows, size_t cols);
 
-    inline bool &Plane(int r, int c) // Reference for getting or setting a value
+    inline bool &Plane(size_t r, size_t c) // Reference for getting or setting a value
     {
         return fields.Value(r, c);
     }
 
-    const inline bool &Plane(int r, int c) const // Reference for getting or setting a value
+    const inline bool &Plane(size_t r, size_t c) const // Reference for getting or setting a value
     {
         return fields.Value(r, c);
     }
@@ -35,8 +35,8 @@ public:
 
 struct Point
 {
-    int row;
-    int col;
+    size_t row;
+    size_t col;
 };
 
 struct Support

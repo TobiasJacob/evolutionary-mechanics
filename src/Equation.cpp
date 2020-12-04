@@ -1,6 +1,6 @@
 #include "Equation.hpp"
 
-Equation::Equation(const int N) : N(N), K(N, N), f(N, 0)
+Equation::Equation(const size_t N) : N(N), K(N, N), f(N, 0)
 {
     
 }
@@ -19,13 +19,13 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
 
     *r_k = subtract(f, K * *x_k);
     *p_k = *r_k;
-    int counter = 0;
+    size_t counter = 0;
     while (counter < 10000)
     {
         vector<float> kTimesP = K * *p_k;
 
         float alpha_k_divider = 0;
-        for (int n = 0; n < N; n++)
+        for (size_t n = 0; n < N; n++)
             alpha_k_divider += (*p_k)[n] * kTimesP[n];
         if (alpha_k_divider < 1e-12) // Appears if f = 0
             return pair<unique_ptr<vector<float>>, int>(move(x_k1), counter);
