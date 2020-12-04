@@ -35,10 +35,11 @@ class EvolutionaryOptimizator
         const vector<Force> &forces;
         void copyOrganism(organism org1, organism org2, int rows, int cols, int startingRow, int startingCol);
         void simpleCrossingOver(organism org1, organism org2, organism dest, int rows, int cols);
+        void experimentalCrossingOver(organism org1, organism org2, organism dest, int rows, int cols);
         //Initial Organisms, must be malloc'ed
         organism *organisms;
         vector<organism> elements;
-   
+        //vector<organism> organisms_vector; 
         //number of organisms in the array
         const int organismsCount;
         //Tests organism's fitness to the problem

@@ -88,7 +88,7 @@ int main(int argc, char **argv)
     orgs[0] = org1;
     orgs[1] = org2;
 
-    EvolutionaryOptimizator ea(orgs, support, forces, 2, 0.2, N, N);
+    EvolutionaryOptimizator ea(orgs, support, forces, 2, 20, N, N);
     
     EvolutionaryOptimizator::organism finishedOrg = ea.evolve();
     cout <<"Done"<<endl;
