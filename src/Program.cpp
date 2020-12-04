@@ -1,19 +1,23 @@
 #include <iostream>
 #include <iomanip>
+#include <string>
+#include <omp.h>
 #include "Field.hpp"
 #include "PerformanceEvaluator.hpp"
-#include <string>
 
 using namespace std;
 
 int main(int argc, char **argv)
 {
-    if (argc != 2) 
+    if (argc != 3) 
     {
-        cout << "Usage: " << argv[0] << " <N>" << endl;
+        cout << "Usage: " << argv[0] << " <N> <C>" << endl;
         exit(1);
     }
     size_t N = (size_t)stoi(argv[1]);
+    size_t C = (size_t)stoi(argv[2]);
+
+    omp_set_num_threads(C);
 
     // Support and Forces should remain unchanged during the remaining part of the program
     Support support = {
@@ -45,7 +49,6 @@ int main(int argc, char **argv)
             .forceCol = 0
         };
     }
-    
 
     // Field defines the structural layout
     Field field(N, N);
@@ -56,7 +59,8 @@ int main(int argc, char **argv)
     
 
     PerformanceEvaluator evaluator(N, N, support, forces);
-    float perf = evaluator.GetPerformance(field, "debug.html");
+    float perf;
+    perf = evaluator.GetPerformance(field, "debug.html");
 
     cout << perf << endl;
 }
