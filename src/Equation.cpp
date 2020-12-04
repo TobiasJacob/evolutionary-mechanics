@@ -40,7 +40,6 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
             fillZeros(kTimesP);
             K.Multiply(*p_k, kTimesP);
         }
-        #pragma omp barrier
 
         #pragma omp single
         {
@@ -54,7 +53,6 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
             if (alpha_k_divider < 1e-12) // Appears if f = 0
                 break;
         }
-        #pragma omp barrier
 
         #pragma omp single
         {
@@ -68,7 +66,6 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
             add(*x_k, scaledP_K, *x_k1);
             subtract(*r_k, scaledKTimesP, *r_k1);
         }
-        #pragma omp barrier
 
         if (l2square(*r_k1) < 1e-10)
             break;
@@ -79,7 +76,6 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
         }
         #pragma omp barrier
 
-        
         {
             multiply(beta_k, *p_k, scaledP_K);
             add(*r_k1, scaledP_K, *p_k1);
