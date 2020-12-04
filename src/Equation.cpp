@@ -24,10 +24,10 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
     vector<float> kTimesx_k(N, 0);
     vector<float> scaledP_K(N, 0);
     vector<float> scaledKTimesP(N, 0);
-    float alpha_k = 1;
     float beta_k = 1;
     float r_k1_squared = 0;
     float alpha_k_divider = 0;
+    float alpha_k = 0;
 
     K.Multiply(*x_k, kTimesx_k);
     subtract(f, kTimesx_k, *r_k);
@@ -48,19 +48,9 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
         if (alpha_k_divider < 1e-12) // Appears if f = 0
             break;
         #pragma omp barrier
-        float alpha_k2 = 0;
-        scalarProduct(*p_k, kTimesP, alpha_k2);
-        
-        #pragma omp single
-        {
-            alpha_k = 0;
-        }
+        alpha_k = 0;
         #pragma omp barrier
-        {
-            #pragma omp for reduction(+: alpha_k) schedule(static, 16)
-            for (size_t n = 0; n < N; n++)
-                alpha_k += (*r_k)[n] * (*r_k)[n];
-        }
+        l2square(*r_k, alpha_k);
         #pragma omp barrier
 
         {

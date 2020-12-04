@@ -35,17 +35,12 @@ void multiply(const T a, const vector<T> &b, vector<T> &result)
         result[r] = a * b[r];
 }
 
-static float resultL2Square = 0;
-
 template<typename T>
-T l2square(const vector<T> &a) 
+void l2square(const vector<T> &a, T &resultL2Square)
 {
-    resultL2Square = 0;
-    #pragma omp barrier
     #pragma omp for reduction(+: resultL2Square) schedule(static, 16)
     for (size_t r = 0; r < a.size(); r++)
         resultL2Square += a[r] * a[r];
-    return resultL2Square;    
 }
 
 template<typename T>
@@ -82,8 +77,8 @@ template void subtract(const vector<int> &a, const vector<int> &b, vector<int> &
 template void subtract(const vector<float> &a, const vector<float> &b, vector<float> &result);
 template void multiply(const int a, const vector<int> &b, vector<int> &result);
 template void multiply(const float a, const vector<float> &b, vector<float> &result);
-template int l2square(const vector<int> &a);
-template float l2square(const vector<float> &a);
+template void l2square(const vector<int> &a, int &resultL2Square);
+template void l2square(const vector<float> &a, float &resultL2Square);
 template void scalarProduct(const vector<int> &a, const vector<int> &b, int &result);
 template void scalarProduct(const vector<float> &a, const vector<float> &b, float &result);
 template void printVector(const vector<int> &a);
