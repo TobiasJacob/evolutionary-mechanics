@@ -299,3 +299,5 @@ build/*
 .vscode
 build
 debug.out
+
+debug*.html

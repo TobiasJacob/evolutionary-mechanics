@@ -27,6 +27,8 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
         float alpha_k_divider = 0;
         for (int n = 0; n < N; n++)
             alpha_k_divider += (*p_k)[n] * kTimesP[n];
+        if (alpha_k_divider < 1e-12) // Appears if f = 0
+            return pair<unique_ptr<vector<float>>, int>(move(x_k1), counter);
         float alpha_k = l2square(*r_k) / alpha_k_divider;
 
         vector<float> scaledP_K = multiply(alpha_k, *p_k);
