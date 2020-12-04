@@ -24,41 +24,76 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
     vector<float> kTimesx_k(N, 0);
     vector<float> scaledP_K(N, 0);
     vector<float> scaledKTimesP(N, 0);
+    float alpha_k = 1;
+    float alpha_k_divider = 1;
+    float beta_k = 1;
 
     K.Multiply(*x_k, kTimesx_k);
     subtract(f, kTimesx_k, *r_k);
     *p_k = *r_k;
     size_t counter = 0;
     const size_t maxSteps = 10000;
+    #pragma omp parallel
+    while (counter < maxSteps)
     {
-        while (counter < maxSteps)
         {
             fillZeros(kTimesP);
             K.Multiply(*p_k, kTimesP);
+        }
+        #pragma omp barrier
 
-            float alpha_k_divider = 0;
+        #pragma omp single
+        {
+            alpha_k_divider = 0;
             for (size_t n = 0; n < N; n++)
                 alpha_k_divider += (*p_k)[n] * kTimesP[n];
+        }
+        #pragma omp barrier
+
+        {
             if (alpha_k_divider < 1e-12) // Appears if f = 0
                 break;
-            float alpha_k = l2square(*r_k) / alpha_k_divider;
+        }
+        #pragma omp barrier
 
+        #pragma omp single
+        {
+            alpha_k = l2square(*r_k) / alpha_k_divider;
+        }
+        #pragma omp barrier
+
+        {
             multiply(alpha_k, *p_k, scaledP_K);
             multiply(alpha_k, kTimesP, scaledKTimesP);
             add(*x_k, scaledP_K, *x_k1);
             subtract(*r_k, scaledKTimesP, *r_k1);
-            if (l2square(*r_k1) < 1e-10)
-                break;
-            
-            float beta_k = l2square(*r_k1) / l2square(*r_k);
+        }
+        #pragma omp barrier
+
+        if (l2square(*r_k1) < 1e-10)
+            break;
+
+        #pragma omp single
+        {
+            beta_k = l2square(*r_k1) / l2square(*r_k); // TODO: Do not recalculate this
+        }
+        #pragma omp barrier
+
+        
+        {
             multiply(beta_k, *p_k, scaledP_K);
             add(*r_k1, scaledP_K, *p_k1);
+        }
+        #pragma omp barrier
 
+        #pragma omp single
+        {
             x_k.swap(x_k1);
             r_k.swap(r_k1);
             p_k.swap(p_k1);
             counter++;
         }
+        #pragma omp barrier
     }
     
     if (counter == maxSteps) {

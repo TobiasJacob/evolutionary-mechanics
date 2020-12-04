@@ -48,6 +48,7 @@ float l2square(const vector<T> &a)
 template<typename T>
 void printVector(const vector<T> &a) 
 {
+    #pragma omp for
     for (size_t r = 0; r < a.size(); r++)
         cout << a[r] << " ";
     cout << endl;
@@ -56,6 +57,7 @@ void printVector(const vector<T> &a)
 template<typename T>
 void fillZeros(vector<T> &a) 
 {
+    #pragma omp for
     for (size_t r = 0; r < a.size(); r++)
         a[r] = 0;
 }
