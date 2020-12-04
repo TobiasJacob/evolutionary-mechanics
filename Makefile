@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -Wall -I.. -I. -O3 -std=c++17 -DDEBUG -Ofast
+CXXFLAGS = -Wall -I.. -I. -std=c++17 -DDEBUG -Ofast
 
 # SRC are the object files, that are included by tests and by the program. Do not include src/Program.cpp here!
 SRC = src/Field.cpp src/Matrix.cpp src/Equation.cpp src/PerformanceEvaluator.cpp src/SparseMatrix.cpp src/Microtime.cpp
