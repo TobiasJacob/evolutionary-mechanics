@@ -39,7 +39,7 @@ TEST_CASE("PerformanceEvaluator", "[PerformanceEvaluator]")
     field.Plane(2, 0) = true;
     
     PerformanceEvaluator evaluator(3, 3, support, forces);
-    float performance = evaluator.GetPerformance(field);
+    float performance = evaluator.GetPerformance(field, nullopt);
     INFO("Perf: " << performance);
     REQUIRE(performance == Approx(1029.35278f).margin(1e-2));
 }
@@ -82,7 +82,7 @@ TEST_CASE("PerformanceEvaluatorSupportNotAttached", "[PerformanceEvaluator]")
     field.Plane(2, 0) = false;
     
     PerformanceEvaluator evaluator(3, 3, support, forces);
-    float performance = evaluator.GetPerformance(field);
+    float performance = evaluator.GetPerformance(field, nullopt);
     INFO("Perf: " << performance);
     REQUIRE(performance == INFINITY);
 }
@@ -124,7 +124,7 @@ TEST_CASE("PerformanceEvaluatorForceNotAttached", "[PerformanceEvaluator]")
     field.Plane(2, 0) = true;
     
     PerformanceEvaluator evaluator(3, 3, support, forces);
-    float performance = evaluator.GetPerformance(field);
+    float performance = evaluator.GetPerformance(field, nullopt);
     INFO("Perf: " << performance);
     REQUIRE(performance == INFINITY);
 }
@@ -166,10 +166,10 @@ TEST_CASE("DoubleForceMeansFourTimesPenality", "[PerformanceEvaluator]")
     field.Plane(2, 0) = true;
     
     PerformanceEvaluator evaluator(3, 3, support, forces);
-    float performance1 = evaluator.GetPerformance(field);
+    float performance1 = evaluator.GetPerformance(field, nullopt);
     INFO("Perf1: " << performance1);
     forces[0].forceRow = 20;
-    float performance2 = evaluator.GetPerformance(field);
+    float performance2 = evaluator.GetPerformance(field, nullopt);
     INFO("Perf2: " << performance2);
     REQUIRE(4 * performance1 == Approx(performance2).margin(1e-2));
 }
@@ -211,7 +211,7 @@ TEST_CASE("ForceZeroMeansPerformanceZero", "[PerformanceEvaluator]")
     field.Plane(2, 0) = true;
     
     PerformanceEvaluator evaluator(3, 3, support, forces);
-    float performance1 = evaluator.GetPerformance(field);
+    float performance1 = evaluator.GetPerformance(field, nullopt);
     INFO("Perf1: " << performance1);
     REQUIRE(performance1 == Approx(0.0f).margin(1e-2));
 }

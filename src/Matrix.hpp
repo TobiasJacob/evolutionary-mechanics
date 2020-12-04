@@ -29,6 +29,9 @@ public:
     Matrix & operator=(Matrix&&) = default;
     ~Matrix();
 
+    int getRows() const;
+    int getCols() const;
+
     inline T &Value(int r, int c) 
     {
         #ifdef DEBUG
