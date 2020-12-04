@@ -7,7 +7,7 @@ void add(const vector<T> &a, const vector<T> &b, vector<T> &result)
     if (a.size() != b.size()) cerr << "Invalid vector addtion, first has " << a.size() << " rows and second has " << b.size() << " rows" << endl;
     if (a.size() != result.size()) cerr << "Invalid vector addtion, vectors have " << a.size() << " rows and result has " << result.size() << " rows" << endl;
     #endif
-    #pragma omp for
+    #pragma omp for schedule(static, 16)
     for (size_t r = 0; r < a.size(); r++)
         result[r] = a[r] + b[r];
 }
@@ -19,7 +19,7 @@ void subtract(const vector<T> &a, const vector<T> &b, vector<T> &result)
     if (a.size() != b.size()) cerr << "Invalid vector subtract, first has " << a.size() << " rows and second has " << b.size() << " rows" << endl;
     if (a.size() != result.size()) cerr << "Invalid vector addtion, vectors have " << a.size() << " rows and result has " << result.size() << " rows" << endl;
     #endif
-    #pragma omp for
+    #pragma omp for schedule(static, 16)
     for (size_t r = 0; r < a.size(); r++)
         result[r] = a[r] - b[r];
 }
@@ -30,7 +30,7 @@ void multiply(const T a, const vector<T> &b, vector<T> &result)
     #ifdef DEBUG
     if (b.size() != result.size()) cerr << "Invalid vector addtion, vector has " << b.size() << " rows and result has " << result.size() << " rows" << endl;
     #endif
-    #pragma omp for
+    #pragma omp for schedule(static, 16)
     for (size_t r = 0; r < b.size(); r++)
         result[r] = a * b[r];
 }

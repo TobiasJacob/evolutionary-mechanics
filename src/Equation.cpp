@@ -27,6 +27,7 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
     float alpha_k = 1;
     float alpha_k_divider = 1;
     float beta_k = 1;
+    float r_k1_squared = 0;
 
     K.Multiply(*x_k, kTimesx_k);
     subtract(f, kTimesx_k, *r_k);
@@ -44,11 +45,14 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
         #pragma omp single
         {
             alpha_k_divider = 0;
+        }
+        #pragma omp barrier
+        {
+            #pragma omp for reduction(+: alpha_k_divider) schedule(static, 16)
             for (size_t n = 0; n < N; n++)
                 alpha_k_divider += (*p_k)[n] * kTimesP[n];
         }
         #pragma omp barrier
-
         {
             if (alpha_k_divider < 1e-12) // Appears if f = 0
                 break;
@@ -56,23 +60,42 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
 
         #pragma omp single
         {
-            alpha_k = l2square(*r_k) / alpha_k_divider;
+            alpha_k = 0;
+        }
+        #pragma omp barrier
+        {
+            #pragma omp for reduction(+: alpha_k) schedule(static, 16)
+            for (size_t n = 0; n < N; n++)
+                alpha_k += (*r_k)[n] * (*r_k)[n];
         }
         #pragma omp barrier
 
         {
-            multiply(alpha_k, *p_k, scaledP_K);
-            multiply(alpha_k, kTimesP, scaledKTimesP);
+            multiply(alpha_k / alpha_k_divider, *p_k, scaledP_K);
+            multiply(alpha_k / alpha_k_divider, kTimesP, scaledKTimesP);
             add(*x_k, scaledP_K, *x_k1);
             subtract(*r_k, scaledKTimesP, *r_k1);
         }
+        #pragma omp barrier
 
-        if (l2square(*r_k1) < 1e-10)
+        #pragma omp single
+        {
+            r_k1_squared = 0;
+        }
+        #pragma omp barrier
+        {
+            #pragma omp for reduction(+: r_k1_squared) schedule(static, 16)
+            for (size_t n = 0; n < N; n++)
+                r_k1_squared += (*r_k1)[n] * (*r_k1)[n];
+        }
+        #pragma omp barrier // TODO: Has reduction an implicit barrier?
+
+        if (r_k1_squared < 1e-10)
             break;
 
         #pragma omp single
         {
-            beta_k = l2square(*r_k1) / l2square(*r_k); // TODO: Do not recalculate this
+            beta_k = r_k1_squared / alpha_k; // TODO: Do not recalculate this
         }
         #pragma omp barrier
 
