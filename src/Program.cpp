@@ -3,8 +3,24 @@
 #include "Field.hpp"
 #include "PerformanceEvaluator.hpp"
 #include <string>
+#include "EvolutionaryOptimizator.hpp"
 
 using namespace std;
+
+typedef struct{
+    Field* field;
+    int rows, cols;
+}organism;
+
+unsigned int testOrg(organism orgToTest)
+{
+	return *(unsigned int *)orgToTest.field;
+}
+
+void progressDisplayer(unsigned int currentFitness)
+{
+	printf("fitness: %u\n", currentFitness);
+}
 
 int main(int argc, char **argv)
 {
@@ -59,4 +75,20 @@ int main(int argc, char **argv)
     float perf = evaluator.GetPerformance(field, "debug.html");
 
     cout << perf << endl;
+    EvolutionaryOptimizator::organism *orgs = new EvolutionaryOptimizator::organism[2];
+    EvolutionaryOptimizator::organism org1, org2;
+    org1.field = &field;
+    org2.field = &field;
+    
+    org1.rows = N;
+    org1.cols = N;
+    org2.rows = N;
+    org2.cols = N;
+    
+    orgs[0] = org1;
+    orgs[1] = org2;
+    EvolutionaryOptimizator ea(orgs, support, forces, 2, 0.98, N, N);
+    
+    EvolutionaryOptimizator::organism finishedOrg = ea.evolve();
+    cout <<"Done"<<endl;
 }

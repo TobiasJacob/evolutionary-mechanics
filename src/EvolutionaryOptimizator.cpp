@@ -1,4 +1,10 @@
 #include "EvolutionaryOptimizator.hpp"
+#include "PerformanceEvaluator.hpp"
+#include "Equation.hpp"
+#include "Matrix.hpp"
+#include "Microtime.hpp"
+#include <fstream>
+#include <algorithm>
 
 struct sorting_element{
     unsigned int fitness;
@@ -6,7 +12,11 @@ struct sorting_element{
     struct sorting_element *nextElement;
 };
 
-void copyOrganism(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizator::organism org2, int rows, int cols, int startingRow, int startingCol)
+EvolutionaryOptimizator::EvolutionaryOptimizator(EvolutionaryOptimizator::organism *organisms, const Support &supports, const vector<Force> &forces, const int organismsCount, const int desiredFitness, const int orgRows,  const int orgCols) : supports(supports), forces(forces), organismsCount(organismsCount), desiredFitness(desiredFitness), orgRows(orgRows), orgCols(orgCols){
+}
+
+
+void EvolutionaryOptimizator::copyOrganism(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizator::organism org2, int rows, int cols, int startingRow, int startingCol)
 {   
     for(int r = startingRow; r < rows; r++){
 
@@ -18,7 +28,8 @@ void copyOrganism(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizato
     return;
 }
 
-void simpleCrossingOver(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizator::organism org2, EvolutionaryOptimizator::organism dest, int rows, int cols)
+
+void EvolutionaryOptimizator::simpleCrossingOver(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizator::organism org2, EvolutionaryOptimizator::organism dest, int rows, int cols)
 {
     for(int r = 0; r < rows; r++){
         
@@ -37,6 +48,8 @@ void simpleCrossingOver(EvolutionaryOptimizator::organism org1, EvolutionaryOpti
             }
         }
     }
+
+    return;
 }
 
 EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
@@ -68,28 +81,28 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
     int totalChildren = this->organismsCount;
 
     //Counters
-    int i,j;
+    int i;
 
     //Used to sort the organisms from most to lthis->t fit
     //First element is for placholding(?)
 
     //Check this
-    struct sorting_element *elements = (struct sorting_element *) malloc(sizeof(struct sorting_element) * (this->organismsCount + 1));
-    
+    //struct sorting_element *elements = (struct sorting_element *) malloc(sizeof(struct sorting_element) * (this->organismsCount + 1));
+    sorting_element *elements = new sorting_element[this->organismsCount + 1];  
     elements[0].fitness = 0.0;
     elements[0].nextElement = NULL;
     elements[0].state = 0;
     
     while(1){
-
         unsigned int orgFitness = 0;
 
         //Loops thru organisms and tests fitness + sorting
 
-        for(i=0; i < totalChildren; i++){
-            PerformanceEvaluator evaluator;
+        for(int i=0; i < totalChildren; i++){
+            PerformanceEvaluator evaluator(this->orgRows, this->orgCols, this->supports, this->forces);
 
-            orgFitness = evaluator.GetPerformance(*this->organisms[i].field, this->supports, this->forces);
+        cout << "debug" << *this->organisms[i].field << endl;
+            orgFitness = evaluator.GetPerformance(*this->organisms[i].field, "debug.html");
             orgFitness = this->fitnessTest(this->organisms[i]);
 
             //if org found with satysfactory fitness
@@ -114,7 +127,7 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
             //Used to iterate thru array of organism fitnesses
             struct sorting_element *next = &elements[0];
             
-            for(j = 0; j < i+1; j++){
+            for(int j = 0; j < i+1; j++){
 
                 if(next-> nextElement == NULL){
 
@@ -171,7 +184,7 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
             }
 
             //Moves down the hierarchy a maximum of MATE_VARIANCE_CONSTANT percent
-            for(j = 0; j < randomNumber; j++){
+            for(int j = 0; j < randomNumber; j++){
 
                 if(nextMate->state){
                     previousMate = nextMate;
@@ -200,7 +213,7 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
                     (elementToReplicate->fitness + nextMate->fitness)/totalFitness);
             
             totalChildren += children;
-            for(j = 0; j<children; j++){
+            for(int j = 0; j<children; j++){
 
                 newGeneration[newGenerationIndex] = reproduce(*orgToReplicate, *mate);
                 newGenerationIndex++;
