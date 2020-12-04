@@ -36,12 +36,25 @@ void multiply(const T a, const vector<T> &b, vector<T> &result)
 }
 
 template<typename T>
-float l2square(const vector<T> &a) 
+T l2square(const vector<T> &a) 
 {
-    float result = 0;
-    // #pragma omp for reduction(+: result) // TODO
+    static T result = 0;
+    #pragma omp for reduction(+: result) schedule(static, 16)
     for (size_t r = 0; r < a.size(); r++)
         result += a[r] * a[r];
+    return result;    
+}
+
+template<typename T>
+T scalarProduct(const vector<T> &a, const vector<T> &b) 
+{
+    #ifdef DEBUG
+    if (a.size() != b.size()) cerr << "Invalid vector addtion, a has " << a.size() << " rows and b has " << b.size() << " rows" << endl;
+    #endif
+    static T result = 0;
+    #pragma omp for reduction(+: result) schedule(static, 16)
+    for (size_t r = 0; r < a.size(); r++)
+        result += a[r] * b[r];
     return result;    
 }
 
@@ -57,7 +70,7 @@ void printVector(const vector<T> &a)
 template<typename T>
 void fillZeros(vector<T> &a) 
 {
-    #pragma omp for
+    #pragma omp for schedule(static, 16)
     for (size_t r = 0; r < a.size(); r++)
         a[r] = 0;
 }
@@ -68,8 +81,10 @@ template void subtract(const vector<int> &a, const vector<int> &b, vector<int> &
 template void subtract(const vector<float> &a, const vector<float> &b, vector<float> &result);
 template void multiply(const int a, const vector<int> &b, vector<int> &result);
 template void multiply(const float a, const vector<float> &b, vector<float> &result);
-template float l2square(const vector<int> &a);
+template int l2square(const vector<int> &a);
 template float l2square(const vector<float> &a);
+template int scalarProduct(const vector<int> &a, const vector<int> &b);
+template float scalarProduct(const vector<float> &a, const vector<float> &b);
 template void printVector(const vector<int> &a);
 template void printVector(const vector<float> &a);
 template void fillZeros(vector<float> &a);

@@ -25,9 +25,9 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
     vector<float> scaledP_K(N, 0);
     vector<float> scaledKTimesP(N, 0);
     float alpha_k = 1;
-    float alpha_k_divider = 1;
     float beta_k = 1;
     float r_k1_squared = 0;
+    float alpha_k_divider = 0;
 
     K.Multiply(*x_k, kTimesx_k);
     subtract(f, kTimesx_k, *r_k);
@@ -58,6 +58,10 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
                 break;
         }
 
+        // float alpha_k_divider = scalarProduct(*p_k, kTimesP);
+        // if (alpha_k_divider < 1e-12) // Appears if f = 0
+        //     break;
+        
         #pragma omp single
         {
             alpha_k = 0;
