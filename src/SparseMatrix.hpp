@@ -21,7 +21,7 @@ private:
     const size_t rows;
     const size_t cols;
     const T defaultValue;
-    list<pair<size_t, T>> *values;
+    list<pair<size_t, T> > *values;
 
 public:
     SparseMatrix(size_t rows, size_t cols);

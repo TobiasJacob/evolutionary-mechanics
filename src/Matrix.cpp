@@ -3,21 +3,28 @@
 template<>
 Matrix<int>::Matrix(size_t rows, size_t cols, int value) : rows(rows), cols(cols)
 {
-    values = (int *)malloc(sizeof(float) * rows * cols);
-    memset(values, value, sizeof(float) * rows * cols);
+    values = (int *)malloc(sizeof(int) * rows * cols);
+    memset(values, value, sizeof(int) * rows * cols);
+}
+
+template<>
+Matrix<size_t>::Matrix(size_t rows, size_t cols, size_t value) : rows(rows), cols(cols)
+{
+    values = (size_t *)malloc(sizeof(size_t) * rows * cols);
+    memset(values, value, sizeof(size_t) * rows * cols);
 }
 
 template<>
 Matrix<bool>::Matrix(size_t rows, size_t cols, bool value) : rows(rows), cols(cols)
 {
-    values = (bool *)malloc(sizeof(float) * rows * cols);
-    memset(values, value, sizeof(float) * rows * cols);
+    values = (bool *)malloc(sizeof(bool) * rows * cols);
+    memset(values, value, sizeof(bool) * rows * cols);
 }
 
 template<typename T>
 Matrix<T>::Matrix(size_t rows, size_t cols, T value) : rows(rows), cols(cols)
 {
-    values = (T *)malloc(sizeof(float) * rows * cols);
+    values = (T *)malloc(sizeof(T) * rows * cols);
     for (size_t r = 0; r < rows; r++)
         for (size_t c = 0; c < cols; c++)
             Value(r, c) = value;
@@ -107,6 +114,7 @@ ostream& operator<<(ostream& os, const Matrix<T>& matrix)
 template ostream& operator<<(ostream& os, const Matrix<int>& matrix);
 template ostream& operator<<(ostream& os, const Matrix<bool>& matrix);
 template ostream& operator<<(ostream& os, const Matrix<float>& matrix);
+template ostream& operator<<(ostream& os, const Matrix<size_t>& matrix);
 
 template<typename T>
 vector<T> add(const vector<T> &a, const vector<T> &b) 
