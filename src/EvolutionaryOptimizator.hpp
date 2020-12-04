@@ -34,6 +34,7 @@ class EvolutionaryOptimizator
         void simpleCrossingOver(organism org1, organism org2, organism dest, int rows, int cols);
         //Initial Organisms, must be malloc'ed
         organism *organisms;
+        vector<organism> elements;
    
         //number of organisms in the array
         const int organismsCount;

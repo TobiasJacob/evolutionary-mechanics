@@ -71,7 +71,7 @@ int main(int argc, char **argv)
                 field.Plane(i, i2) = true;
     
 
-    PerformanceEvaluator evaluator(N, N, support, forces);
+    PerformanceEvaluator evaluator(N, N, support, forces); 
     float perf = evaluator.GetPerformance(field, "debug.html");
 
     cout << perf << endl;
@@ -87,7 +87,8 @@ int main(int argc, char **argv)
     
     orgs[0] = org1;
     orgs[1] = org2;
-    EvolutionaryOptimizator ea(orgs, support, forces, 2, 0.98, N, N);
+
+    EvolutionaryOptimizator ea(orgs, support, forces, 2, 0, N, N);
     
     EvolutionaryOptimizator::organism finishedOrg = ea.evolve();
     cout <<"Done"<<endl;

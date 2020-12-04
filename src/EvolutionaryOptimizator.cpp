@@ -12,7 +12,7 @@ struct sorting_element{
     struct sorting_element *nextElement;
 };
 
-EvolutionaryOptimizator::EvolutionaryOptimizator(EvolutionaryOptimizator::organism *organisms, const Support &supports, const vector<Force> &forces, const int organismsCount, const int desiredFitness, const int orgRows,  const int orgCols) : supports(supports), forces(forces), organismsCount(organismsCount), desiredFitness(desiredFitness), orgRows(orgRows), orgCols(orgCols){
+EvolutionaryOptimizator::EvolutionaryOptimizator(EvolutionaryOptimizator::organism *organisms, const Support &supports, const vector<Force> &forces, const int organismsCount, const int desiredFitness, const int orgRows,  const int orgCols) : organisms(organisms), supports(supports), forces(forces), organismsCount(organismsCount), desiredFitness(desiredFitness), orgRows(orgRows), orgCols(orgCols){
 }
 
 
@@ -92,18 +92,17 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
     elements[0].fitness = 0.0;
     elements[0].nextElement = NULL;
     elements[0].state = 0;
-    
+   
+
     while(1){
-        unsigned int orgFitness = 0;
+        double orgFitness = 0;
 
         //Loops thru organisms and tests fitness + sorting
 
         for(int i=0; i < totalChildren; i++){
             PerformanceEvaluator evaluator(this->orgRows, this->orgCols, this->supports, this->forces);
 
-        cout << "debug" << *this->organisms[i].field << endl;
             orgFitness = evaluator.GetPerformance(*this->organisms[i].field, "debug.html");
-            orgFitness = this->fitnessTest(this->organisms[i]);
 
             //if org found with satysfactory fitness
             if(orgFitness >= this->desiredFitness){
@@ -143,13 +142,16 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
                 }
                 next = next->nextElement;
             }
+
         }
 
-        this->progress(elements[0].nextElement->fitness);
+        //printf("fitness: %u\n",elements[0].nextElement->fitness);
 
+        /*
         if(orgToReturn.field == NULL){
             break;
         }
+*/
 
         //Reproduction
         
