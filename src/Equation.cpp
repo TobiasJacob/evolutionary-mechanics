@@ -37,53 +37,38 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
     #pragma omp parallel
     while (counter < maxSteps)
     {
-        {
-            fillZeros(kTimesP);
-            K.Multiply(*p_k, kTimesP);
-        }
-        alpha_k_divider = 0;
+        fillZeros(kTimesP);
+        K.Multiply(*p_k, kTimesP);
         #pragma omp barrier
         scalarProduct(*p_k, kTimesP, alpha_k_divider);
         #pragma omp barrier
         if (alpha_k_divider < 1e-12) // Appears if f = 0
             break;
         #pragma omp barrier
-        alpha_k = 0;
-        #pragma omp barrier
         l2square(*r_k, alpha_k);
         #pragma omp barrier
 
-        {
-            multiply(alpha_k / alpha_k_divider, *p_k, scaledP_K);
-            multiply(alpha_k / alpha_k_divider, kTimesP, scaledKTimesP);
-            add(*x_k, scaledP_K, *x_k1);
-            subtract(*r_k, scaledKTimesP, *r_k1);
-        }
+        multiply(alpha_k / alpha_k_divider, *p_k, scaledP_K);
+        multiply(alpha_k / alpha_k_divider, kTimesP, scaledKTimesP);
+        add(*x_k, scaledP_K, *x_k1);
+        subtract(*r_k, scaledKTimesP, *r_k1);
         #pragma omp barrier
 
-        #pragma omp barrier
-        r_k1_squared = 0;
-        #pragma omp barrier
         l2square(*r_k1, r_k1_squared);
         #pragma omp barrier // TODO: Has reduction an implicit barrier?
 
         if (r_k1_squared < 1e-10)
             break;
-
-        #pragma omp single
-        {
-            beta_k = r_k1_squared / alpha_k; // TODO: Do not recalculate this
-        }
-        #pragma omp barrier
-
-        {
-            multiply(beta_k, *p_k, scaledP_K);
-            add(*r_k1, scaledP_K, *p_k1);
-        }
+        beta_k = r_k1_squared / alpha_k; // TODO: Do not recalculate this
+        multiply(beta_k, *p_k, scaledP_K);
+        add(*r_k1, scaledP_K, *p_k1);
         #pragma omp barrier
 
         #pragma omp single
         {
+            alpha_k = 0;
+            r_k1_squared = 0;
+            alpha_k_divider = 0;
             x_k.swap(x_k1);
             r_k.swap(r_k1);
             p_k.swap(p_k1);
