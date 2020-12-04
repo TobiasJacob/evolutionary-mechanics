@@ -17,7 +17,7 @@ template<typename T>
 T l2square(const vector<T> &a);
 
 template<typename T>
-T scalarProduct(const vector<T> &a, const vector<T> &b);
+void scalarProduct(const vector<T> &a, const vector<T> &b, T &resultScalar);
 
 template<typename T>
 void printVector(const vector<T> &a);

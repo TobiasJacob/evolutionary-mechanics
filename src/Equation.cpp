@@ -41,26 +41,15 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
             fillZeros(kTimesP);
             K.Multiply(*p_k, kTimesP);
         }
-
-        #pragma omp single
-        {
-            alpha_k_divider = 0;
-        }
+        alpha_k_divider = 0;
         #pragma omp barrier
-        {
-            #pragma omp for reduction(+: alpha_k_divider) schedule(static, 16)
-            for (size_t n = 0; n < N; n++)
-                alpha_k_divider += (*p_k)[n] * kTimesP[n];
-        }
+        scalarProduct(*p_k, kTimesP, alpha_k_divider);
         #pragma omp barrier
-        {
-            if (alpha_k_divider < 1e-12) // Appears if f = 0
-                break;
-        }
-
-        // float alpha_k_divider = scalarProduct(*p_k, kTimesP);
-        // if (alpha_k_divider < 1e-12) // Appears if f = 0
-        //     break;
+        if (alpha_k_divider < 1e-12) // Appears if f = 0
+            break;
+        #pragma omp barrier
+        float alpha_k2 = 0;
+        scalarProduct(*p_k, kTimesP, alpha_k2);
         
         #pragma omp single
         {

@@ -35,27 +35,28 @@ void multiply(const T a, const vector<T> &b, vector<T> &result)
         result[r] = a * b[r];
 }
 
+static float resultL2Square = 0;
+
 template<typename T>
 T l2square(const vector<T> &a) 
 {
-    static T result = 0;
-    #pragma omp for reduction(+: result) schedule(static, 16)
+    resultL2Square = 0;
+    #pragma omp barrier
+    #pragma omp for reduction(+: resultL2Square) schedule(static, 16)
     for (size_t r = 0; r < a.size(); r++)
-        result += a[r] * a[r];
-    return result;    
+        resultL2Square += a[r] * a[r];
+    return resultL2Square;    
 }
 
 template<typename T>
-T scalarProduct(const vector<T> &a, const vector<T> &b) 
+void scalarProduct(const vector<T> &a, const vector<T> &b, T &resultScalar) 
 {
     #ifdef DEBUG
     if (a.size() != b.size()) cerr << "Invalid vector addtion, a has " << a.size() << " rows and b has " << b.size() << " rows" << endl;
     #endif
-    static T result = 0;
-    #pragma omp for reduction(+: result) schedule(static, 16)
+    #pragma omp for reduction(+: resultScalar) schedule(static, 16)
     for (size_t r = 0; r < a.size(); r++)
-        result += a[r] * b[r];
-    return result;    
+        resultScalar += a[r] * b[r];
 }
 
 template<typename T>
@@ -83,8 +84,8 @@ template void multiply(const int a, const vector<int> &b, vector<int> &result);
 template void multiply(const float a, const vector<float> &b, vector<float> &result);
 template int l2square(const vector<int> &a);
 template float l2square(const vector<float> &a);
-template int scalarProduct(const vector<int> &a, const vector<int> &b);
-template float scalarProduct(const vector<float> &a, const vector<float> &b);
+template void scalarProduct(const vector<int> &a, const vector<int> &b, int &result);
+template void scalarProduct(const vector<float> &a, const vector<float> &b, float &result);
 template void printVector(const vector<int> &a);
 template void printVector(const vector<float> &a);
 template void fillZeros(vector<float> &a);
