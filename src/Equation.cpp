@@ -61,16 +61,10 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
         }
         #pragma omp barrier
 
-        #pragma omp single
-        {
-            r_k1_squared = 0;
-        }
         #pragma omp barrier
-        {
-            #pragma omp for reduction(+: r_k1_squared) schedule(static, 16)
-            for (size_t n = 0; n < N; n++)
-                r_k1_squared += (*r_k1)[n] * (*r_k1)[n];
-        }
+        r_k1_squared = 0;
+        #pragma omp barrier
+        l2square(*r_k1, r_k1_squared);
         #pragma omp barrier // TODO: Has reduction an implicit barrier?
 
         if (r_k1_squared < 1e-10)

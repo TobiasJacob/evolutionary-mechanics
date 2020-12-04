@@ -200,7 +200,8 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         equation.K.Multiply(*(solution.first), fTilde);
         vector<float> resids(conditions);
         subtract(fTilde, equation.f, resids);
-        float residuum = l2square(resids);
+        float residuum = 0;
+        l2square(resids, residuum);
         cout << "Solution time: " << stop - start << "\tRes: " << residuum << endl;
 
         // Calculate maximum stress
