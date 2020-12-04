@@ -39,21 +39,17 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
     {
         fillZeros(kTimesP);
         K.Multiply(*p_k, kTimesP);
-        #pragma omp barrier
         scalarProduct(*p_k, kTimesP, alpha_k_divider);
+        l2square(*r_k, alpha_k);
+
         #pragma omp barrier
         if (alpha_k_divider < 1e-12) // Appears if f = 0
             break;
-        #pragma omp barrier
-        l2square(*r_k, alpha_k);
-        #pragma omp barrier
 
         multiply(alpha_k / alpha_k_divider, *p_k, scaledP_K);
         multiply(alpha_k / alpha_k_divider, kTimesP, scaledKTimesP);
         add(*x_k, scaledP_K, *x_k1);
         subtract(*r_k, scaledKTimesP, *r_k1);
-        #pragma omp barrier
-
         l2square(*r_k1, r_k1_squared);
         #pragma omp barrier // TODO: Has reduction an implicit barrier?
 
