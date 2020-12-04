@@ -10,6 +10,7 @@
 
 #define MATE_VARIANCE_CONSTANT 0.3
 #define MUTATIONS_PER_BASE_PAIR_CONSTANT 0.1
+#define MAX_NUMBER_OF_REPRODUCTIONS 10
 
 class EvolutionaryOptimizator
 {   
@@ -17,10 +18,12 @@ class EvolutionaryOptimizator
         typedef struct{
             Field* field;
             int rows, cols;
+            double fitness = 0.0;
+            int state = 0;
         }organism;
 
         EvolutionaryOptimizator();
-        EvolutionaryOptimizator(EvolutionaryOptimizator::organism *organisms, const Support &supports, const vector<Force> &forces, const int organismsCount, const int desiredFitness, const int orgRows, const int orgCols);
+        EvolutionaryOptimizator(EvolutionaryOptimizator::organism *organisms, const Support &supports, const vector<Force> &forces, const int organismsCount, const double desiredFitness, const int orgRows, const int orgCols);
          //this evolves the group of organisms until they reach a satisfactory fitness level
         organism evolve();
 
@@ -47,7 +50,7 @@ class EvolutionaryOptimizator
 
         //How much we want to get to the perfect solution to our problem
         //The EA will converge here
-        unsigned const int desiredFitness;
+        const double desiredFitness;
 
         //Heads-up about how close the organisms are
         void(*progress) (unsigned int fitness);
