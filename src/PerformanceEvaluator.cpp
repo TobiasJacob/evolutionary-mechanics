@@ -155,8 +155,8 @@ vector<float> PerformanceEvaluator::calculateStress(Field &field, const vector<f
 
 void PerformanceEvaluator::refreshCornerIndex(Field &field) 
 {
-    auto cornerRowUnused = [=](int r, int c) {return (r == supports.SupportRow1.row && c == supports.SupportRow1.col) || (r == supports.SupportRow2.row && c == supports.SupportRow2.col);  };
-    auto cornerColUnused = [=](int r, int c) {return r == supports.SupportCol.row && c == supports.SupportCol.col; };
+    auto cornerRowUnused = [=](int r, int c) { return any_of(supports.RowSupports.begin(), supports.RowSupports.end(), [=](const Point &p) { return p.row == r && p.col == c; }); };
+    auto cornerColUnused = [=](int r, int c) { return any_of(supports.ColSupports.begin(), supports.ColSupports.end(), [=](const Point &p) { return p.row == r && p.col == c; }); };
 
     cornerIndexRow.SetTo(0);
     cornerIndexCol.SetTo(0);

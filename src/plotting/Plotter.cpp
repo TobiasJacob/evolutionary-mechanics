@@ -75,10 +75,15 @@ void Plotter::plot(const Field &field, const vector<float> &u, const Matrix<int>
     output << "];" << endl;
 
     // supports
-    output << "const supports = {"
-            << "SupportRow1: { row: " << supports.SupportRow1.row << ", col: " << supports.SupportRow1.col << "}, "
-            << "SupportRow2: { row: " << supports.SupportRow2.row << ", col: " << supports.SupportRow2.col << "}, "
-            << "SupportCol: { row: " << supports.SupportCol.row << ", col: " << supports.SupportCol.col << "}}; " << endl;
+    output << "const supports = { RowSupports: [";
+    output << "{ row: " << supports.RowSupports[0].row << ", col: " << supports.RowSupports[0].col << " }";
+    for (int i = 1; i < supports.RowSupports.size(); i++)
+        output << ", { row: " << supports.RowSupports[i].row << ", col: " << supports.RowSupports[i].col << " }";
+    output << "], ColSupports: [";
+    output << "{ row: " << supports.ColSupports[0].row << ", col: " << supports.ColSupports[0].col << " }";
+    for (int i = 1; i < supports.ColSupports.size(); i++)
+        output << ", { row: " << supports.ColSupports[i].row << ", col: " << supports.ColSupports[i].col << " }";
+    output << "]}" << endl;
 
     // forces
     output << "const forces = [";
