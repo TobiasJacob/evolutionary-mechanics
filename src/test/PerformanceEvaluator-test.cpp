@@ -6,18 +6,17 @@ TEST_CASE("PerformanceEvaluator", "[PerformanceEvaluator]")
 {
     // Support and Forces should remain unchanged during the remaining part of the program
     Support support = {
-        .SupportRow1 = { // Define vertical-blocking support on bottom left corner
+        .RowSupports = {{ // Define vertical-blocking support on bottom, second from left corner
             .row = 3,
             .col = 0
-        },
-        .SupportRow2 = { // Define vertical-blocking support on bottom, second from left corner
+        }, { // Define horizontal-blocking support  on bottom left corner
             .row = 3,
             .col = 1
-        },
-        .SupportCol = { // Define horizontal-blocking support  on bottom left corner
+        }},
+        .ColSupports = {{ // Define vertical-blocking support on bottom left corner
             .row = 3,
             .col = 0
-        }
+        }}
     };
     vector<Force> forces = {
         {
@@ -49,18 +48,17 @@ TEST_CASE("PerformanceEvaluatorSupportNotAttached", "[PerformanceEvaluator]")
     return; // Currently not implemented
     // Support and Forces should remain unchanged during the remaining part of the program
     Support support = {
-        .SupportRow1 = { // Define vertical-blocking support on bottom left corner
+        .RowSupports = {{ // Define vertical-blocking support on bottom, second from left corner
             .row = 3,
             .col = 0
-        },
-        .SupportRow2 = { // Define vertical-blocking support on bottom, second from left corner
+        }, { // Define horizontal-blocking support  on bottom left corner
             .row = 3,
             .col = 1
-        },
-        .SupportCol = { // Define horizontal-blocking support  on bottom left corner
+        }},
+        .ColSupports = {{ // Define vertical-blocking support on bottom left corner
             .row = 3,
             .col = 0
-        }
+        }}
     };
     vector<Force> forces = {
         {
@@ -91,18 +89,17 @@ TEST_CASE("PerformanceEvaluatorForceNotAttached", "[PerformanceEvaluator]")
 {
     // Support and Forces should remain unchanged during the remaining part of the program
     Support support = {
-        .SupportRow1 = { // Define vertical-blocking support on bottom left corner
+        .RowSupports = {{ // Define vertical-blocking support on bottom, second from left corner
             .row = 3,
             .col = 0
-        },
-        .SupportRow2 = { // Define vertical-blocking support on bottom, second from left corner
+        }, { // Define horizontal-blocking support  on bottom left corner
             .row = 3,
             .col = 1
-        },
-        .SupportCol = { // Define horizontal-blocking support  on bottom left corner
+        }},
+        .ColSupports = {{ // Define vertical-blocking support on bottom left corner
             .row = 3,
             .col = 0
-        }
+        }}
     };
     vector<Force> forces = {
         {
@@ -133,18 +130,17 @@ TEST_CASE("DoubleForceMeansFourTimesPenality", "[PerformanceEvaluator]")
 {
     // Support and Forces should remain unchanged during the remaining part of the program
     Support support = {
-        .SupportRow1 = { // Define vertical-blocking support on bottom left corner
+        .RowSupports = {{ // Define vertical-blocking support on bottom, second from left corner
             .row = 3,
             .col = 0
-        },
-        .SupportRow2 = { // Define vertical-blocking support on bottom, second from left corner
+        }, { // Define horizontal-blocking support  on bottom left corner
             .row = 3,
             .col = 1
-        },
-        .SupportCol = { // Define horizontal-blocking support  on bottom left corner
+        }},
+        .ColSupports = {{ // Define vertical-blocking support on bottom left corner
             .row = 3,
             .col = 0
-        }
+        }}
     };
     vector<Force> forces = {
         {
@@ -178,18 +174,17 @@ TEST_CASE("ForceZeroMeansPerformanceZero", "[PerformanceEvaluator]")
 {
     // Support and Forces should remain unchanged during the remaining part of the program
     Support support = {
-        .SupportRow1 = { // Define vertical-blocking support on bottom left corner
+        .RowSupports = {{ // Define vertical-blocking support on bottom, second from left corner
             .row = 3,
             .col = 0
-        },
-        .SupportRow2 = { // Define vertical-blocking support on bottom, second from left corner
+        }, { // Define horizontal-blocking support  on bottom left corner
             .row = 3,
             .col = 1
-        },
-        .SupportCol = { // Define horizontal-blocking support  on bottom left corner
+        }},
+        .ColSupports = {{ // Define vertical-blocking support on bottom left corner
             .row = 3,
             .col = 0
-        }
+        }}
     };
     vector<Force> forces = {
         {

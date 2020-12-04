@@ -41,9 +41,8 @@ struct Point
 
 struct Support
 {
-    Point SupportRow1; // Sets the row displacement at cornerPoint to zero
-    Point SupportRow2; // Sets the row displacement at cornerPoint to zero
-    Point SupportCol; // Sets the col displacement at cornerPoint to zero
+    vector<Point> RowSupports; // Sets the row displacement at cornerPoint to zero
+    vector<Point> ColSupports; // Sets the col displacement at cornerPoint to zero
 };
 
 struct Force
