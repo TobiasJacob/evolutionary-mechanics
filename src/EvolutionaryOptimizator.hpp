@@ -29,6 +29,7 @@ class EvolutionaryOptimizator
         const Support &supports;
         const vector<Force> forces;
         void copyOrganism(organism org1, organism org2, int rows, int cols, int startingRow, int startingCol);
+        void simpleCrossingOver(organism org1, organism org2, organism dest, int rows, int cols, int startingRow, int startingCol);
         //Initial Organisms, must be malloc'ed
         organism *organisms;
    

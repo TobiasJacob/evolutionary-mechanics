@@ -11,12 +11,32 @@ void copyOrganism(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizato
     for(int r = startingRow; r < rows; r++){
 
         for(int c = startingCol; c < cols; c++){
-
             org2.field->Plane(r,c) = org1.field->Plane(r,c);
         }
     }
     
     return;
+}
+
+void simpleCrossingOver(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizator::organism org2, EvolutionaryOptimizator::organism dest, int rows, int cols)
+{
+    for(int r = 0; r < rows; r++){
+        
+        for(int c = 0; c < cols; c++){
+            
+            if(org1.field->Plane(r,c) && org2.field->Plane(r,c)){
+                dest.field->Plane(r,c) = true; 
+            }
+
+            else if((org1.field->Plane(r,c) || org2.field->Plane(r,c)) && rand()%2 == 0){
+                dest.field->Plane(r,c) = true;      
+            }
+
+            else{
+                dest.field->Plane(r,c) = false;
+            }
+        }
+    }
 }
 
 EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
@@ -244,9 +264,10 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::reproduce(Evolutionar
 
     //Child starts with first parent's dna then crosses with the other
     child.field = new Field(org1.field->Rows, org1.field->Cols);
-    copyOrganism(child, org1, org1.field->Rows, org1.field->Cols, 0, 0);
+    //copyOrganism(child, org1, org1.field->Rows, org1.field->Cols, 0, 0);
 
     //Crossing over
+/*
     crossingCols = rand() % (this->orgCols + 1);
     crossingRows = rand() % (this->orgRows + 1);
 
@@ -266,8 +287,11 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::reproduce(Evolutionar
     colsOffset =  this->orgCols - crossingCols >= (int)round((double)this->orgCols / 2.0) ?
         0 : ((int)round((double)this->orgCols/ 2.0) - (this->orgCols - crossingCols)); 
 
-    copyOrganism(child, org2, rowsOffset, colsOffset, crossingRows, crossingCols);
+    //copyOrganism(child, org2, rowsOffset, colsOffset, crossingRows, crossingCols);
+*/
 
+    simpleCrossingOver(org1,org2, child, org1.field->Rows, org1.field->Cols);
+    
     //Mutating
 
     mutationCount = rand() % (2 * (int)round(MUTATIONS_PER_BASE_PAIR_CONSTANT * (double)this->orgRows * (double)this->orgCols * 8.0));
