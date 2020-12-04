@@ -1,6 +1,8 @@
 #include "PerformanceEvaluator.hpp"
 #include "Equation.hpp"
 #include "Matrix.hpp"
+#include "Microtime.hpp"
+#include <fstream>
 
 const static float K[6][6] = {
     { 300,  180, -240,  -60,  -60, -120},
@@ -143,10 +145,14 @@ float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports
 
     try
     {
+        double start = microtime();
         // Generates an equation system from the field / mesh
         Equation equation = setupEquation(field, supports, forces);
+        double stop = microtime();
+        cout << "Equation setup time: " << stop - start << endl;
         Equation reducedEquation(conditions - 3);
 
+        start = microtime();
         // The values of the supports are zero, and can therefore be removed.
         int rTarget = 0;
         for (int r = 0; r < conditions; r++)
@@ -159,19 +165,26 @@ float PerformanceEvaluator::GetPerformance(Field &field, const Support &supports
             {
                 if (c == supportColIndex || c == supportRow1Index || c == supportRow2Index)
                     continue;
-                reducedEquation.K.SetValue(rTarget, cTarget, equation.K.GetValue(r, c));
+                int value = equation.K.GetValue(r, c);
+                if (value)
+                    reducedEquation.K.SetValue(rTarget, cTarget, value);
                 cTarget++;
             }
             rTarget++;
         }
+        stop = microtime();
+        cout << "Reduction time: " << stop - start << endl;
         
         // Solve equation
+        start = microtime();
         pair<unique_ptr<vector<float>>, int> solution = reducedEquation.SolveIterative();
+        stop = microtime();
+        cout << "Solving time: " << stop - start << endl;
 
         // Calculate residum
         vector<float> fTilde = reducedEquation.K * *(solution.first);
         vector<float> residuum = subtract(fTilde, reducedEquation.f);
-        cout << "Solved after " << solution.second << " steps with residuum " << l2square(residuum) << endl;
+        cout << "Solved " << conditions - 3 << " equations after " << solution.second << " steps with residuum " << l2square(residuum) << endl;
         
         // Add the values of the supports again, which are zero
         vector<float> q(conditions, 0);

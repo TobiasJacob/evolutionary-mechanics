@@ -298,3 +298,4 @@ build/*
 .DS_Store
 .vscode
 build
+debug.out
