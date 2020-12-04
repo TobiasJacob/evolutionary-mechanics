@@ -5,6 +5,7 @@
 #include <optional>
 #include "Field.hpp"
 #include "plotting/Plotter.hpp"
+#include "VectorOperations.hpp"
 
 class PerformanceEvaluator
 {

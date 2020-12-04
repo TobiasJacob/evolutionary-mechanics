@@ -2,7 +2,7 @@ CXX = g++-10
 CXXFLAGS = -Wall -I.. -I. -std=c++17 -DDEBUG -Ofast -g -fopenmp
 
 # SRC are the object files, that are included by tests and by the program. Do not include src/Program.cpp here!
-SRC = src/Field.cpp src/Matrix.cpp src/Equation.cpp src/PerformanceEvaluator.cpp src/SparseMatrix.cpp src/Microtime.cpp src/plotting/Plotter.cpp
+SRC = src/Field.cpp src/Matrix.cpp src/Equation.cpp src/PerformanceEvaluator.cpp src/SparseMatrix.cpp src/Microtime.cpp src/plotting/Plotter.cpp src/VectorOperations.cpp
 # Those are the test files. Note that they provide a custom main function. Do not include src/test/test.cpp here!
 TESTS = src/test/testing-test.cpp src/test/SparseMatrix-test.cpp src/test/Equation-test.cpp src/test/PerformanceEvaluator-test.cpp
 

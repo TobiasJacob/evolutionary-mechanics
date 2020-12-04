@@ -187,18 +187,21 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
     
     try
     {
-        double start = microtime();
         // Generates an equation system from the field / mesh
         Equation equation = setupEquation(field);
         
         // Solve equation
+        double start = microtime();
         pair<unique_ptr<vector<float>>, int> solution = equation.SolveIterative();
         double stop = microtime();
 
         // Calculate residum
-        vector<float> fTilde = equation.K * *(solution.first);
-        vector<float> resids = subtract(fTilde, equation.f);
+        vector<float> fTilde(conditions, 0);
+        equation.K.Multiply(*(solution.first), fTilde);
+        vector<float> resids(conditions);
+        subtract(fTilde, equation.f, resids);
         float residuum = l2square(resids);
+        cout << "Solution time: " << stop - start << "\tRes: " << residuum << endl;
 
         // Calculate maximum stress
         vector<float> stress = calculateStress(field, *solution.first);

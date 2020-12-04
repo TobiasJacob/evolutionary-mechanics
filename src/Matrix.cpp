@@ -58,6 +58,7 @@ void Matrix<int>::SetTo(int value)
 template<typename T>
 void Matrix<T>::SetTo(T value) 
 {
+    #pragma omp for
     for (size_t r = 0; r < rows; r++)
         for (size_t c = 0; c < cols; c++)
             Value(r, c) = value;
@@ -65,31 +66,31 @@ void Matrix<T>::SetTo(T value)
 }
 
 template<>
-vector<bool> Matrix<bool>::operator *(const vector<bool> &vec) 
+void Matrix<bool>::Multiply(const vector<bool> &vec, vector<bool> &result) 
 {
     #ifdef DEBUG
-    if (vec.size() != cols) cerr << "Invalid matrix multiplication, has " << cols << " cols and vector has " << vec.size() << " rows" << endl;
+    if (vec.size() != cols) {cerr << "Invalid sparse matrix multiplication, has " << cols << " cols and vector has " << vec.size() << " rows" << endl; throw new invalid_argument("Vector size"); }
+    if (rows != result.size()) {cerr << "Invalid sparse matrix multiplication, result has " << result.size() << " cols and matrix has " << rows << " rows" << endl; throw new invalid_argument("Result size"); }
     #endif
-    vector<bool> result(rows, 0);
+    #pragma omp for
     for (size_t r = 0; r < rows; r++)
         for (size_t c = 0; c < cols; c++)
             if (Value(r, c) && vec[c])
                 result[r] = !result[r];
-    return result;
 }
 
 
 template<typename T>
-vector<T> Matrix<T>::operator *(const vector<T> &vec) 
+void Matrix<T>::Multiply(const vector<T> &vec, vector<T> &result) 
 {
     #ifdef DEBUG
-    if (vec.size() != cols) cerr << "Invalid matrix multiplication, has " << cols << " cols and vector has " << vec.size() << " rows" << endl;
+    if (vec.size() != cols) {cerr << "Invalid sparse matrix multiplication, has " << cols << " cols and vector has " << vec.size() << " rows" << endl; throw new invalid_argument("Vector size"); }
+    if (rows != result.size()) {cerr << "Invalid sparse matrix multiplication, result has " << result.size() << " cols and matrix has " << rows << " rows" << endl; throw new invalid_argument("Result size"); }
     #endif
-    vector<T> result(rows, 0);
+    #pragma omp for
     for (size_t r = 0; r < rows; r++)
         for (size_t c = 0; c < cols; c++)
             result[r] += Value(r, c) * vec[c];
-    return result;    
 }
 
 template class Matrix<int>;
@@ -115,64 +116,3 @@ template ostream& operator<<(ostream& os, const Matrix<int>& matrix);
 template ostream& operator<<(ostream& os, const Matrix<bool>& matrix);
 template ostream& operator<<(ostream& os, const Matrix<float>& matrix);
 template ostream& operator<<(ostream& os, const Matrix<size_t>& matrix);
-
-template<typename T>
-vector<T> add(const vector<T> &a, const vector<T> &b) 
-{
-    #ifdef DEBUG
-    if (a.size() != b.size()) cerr << "Invalid vector addtion, first has " << a.size() << " rows and second has " << b.size() << " rows" << endl;
-    #endif
-    vector<T> result(a.size(), 0);
-    for (size_t r = 0; r < a.size(); r++)
-        result[r] = a[r] + b[r];
-    return result;
-}
-
-template<typename T>
-vector<T> subtract(const vector<T> &a, const vector<T> &b) 
-{
-    #ifdef DEBUG
-    if (a.size() != b.size()) cerr << "Invalid vector subtract, first has " << a.size() << " rows and second has " << b.size() << " rows" << endl;
-    #endif
-    vector<T> result(a.size(), 0);
-    for (size_t r = 0; r < a.size(); r++)
-        result[r] = a[r] - b[r];
-    return result;    
-}
-
-template<typename T>
-vector<T> multiply(const T a, const vector<T> &b) 
-{
-    vector<T> result(b.size(), 0);
-    for (size_t r = 0; r < b.size(); r++)
-        result[r] = a * b[r];
-    return result;    
-}
-
-template<typename T>
-float l2square(const vector<T> &a) 
-{
-    float result = 0;
-    for (size_t r = 0; r < a.size(); r++)
-        result += a[r] * a[r];
-    return result;    
-}
-
-template<typename T>
-void printVector(const vector<T> &a) 
-{
-    for (size_t r = 0; r < a.size(); r++)
-        cout << a[r] << " ";
-    cout << endl;
-}
-
-template vector<int> add(const vector<int> &a, const vector<int> &b);
-template vector<float> add(const vector<float> &a, const vector<float> &b);
-template vector<int> subtract(const vector<int> &a, const vector<int> &b);
-template vector<float> subtract(const vector<float> &a, const vector<float> &b);
-template vector<int> multiply(const int a, const vector<int> &b);
-template vector<float> multiply(const float a, const vector<float> &b);
-template float l2square(const vector<int> &a);
-template float l2square(const vector<float> &a);
-template void printVector(const vector<int> &a);
-template void printVector(const vector<float> &a);
