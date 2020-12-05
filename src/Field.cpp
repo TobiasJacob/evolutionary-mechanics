@@ -2,7 +2,7 @@
 
 #define DIVSQRT2 0.70710678118
 
-Field::Field(size_t rows, size_t cols) : fields(rows, cols, false), Rows(rows), Cols(cols)
+Field::Field(size_t rows, size_t cols, bool defaultValue) : fields(rows, cols, defaultValue), Rows(rows), Cols(cols)
 {
 }
 
