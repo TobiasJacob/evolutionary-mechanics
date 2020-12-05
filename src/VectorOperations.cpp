@@ -71,6 +71,17 @@ void fillZeros(vector<T> &a)
         a[r] = 0;
 }
 
+template<typename T>
+void assign(vector<T> &src, vector<T> &dest) 
+{
+    #ifdef DEBUG
+    if (src.size() != dest.size()) cerr << "Invalid vector assignment, a has " << src.size() << " rows and b has " << dest.size() << " rows" << endl;
+    #endif
+    #pragma omp for schedule(static, 256)
+    for (size_t r = 0; r < src.size(); r++)
+        dest[r] = src[r];
+}
+
 template void add(const vector<int> &a, const vector<int> &b, vector<int> &result);
 template void add(const vector<float> &a, const vector<float> &b, vector<float> &result);
 template void subtract(const vector<int> &a, const vector<int> &b, vector<int> &result);
@@ -84,3 +95,4 @@ template void scalarProduct(const vector<float> &a, const vector<float> &b, floa
 template void printVector(const vector<int> &a);
 template void printVector(const vector<float> &a);
 template void fillZeros(vector<float> &a);
+template void assign(vector<float> &src, vector<float> &dest);

@@ -85,47 +85,6 @@ TEST_CASE("PerformanceEvaluatorSupportNotAttached", "[PerformanceEvaluator]")
     REQUIRE(performance == INFINITY);
 }
 
-TEST_CASE("PerformanceEvaluatorForceNotAttached", "[PerformanceEvaluator]")
-{
-    // Support and Forces should remain unchanged during the remaining part of the program
-    Support support = {
-        .RowSupports = {{ // Define vertical-blocking support on bottom, second from left corner
-            .row = 3,
-            .col = 0
-        }, { // Define horizontal-blocking support  on bottom left corner
-            .row = 3,
-            .col = 1
-        }},
-        .ColSupports = {{ // Define vertical-blocking support on bottom left corner
-            .row = 3,
-            .col = 0
-        }}
-    };
-    vector<Force> forces = {
-        {
-            .attackCorner = {
-                .row = 3,
-                .col = 2
-            },
-            .forceRow = 10,
-            .forceCol = 0
-        }
-    };
-
-    // Field defines the structural layout
-    Field field(3, 3);
-    field.Plane(0, 0) = true;
-    field.Plane(1, 0) = true;
-    field.Plane(1, 1) = true;
-    field.Plane(1, 2) = true;
-    field.Plane(2, 0) = true;
-    
-    PerformanceEvaluator evaluator(3, 3, support, forces);
-    float performance = evaluator.GetPerformance(field, nullopt);
-    INFO("Perf: " << performance);
-    REQUIRE(performance == INFINITY);
-}
-
 TEST_CASE("DoubleForceMeansFourTimesPenality", "[PerformanceEvaluator]")
 {
     // Support and Forces should remain unchanged during the remaining part of the program

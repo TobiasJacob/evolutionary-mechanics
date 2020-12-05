@@ -48,7 +48,7 @@ int main(int argc, char **argv)
                 .col = i
             },
             .forceRow = .01,
-            .forceCol = .2
+            .forceCol = .1
         };
     }
 

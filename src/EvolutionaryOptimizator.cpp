@@ -99,6 +99,10 @@ void EvolutionaryOptimizator::mutate(Organism &dest, size_t alteratedFields)
             for (const Point &p : supports.ColSupports) if ((p.col == mutationCol || p.col == mutationCol + 1) && (p.row == mutationRow || p.row == mutationRow + 1)) {isSupport = true; break;}
             for (const Point &p : supports.RowSupports) if ((p.col == mutationCol || p.col == mutationCol + 1) && (p.row == mutationRow || p.row == mutationRow + 1)) {isSupport = true; break;}
             if (isSupport) continue;
+
+            bool isOnForce = false;
+            for (const Force &f : forces) if ((f.attackCorner.col == mutationCol || f.attackCorner.col == mutationCol + 1) && (f.attackCorner.row == mutationRow || f.attackCorner.row == mutationRow + 1)) {isOnForce = true; break;}
+            if (isOnForce) continue;
             
             // If there is an element: removed only if it's not in the middle of two neighbours or the only connection on an edge
             // And if it is not at a support
@@ -142,7 +146,8 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
             if (i == 0 && epoch % 10 == 0)
                 debugSave = string("debug/Debug-") + to_string(epoch) + ".html";
             
-            float stress = evaluator.GetPerformance(*org.field, debugSave);
+            float stress;
+            stress = evaluator.GetPerformance(*org.field, debugSave);
             if (stress > maxStress) // Mechanical structure broke, organism died
                 org.loss = INFINITY;
             else

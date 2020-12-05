@@ -24,3 +24,6 @@ void printVector(const vector<T> &a);
 
 template<typename T>
 void fillZeros(vector<T> &a);
+
+template<typename T>
+void assign(vector<T> &src, vector<T> &dest);
