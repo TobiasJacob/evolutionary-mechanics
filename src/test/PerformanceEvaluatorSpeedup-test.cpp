@@ -59,7 +59,7 @@ TEST_CASE("PerformanceEvaluatorSpeedup", "[.][PerformanceEvaluator]")
     {
         ofstream output("performance.txt");
         output << "N, C, Time" << endl;
-        for (size_t N : {10, 25, 50, 100, 200})
+        for (size_t N : {10, 25, 50, 75, 100, 150, 200})
             for (size_t C : {1, 2, 4, 8, 16})
                 testWithSize(output, N, C);
     }
