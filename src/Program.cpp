@@ -62,7 +62,7 @@ int main(int argc, char **argv)
     
 
     PerformanceEvaluator evaluator(N, N, support, forces); 
-    int desiredFitness = 100000000;
+    double desiredFitness = 0.05;
     int numberOfOrganisms = 4;
 
     float perf = evaluator.GetPerformance(field, "debug.html");

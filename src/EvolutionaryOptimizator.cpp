@@ -140,7 +140,7 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
             cout << "**Debug - Fitness: \n" << orgFitness << endl;  
 
             //if org found with satysfactory fitness
-            if(orgFitness >= this->desiredFitness){
+            if(orgFitness <= this->desiredFitness){
                 //check we need to save the new field  
                 orgToReturn.field = new Field(this->orgRows, this->orgCols);
                 copyOrganism(organisms_vector[i], orgToReturn, this->orgRows, this->orgCols, 0, 0);
