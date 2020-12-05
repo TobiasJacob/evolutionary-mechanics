@@ -115,7 +115,7 @@ void EvolutionaryOptimizator::mutate(Organism &dest, size_t alteratedFields)
 
 void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxStress, const float alterationDecay)
 {
-    float alterations = orgRows * orgCols;
+    float alterations = orgRows * orgCols / 10;
     for (size_t epoch = 0; epoch < generations; epoch++)
     {
         // Calculate loss for each organism
