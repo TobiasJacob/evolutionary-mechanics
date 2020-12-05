@@ -39,7 +39,7 @@ int main(int argc, char **argv)
         });
     }
 
-    vector<Force> forces(N + 1);
+    vector<Force> forces(N / 3);
     for (size_t i = 0; i < forces.size(); i++)
     {
         forces[i] = {
@@ -47,13 +47,13 @@ int main(int argc, char **argv)
                 .row = N,
                 .col = i
             },
-            .forceRow = .1,
-            .forceCol = 0
+            .forceRow = .01,
+            .forceCol = .2
         };
     }
 
     EvolutionaryOptimizator evolutionary_optimizator(support, forces, 100, N, N);
     
-    evolutionary_optimizator.Evolve(1000, 0.1f, 0.995f);
+    evolutionary_optimizator.Evolve(1000, 1.f, 0.995f);
 }
 
