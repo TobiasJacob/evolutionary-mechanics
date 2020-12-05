@@ -13,6 +13,14 @@ EvolutionaryOptimizator::Organism::Organism(size_t rows, size_t cols)
     
 }
 
+EvolutionaryOptimizator::Organism::Organism(Organism const &other)
+    : loss(other.loss), field(other.field.Rows, other.field.Cols)
+{
+    for (size_t r = 0; r < field.Rows; r++)
+        for (size_t c = 0; c < field.Cols; c++)
+            field.Plane(r, c) = other.field.Plane(r, c);    
+}
+
 EvolutionaryOptimizator::Organism &EvolutionaryOptimizator::Organism::operator= (Organism const &other)
 {
     #ifdef DEBUG
@@ -36,19 +44,19 @@ size_t EvolutionaryOptimizator::Organism::countPlanes()
 
 EvolutionaryOptimizator::EvolutionaryOptimizator(const Support &supports, const vector<Force> &forces, const size_t organismsCount, const size_t orgRows, const size_t orgCols)
     : supports(supports), forces(forces), orgRows(orgRows), orgCols(orgCols)
+    , evaluator(orgRows, orgCols, supports, forces)
     , currentGeneration(new vector<Organism>(organismsCount, Organism(orgRows, orgCols)))
     , nextGeneration(new vector<Organism>(organismsCount, Organism(orgRows, orgCols))) // TODO: Make sure, fields get deep copied
-    , evaluator(orgRows, orgCols, supports, forces)
 {
 
 }
 
 void EvolutionaryOptimizator::mutate(Organism &dest) 
 {
-    for (int i = 0; i < dest.field.Cols * dest.field.Rows / 10; i++) { // TODO: Introdouce exponentially decaying mutation rate
+    for (size_t i = 0; i < dest.field.Cols * dest.field.Rows / 10; i++) { // TODO: Introdouce exponentially decaying mutation rate
         // Chooses a random Col and a random row to execute the mutation
-        int mutationCol = (rand() % (this->orgCols));
-        int mutationRow = (rand() % (this->orgRows));
+        size_t mutationCol = rand() % orgCols;
+        size_t mutationRow = rand() % orgRows;
 
         // TODO: Do not alter supports etc.
 
@@ -107,7 +115,7 @@ void EvolutionaryOptimizator::Evolve(size_t generations)
 
         // Setup a new organism, best 10% get children
         size_t childrenPerOrganism = currentGeneration->size() / 10;
-        for (int i = 0; i < nextGeneration->size(); i++)
+        for (size_t i = 0; i < nextGeneration->size(); i++)
         {
             (*nextGeneration)[i] = (*currentGeneration)[i / childrenPerOrganism];
             mutate((*nextGeneration)[i]);
