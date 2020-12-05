@@ -92,14 +92,8 @@ Equation PerformanceEvaluator::setupEquation(Field &field)
     return equation;
 }
 
-vector<float> PerformanceEvaluator::calculateStress(Field &field, const vector<float> &q) 
+void PerformanceEvaluator::calculateStress(Field &field, const vector<float> &q, vector<float> &stress)
 {
-    size_t planes = 0;
-    for (size_t r = 0; r < rows; r++)
-        for (size_t c = 0; c < cols; c++)
-            if (field.Plane(r, c))
-                planes++;
-    vector<float> stress(planes * 2);
     // For every tile
     size_t i = 0;
     for (size_t r = 0; r < rows; r++)
@@ -150,7 +144,6 @@ vector<float> PerformanceEvaluator::calculateStress(Field &field, const vector<f
                 stress[i++] = squaredStressLower;
                 stress[i++] = squaredStressUpper;
             }
-    return stress;
 }
 
 void PerformanceEvaluator::refreshCornerIndex(Field &field) 
@@ -175,6 +168,11 @@ void PerformanceEvaluator::refreshCornerIndex(Field &field)
                 if (!cornerIndexCol.Value(r, c + 1) && !cornerColUnused(r, c + 1)) cornerIndexCol.Value(r, c + 1) = ++conditions;
 
             }
+    planes = 0;
+    for (size_t r = 0; r < rows; r++)
+        for (size_t c = 0; c < cols; c++)
+            if (field.Plane(r, c))
+                planes++;
 }
 
 float PerformanceEvaluator::GetPerformance(Field &field, optional<string> outputFileName)
@@ -197,17 +195,22 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         // Calculate residum
         vector<float> fTilde(conditions, 0);
         vector<float> resids(conditions);
+        vector<float> stress(planes * 2);
         float residuum = 0;
+        float maxStress = 0;
         #pragma omp parallel
         {
             equation.K.Multiply(*(solution.first), fTilde);
             subtract(fTilde, equation.f, resids);
             l2square(resids, residuum);
+
+            // Calculate maximum stress
+            calculateStress(field, *solution.first, stress);
+            #pragma omp for reduction(max:maxStress) schedule(static, 256)
+            for (size_t i = 0; i < planes * 2; i++)
+                maxStress = max(maxStress, stress[i]);
         }
 
-        // Calculate maximum stress
-        vector<float> stress = calculateStress(field, *solution.first);
-        float maxStress = *max_element(stress.begin(), stress.end());
         double stop = microtime();
 
         // Maybe put out debug view
