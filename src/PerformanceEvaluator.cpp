@@ -1,7 +1,8 @@
 #include "PerformanceEvaluator.hpp"
-#include "equation.hpp"
+#include "Equation.hpp"
 #include "Matrix.hpp"
 #include "Microtime.hpp"
+#include <omp.h>
 #include <fstream>
 #include <algorithm>
 
@@ -36,8 +37,9 @@ void PerformanceEvaluator::setupEquation(Field &field)
     // Forces on supports are not set
     // This one is easy to parallelize since each force HAS to be (by requirement) on a different position
     #pragma omp for schedule(static, 1)
-    for (const Force &f: forces)
+    for (size_t i = 0; i < forces.size(); i++)
     {
+        const Force &f = forces[i];
         size_t forceIndexRow = cornerIndexRow.Value(f.attackCorner.row, f.attackCorner.col);
         #ifdef DEBUG
         if (!forceIndexRow) throw std::runtime_error("Force not attached");
