@@ -40,8 +40,14 @@ void PerformanceEvaluator::setupEquation(Field &field)
     for (const Force &f: forces)
     {
         size_t forceIndexRow = cornerIndexRow.Value(f.attackCorner.row, f.attackCorner.col);
+        #ifdef DEBUG
+        if (!forceIndexRow) throw std::runtime_error("Force not attached");
+        #endif
         equation->f[forceIndexRow - 1] += f.forceRow;
         size_t forceIndexCol = cornerIndexCol.Value(f.attackCorner.row, f.attackCorner.col);
+        #ifdef DEBUG
+        if (!forceIndexRow) throw std::runtime_error("Force not attached");
+        #endif
         equation->f[forceIndexCol - 1] += f.forceCol;
     }
 
@@ -193,7 +199,7 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         residuum = 0;
         maxStress = 0;
         equation = make_unique<Equation>(conditions);
-        equationRowLock = make_unique<vector<omp_lock_t> >(conditions);
+        // equationRowLock = make_unique<vector<omp_lock_t> >(conditions);
     }
     #pragma omp barrier
 

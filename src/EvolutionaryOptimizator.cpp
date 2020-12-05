@@ -101,7 +101,7 @@ void EvolutionaryOptimizator::mutate(Organism &dest, size_t alteratedFields)
             if (isSupport) continue;
 
             bool isOnForce = false;
-            for (const Force &f : forces) if ((f.attackCorner.col == mutationCol || f.attackCorner.col == mutationCol + 1) && (f.attackCorner.row == mutationRow || f.attackCorner.row == mutationRow + 1)) {isSupport = true; break;}
+            for (const Force &f : forces) if ((f.attackCorner.col == mutationCol || f.attackCorner.col == mutationCol + 1) && (f.attackCorner.row == mutationRow || f.attackCorner.row == mutationRow + 1)) {isOnForce = true; break;}
             if (isOnForce) continue;
             
             // If there is an element: removed only if it's not in the middle of two neighbours or the only connection on an edge
