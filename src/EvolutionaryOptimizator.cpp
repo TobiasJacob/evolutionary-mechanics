@@ -96,26 +96,33 @@ void EvolutionaryOptimizator::mutate(Organism &dest)
             for (int i = 0; i < 9; i++)
                 if (binaryValues[i] != binaryValues[i + 1]) switchCount++;
             // switchCount is ether 0, 2 or 4. Removing is fine, if it is not four
-            dest.field.Plane(mutationRow, mutationCol) = false;
+            if (switchCount < 4)
+                dest.field.Plane(mutationRow, mutationCol) = false;
         }
     }
 }
 
-void EvolutionaryOptimizator::Evolve(size_t generations)
+void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxStress)
 {
     for (size_t epoch = 0; epoch < generations; epoch++)
     {
         // Calculate loss for each organism
-        for (Organism &org : *currentGeneration)
+        for (size_t i = 0; i < currentGeneration->size(); i++)
         {
-            float stress = evaluator.GetPerformance(org.field, nullopt);
-            if (stress > 10) // Mechanical structure broke, organism died
+            Organism &org = (*currentGeneration)[i];
+
+            optional<string> debugSave = nullopt;
+            if (i == 0)
+                debugSave = string("debug/Debug-") + to_string(epoch) + ".html";
+            
+            float stress = evaluator.GetPerformance(org.field, debugSave);
+            if (stress > maxStress) // Mechanical structure broke, organism died
                 org.loss = INFINITY;
             else
                 org.loss = org.countPlanes();
         }
 
-        // Sort accodring to loss
+        // Sort according to loss
         sort(currentGeneration->begin(), currentGeneration->end(), [](Organism &a, Organism &b) {return a.loss < b.loss; });
         cout << (*currentGeneration)[0].loss << endl;
 

@@ -54,6 +54,6 @@ int main(int argc, char **argv)
 
     EvolutionaryOptimizator evolutionary_optimizator(support, forces, 100, N, N);
     
-    evolutionary_optimizator.Evolve(40);
+    evolutionary_optimizator.Evolve(100, 0.1);
 }
 
