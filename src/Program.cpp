@@ -4,11 +4,7 @@
 #include <omp.h>
 #include "Field.hpp"
 #include "PerformanceEvaluator.hpp"
-<<<<<<< HEAD
-#include <string>
 #include "EvolutionaryOptimizator.hpp"
-=======
->>>>>>> master
 
 using namespace std;
 
