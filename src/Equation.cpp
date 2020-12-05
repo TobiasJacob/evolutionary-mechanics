@@ -28,46 +28,48 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
     float alpha_k_divider = 0;
     float alpha_k = 0;
 
-    K.Multiply(*x_k, kTimesx_k);
-    subtract(f, kTimesx_k, *r_k);
-    *p_k = *r_k;
     size_t counter = 0;
     const size_t maxSteps = 10000;
     #pragma omp parallel
-    while (counter < maxSteps)
     {
-        fillZeros(kTimesP);
-        K.Multiply(*p_k, kTimesP);
-        scalarProduct(*p_k, kTimesP, alpha_k_divider); // Implicit barrier
-
-        if (alpha_k_divider < 1e-12) // Appears if f = 0
-            break;
-        l2square(*r_k, alpha_k); // Implicit barrier
-
-        multiply(alpha_k / alpha_k_divider, *p_k, scaledP_K);
-        multiply(alpha_k / alpha_k_divider, kTimesP, scaledKTimesP);
-        add(*x_k, scaledP_K, *x_k1);
-        subtract(*r_k, scaledKTimesP, *r_k1);
-        l2square(*r_k1, r_k1_squared); // Implicit barrier
-
-        if (r_k1_squared < 1e-10)
-            break;
-
-        multiply(r_k1_squared / alpha_k, *p_k, scaledP_K);
-        add(*r_k1, scaledP_K, *p_k1);
-
-        #pragma omp barrier
-        #pragma omp single
+        K.Multiply(*x_k, kTimesx_k);
+        subtract(f, kTimesx_k, *r_k);
+        assign(*r_k, *p_k);
+        while (counter < maxSteps)
         {
-            alpha_k = 0;
-            r_k1_squared = 0;
-            alpha_k_divider = 0;
-            x_k.swap(x_k1);
-            r_k.swap(r_k1);
-            p_k.swap(p_k1);
-            counter++;
+            fillZeros(kTimesP);
+            K.Multiply(*p_k, kTimesP);
+            scalarProduct(*p_k, kTimesP, alpha_k_divider); // Implicit barrier
+
+            if (alpha_k_divider < 1e-12) // Appears if f = 0
+                break;
+            l2square(*r_k, alpha_k); // Implicit barrier
+
+            multiply(alpha_k / alpha_k_divider, *p_k, scaledP_K);
+            multiply(alpha_k / alpha_k_divider, kTimesP, scaledKTimesP);
+            add(*x_k, scaledP_K, *x_k1);
+            subtract(*r_k, scaledKTimesP, *r_k1);
+            l2square(*r_k1, r_k1_squared); // Implicit barrier
+
+            if (r_k1_squared < 1e-10)
+                break;
+
+            multiply(r_k1_squared / alpha_k, *p_k, scaledP_K);
+            add(*r_k1, scaledP_K, *p_k1);
+
+            #pragma omp barrier
+            #pragma omp single
+            {
+                alpha_k = 0;
+                r_k1_squared = 0;
+                alpha_k_divider = 0;
+                x_k.swap(x_k1);
+                r_k.swap(r_k1);
+                p_k.swap(p_k1);
+                counter++;
+            }
+            #pragma omp barrier
         }
-        #pragma omp barrier
     }
     
     if (counter == maxSteps) {
