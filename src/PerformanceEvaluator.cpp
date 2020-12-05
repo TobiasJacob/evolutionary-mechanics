@@ -197,11 +197,14 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
 
         // Calculate residum
         vector<float> fTilde(conditions, 0);
-        equation.K.Multiply(*(solution.first), fTilde);
         vector<float> resids(conditions);
-        subtract(fTilde, equation.f, resids);
         float residuum = 0;
-        l2square(resids, residuum);
+        #pragma omp parallel
+        {
+            equation.K.Multiply(*(solution.first), fTilde);
+            subtract(fTilde, equation.f, resids);
+            l2square(resids, residuum);
+        }
         cout << "\tRes: " << residuum << endl;
 
         // Calculate maximum stress

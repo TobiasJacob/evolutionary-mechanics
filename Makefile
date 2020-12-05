@@ -1,5 +1,5 @@
-CXX = g++-10
-CXXFLAGS = -Wall -I.. -I. -std=c++17 -Ofast -fopenmp
+CXX = g++
+CXXFLAGS = -Wall -I.. -I. -std=c++17 -O3 -fopenmp -pg
 
 # SRC are the object files, that are included by tests and by the program. Do not include src/Program.cpp here!
 SRC = src/Field.cpp src/Matrix.cpp src/Equation.cpp src/PerformanceEvaluator.cpp src/SparseMatrix.cpp src/Microtime.cpp src/plotting/Plotter.cpp src/VectorOperations.cpp
@@ -16,23 +16,23 @@ OBJTESTS = $(patsubst %.cpp,build/%.o, $(TESTS))
 all: build/test build/program
 
 # Program provides the main function, OBJSRC all other object files
-build/program: $(OBJSRC) build/src/Program.o
+build/program: $(OBJSRC) build/src/Program.o Makefile
 	$(CXX) $(CXXFLAGS) -o build/program $(OBJSRC) build/src/Program.o
 
 # Link all test and source objects
-build/test: build/src/test/test.o $(OBJTESTS) $(OBJSRC)
+build/test: build/src/test/test.o $(OBJTESTS) $(OBJSRC) Makefile
 	$(CXX) $(CXXFLAGS) -o build/test $(OBJTESTS) $(OBJSRC) build/src/test/test.o
 
 # Special rule, so that catch has not to be rebuild when a header changes
-build/src/test/test.o: src/test/test.cpp | build
+build/src/test/test.o: src/test/test.cpp Makefile | build
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 # General rule to build all object files. Important: If a single header changes, everything has to be rebuild. If a single cpp file changes, only the cpp file has to be rebuild.
-build/src/%.o: src/%.cpp $(OBJHEADERS) | build # Use "order-only prerequisites" when depending on directories
+build/src/%.o: src/%.cpp $(OBJHEADERS) Makefile | build # Use "order-only prerequisites" when depending on directories
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 # Create build directory
-build:
+build: Makefile
 	mkdir -p build
 	mkdir -p build/src
 	mkdir -p build/src/plotting
