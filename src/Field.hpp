@@ -18,7 +18,7 @@ private:
 public:
     const size_t Rows, Cols; // Size of the field
 
-    Field(size_t rows, size_t cols);
+    Field(size_t rows, size_t cols, bool defaultValue = false);
 
     inline bool &Plane(size_t r, size_t c) // Reference for getting or setting a value
     {

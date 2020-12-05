@@ -4,6 +4,7 @@
 #include <omp.h>
 #include "Field.hpp"
 #include "PerformanceEvaluator.hpp"
+#include "EvolutionaryOptimizator.hpp"
 
 using namespace std;
 
@@ -16,6 +17,7 @@ int main(int argc, char **argv)
     }
     size_t N = (size_t)stoi(argv[1]);
     size_t C = (size_t)stoi(argv[2]);
+    srand(0); // Reproducable behaviour
 
     omp_set_num_threads(C);
 
@@ -37,7 +39,7 @@ int main(int argc, char **argv)
         });
     }
 
-    vector<Force> forces(N + 1);
+    vector<Force> forces(N / 3);
     for (size_t i = 0; i < forces.size(); i++)
     {
         forces[i] = {
@@ -45,22 +47,13 @@ int main(int argc, char **argv)
                 .row = N,
                 .col = i
             },
-            .forceRow = .1,
-            .forceCol = 0
+            .forceRow = .01,
+            .forceCol = .2
         };
     }
 
-    // Field defines the structural layout
-    Field field(N, N);
-    for (size_t i = 0; i < N; i++)
-        for (size_t i2 = 0; i2 < N; i2++)
-            if (i < N / 3 || i > 2 * N / 3 || (i2 > N / 3 && i2 < 2 * N / 3))
-                field.Plane(i, i2) = true;
+    EvolutionaryOptimizator evolutionary_optimizator(support, forces, 100, N, N);
     
-
-    PerformanceEvaluator evaluator(N, N, support, forces);
-    float perf;
-    perf = evaluator.GetPerformance(field, "debug.html");
-
-    cout << perf << endl;
+    evolutionary_optimizator.Evolve(1000, 1.f, 0.995f);
 }
+
