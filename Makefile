@@ -1,4 +1,4 @@
-CXX = g++
+CXX = g++-10
 CXXFLAGS = -Wall -I.. -I. -std=c++17 -O3 -fopenmp -DDEBUG
 
 # SRC are the object files, that are included by tests and by the program. Do not include src/Program.cpp here!
