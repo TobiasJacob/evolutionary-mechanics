@@ -202,7 +202,7 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         subtract(fTilde, equation.f, resids);
         float residuum = 0;
         l2square(resids, residuum);
-        cout << "Solution time: " << stop - start << "\tRes: " << residuum << endl;
+        cout << "\tRes: " << residuum << endl;
 
         // Calculate maximum stress
         vector<float> stress = calculateStress(field, *solution.first);

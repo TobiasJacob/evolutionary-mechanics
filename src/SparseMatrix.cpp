@@ -89,7 +89,7 @@ void SparseMatrix<T>::Multiply(const vector<T> &vec, vector<T> &result)
     if (vec.size() != cols) {cerr << "Invalid sparse matrix multiplication, has " << cols << " cols and vector has " << vec.size() << " rows" << endl; throw new invalid_argument("Vector size"); }
     if (rows != result.size()) {cerr << "Invalid sparse matrix multiplication, result has " << result.size() << " cols and matrix has " << rows << " rows" << endl; throw new invalid_argument("Result size"); }
     #endif
-    #pragma omp for schedule(static, 16)
+    #pragma omp for schedule(static, 256)
     for (size_t r = 0; r < rows; r++)
         for (pair<size_t, T> &element: values[r])
         {
