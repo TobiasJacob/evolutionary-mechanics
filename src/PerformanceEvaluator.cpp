@@ -35,7 +35,8 @@ void PerformanceEvaluator::setupEquation(Field &field)
     // Add forces to equation-> If force is not attached to model, model failed.
     // Forces on supports are not set
     // This one is easy to parallelize since each force HAS to be (by requirement) on a different position
-    #pragma omp for schedule(static, 16)
+    //#pragma omp for schedule(static, 1)
+    #pragma omp single
     for (const Force &f: forces)
     {
         size_t forceIndexRow = cornerIndexRow.Value(f.attackCorner.row, f.attackCorner.col);
@@ -64,7 +65,12 @@ void PerformanceEvaluator::setupEquation(Field &field)
                 for (size_t i = 0; i < 6; i++)
                     for (size_t j = 0; j < 6; j++)
                         if (targetIndicesLower[i] && targetIndicesLower[j])
-                            equation->K.GetOrAllocateValue(targetIndicesLower[i] - 1, targetIndicesLower[j] - 1) += K[i][j];
+                        {
+                            const size_t targetRow = targetIndicesLower[i] - 1;
+                            //omp_set_lock(&(*equationRowLock)[targetRow]);
+                            equation->K.GetOrAllocateValue(targetRow, targetIndicesLower[j] - 1) += K[i][j];
+                            //omp_unset_lock(&(*equationRowLock)[targetRow]);
+                        }
 
                 // Upper right triangle, get the index of each corner in the global equation system
                 const size_t targetIndicesUpper[6] = {
@@ -80,7 +86,12 @@ void PerformanceEvaluator::setupEquation(Field &field)
                 for (size_t i = 0; i < 6; i++)
                     for (size_t j = 0; j < 6; j++)
                         if (targetIndicesUpper[i] && targetIndicesUpper[j])
-                            equation->K.GetOrAllocateValue(targetIndicesUpper[i] - 1, targetIndicesUpper[j] - 1) += K[i][j];
+                        {
+                            const size_t targetRow = targetIndicesLower[i] - 1;
+                            //omp_set_lock(&(*equationRowLock)[targetRow]);
+                            equation->K.GetOrAllocateValue(targetRow, targetIndicesLower[j] - 1) += K[i][j];
+                            //omp_unset_lock(&(*equationRowLock)[targetRow]);
+                        }
             }    
 }
 
@@ -185,44 +196,37 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         equationRowLock = make_unique<vector<omp_lock_t> >(conditions);
     }
     #pragma omp barrier
-    
-    try
+
+    // Calculate residum
+    double start = microtime();
+    // Generates an equation system from the field / mesh
+    setupEquation(field);
+
+    #pragma omp parallel
     {
-        // Calculate residum
-        double start = microtime();
-        // Generates an equation system from the field / mesh
-        setupEquation(field);
+        // Solve equation
+        equation->SolveIterative();
 
-        #pragma omp parallel
-        {
-            // Solve equation
-            equation->SolveIterative();
+        equation->K.Multiply(equation->GetSolution(), *fTilde);
+        subtract(*fTilde, equation->f, *resids);
+        l2square(*resids, residuum);
 
-            equation->K.Multiply(equation->GetSolution(), *fTilde);
-            subtract(*fTilde, equation->f, *resids);
-            l2square(*resids, residuum);
-
-            // Calculate maximum stress
-            calculateStress(field, equation->GetSolution(), *stress);
-            #pragma omp for reduction(max:maxStress) schedule(static, 256)
-            for (size_t i = 0; i < planes * 2; i++)
-                maxStress = max(maxStress, (*stress)[i]);
-        }
-
-        double stop = microtime();
-
-        // Maybe put out debug view
-        #pragma omp single
-        if (outputFileName.has_value())
-        {
-            Plotter plotter(*outputFileName);
-            plotter.plot(field, equation->GetSolution(), cornerIndexRow, cornerIndexCol, supports, forces, equation->GetSteps(), residuum, *stress, stop - start); // steps, residum, sigma
-        }
-        #pragma omp barrier
-        return maxStress;
+        // Calculate maximum stress
+        calculateStress(field, equation->GetSolution(), *stress);
+        #pragma omp for reduction(max:maxStress) schedule(static, 256)
+        for (size_t i = 0; i < planes * 2; i++)
+            maxStress = max(maxStress, (*stress)[i]);
     }
-    catch(const float val)
+
+    double stop = microtime();
+
+    // Maybe put out debug view
+    #pragma omp single
+    if (outputFileName.has_value())
     {
-        return INFINITY;
+        Plotter plotter(*outputFileName);
+        plotter.plot(field, equation->GetSolution(), cornerIndexRow, cornerIndexCol, supports, forces, equation->GetSteps(), residuum, *stress, stop - start); // steps, residum, sigma
     }
+    #pragma omp barrier
+    return maxStress;
 }
