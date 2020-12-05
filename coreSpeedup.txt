@@ -1,26 +1,12 @@
-[tj75@cs-ssh evolutionary-mechanics]$ build/program 100 1
-Solution time: 3.10779e+06      Res: 5.6461e-05
-0.966849
-[tj75@cs-ssh evolutionary-mechanics]$ build/program 100 2
-Solution time: 1.40158e+06      Res: 4.92029e-05
-0.966719
-[tj75@cs-ssh evolutionary-mechanics]$ build/program 100 4
-Solution time: 670857   Res: 4.81458e-05
-0.966856
-[tj75@cs-ssh evolutionary-mechanics]$ build/program 100 8
-Solution time: 411604   Res: 4.47984e-05
-0.966902
-
-
 [tj75@cs-ssh evolutionary-mechanics]$ build/program 160 8
-Solution time: 2.74708e+06      Res: 0.000569325
-1.43668
+Solution time: 2.57808e+06      Res: 0
+1.43659
 [tj75@cs-ssh evolutionary-mechanics]$ build/program 160 4
-Solution time: 5.33065e+06      Res: 0.000631225
-1.43658
+Solution time: 5.467e+06        Res: 0
+1.43649
 [tj75@cs-ssh evolutionary-mechanics]$ build/program 160 2
-Solution time: 9.82678e+06      Res: 0.000648048
+Solution time: 9.64353e+06      Res: 0
 1.43642
 [tj75@cs-ssh evolutionary-mechanics]$ build/program 160 1
-Solution time: 2.36831e+07      Res: 0.000745211
+Solution time: 2.42503e+07      Res: 0
 1.43646
