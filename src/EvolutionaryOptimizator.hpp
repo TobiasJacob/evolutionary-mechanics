@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <optional>
+#include <mpi.h>
 #include "Matrix.hpp"
 #include "Field.hpp"
 #include "Equation.hpp"
@@ -15,7 +16,8 @@
 class EvolutionaryOptimizator
 {
     private:
-        struct Organism {
+        struct Organism { // float loss, size_t row, size_t cols, bool[row * col] dim
+            static unique_ptr<MPI_Datatype> mpiDatatype = nullptr;
             float loss = 0.0;
             unique_ptr<Field> field;
             Organism(size_t rows, size_t cols);
@@ -24,8 +26,8 @@ class EvolutionaryOptimizator
             Organism &operator= (Organism const &other);
             Organism(Organism &&other);
             Organism &operator= (Organism &&other);
-            // Move able too
             size_t countPlanes();
+            static MPI_Datatype &getDatatype(size_t rows, size_t cols);
         };
 
         const Support &supports;
