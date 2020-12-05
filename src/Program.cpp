@@ -74,7 +74,7 @@ int main(int argc, char **argv)
     PerformanceEvaluator evaluator(N, N, support, forces); 
     float perf = evaluator.GetPerformance(field, "debug.html");
 
-    cout << perf << endl;
+    cout << "Starting Performance: " << perf << endl;
     EvolutionaryOptimizator::organism *orgs = new EvolutionaryOptimizator::organism[2];
     EvolutionaryOptimizator::organism org1, org2;
     org1.field = &field;

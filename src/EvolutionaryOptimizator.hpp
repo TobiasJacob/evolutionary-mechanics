@@ -24,7 +24,8 @@ class EvolutionaryOptimizator
 
         EvolutionaryOptimizator();
         EvolutionaryOptimizator(EvolutionaryOptimizator::organism *organisms, const Support &supports, const vector<Force> &forces, const int organismsCount, const double desiredFitness, const int orgRows, const int orgCols);
-         //this evolves the group of organisms until they reach a satisfactory fitness level
+        
+        //this evolves the group of organisms until they reach a satisfactory fitness level
         organism evolve();
 
         //Reproduction using 2 organisms - crossing, then mutation
@@ -42,19 +43,14 @@ class EvolutionaryOptimizator
         //vector<organism> organisms_vector; 
         //number of organisms in the array
         const int organismsCount;
-        //Tests organism's fitness to the problem
-        unsigned int (*fitnessTest) (organism org);
 
-        //Organigms lenght (?) not sure about this
+        //Organigms lenght
         const int orgRows;
         const int orgCols;
 
         //How much we want to get to the perfect solution to our problem
         //The EA will converge here
         const double desiredFitness;
-
-        //Heads-up about how close the organisms are
-        void(*progress) (unsigned int fitness);
 };
 
 #endif
