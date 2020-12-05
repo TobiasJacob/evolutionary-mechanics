@@ -89,13 +89,15 @@ TEST_CASE("SparseMatrixMultiplication", "[SparseMatrix]")
 
     vector<float> vec1 = {0, 1, 0, 0, 2, 0, -4, 0};
     vector<float> vec2 = {0, 1, 0, 0, 2, 0, -4, 3, 0};
+    vector<float> result2 = {0, 0, 0, 0, 0};
+    vector<float> result1 = {0, 0, 0, 0, 0};
 
-    REQUIRE_THROWS(matrix * vec2);
+    REQUIRE_THROWS(matrix.Multiply(vec2, result2));
 
     SECTION( "multiply only with default values" ) {
-        vector<float> result1 = matrix * vec1;
+        matrix.Multiply(vec1, result1);
         vector<float> result1Require = {0, 0, 0, 0, 0};
-        for (int i = 0; i < 5; i++)
+        for (size_t i = 0; i < 5; i++)
         {
             INFO(result1[i] << " == " << result1Require[i]);
             REQUIRE(result1[i] == Approx(result1Require[i]).margin(1e-30));
@@ -115,9 +117,10 @@ TEST_CASE("SparseMatrixMultiplication", "[SparseMatrix]")
         matrix.SetValue(3, 3, 23);
         matrix.SetValue(3, 5, 1324);
         matrix.SetValue(3, 7, -1343);
-        vector<float> result = matrix * vec1;
+        vector<float> result = {0, 0, 0, 0, 0};
+        matrix.Multiply(vec1, result);
         vector<float> resultRequire = {1, -1, 0, 0, 0};
-        for (int i = 0; i < 5; i++)
+        for (size_t i = 0; i < 5; i++)
         {
             INFO(result[i] << " == " << resultRequire[i]);
             REQUIRE(result[i] == Approx(resultRequire[i]).margin(1e-30));

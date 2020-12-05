@@ -17,22 +17,22 @@ template<typename T>
 class Matrix
 {
 private:
-    const int rows;
-    const int cols;
+    const size_t rows;
+    const size_t cols;
     T *values;
 
 public:
-    Matrix(int rows, int cols, T value);
+    Matrix(size_t rows, size_t cols, T value);
     Matrix(const Matrix&) = delete; // Disallow copy
     Matrix & operator=(const Matrix&) = delete;
     Matrix(Matrix&&) = default; // Allow move
     Matrix & operator=(Matrix&&) = default;
     ~Matrix();
 
-    int getRows() const;
-    int getCols() const;
+    size_t getRows() const;
+    size_t getCols() const;
 
-    inline T &Value(int r, int c) 
+    inline T &Value(size_t r, size_t c) 
     {
         #ifdef DEBUG
         if (r >= rows || c >= cols) cerr << "Index access error (" << r << "," << c << ") out of (" << rows << "," << cols << ")" << endl;
@@ -41,7 +41,7 @@ public:
     }
 
     // If this class is marked as const, this const overload method will return a const (read only) reference
-    inline const T &Value(int r, int c) const
+    inline const T &Value(size_t r, size_t c) const
     {
         #ifdef DEBUG
         if (r >= rows || c >= cols) cerr << "Index access error (" << r << "," << c << ") out of (" << rows << "," << cols << ")" << endl;
@@ -50,24 +50,9 @@ public:
     }
 
     void SetTo(T value);
-    vector<T> operator *(const vector<T> &vec);
+    void Multiply(const vector<T> &vec, vector<T> &result);
 
     friend ostream& operator<<<T>(ostream& os, const Matrix<T>& matrix);
 };
-
-template<typename T>
-vector<T> add(const vector<T> &a, const vector<T> &b);
-
-template<typename T>
-vector<T> subtract(const vector<T> &a, const vector<T> &b);
-
-template<typename T>
-vector<T> multiply(const T a, const vector<T> &b);
-
-template<typename T>
-float l2square(const vector<T> &a);
-
-template<typename T>
-void printVector(const vector<T> &a);
 
 #endif
