@@ -1,5 +1,5 @@
 #include "PerformanceEvaluator.hpp"
-#include "Equation.hpp"
+#include "equation.hpp"
 #include "Matrix.hpp"
 #include "Microtime.hpp"
 #include <fstream>
@@ -30,12 +30,12 @@ PerformanceEvaluator::PerformanceEvaluator(const size_t rows, const size_t cols,
 }
 
 
-Equation PerformanceEvaluator::setupEquation(Field &field) 
+void PerformanceEvaluator::setupEquation(Field &field)
 {
     // Add three constrains for global position and rotation
-    Equation equation(conditions);
+    equation = make_unique<Equation>(conditions);
 
-    // Add forces to equation. If force is not attached to model, model failed.
+    // Add forces to equation-> If force is not attached to model, model failed.
     // Forces on supports are automatically removed later
     for (const Force &f: forces)
     {
@@ -45,14 +45,14 @@ Equation PerformanceEvaluator::setupEquation(Field &field)
             // cout << f.attackCorner.row << ", " << f.attackCorner.col << " out of bounds" << endl;
             throw INFINITY;
         }
-        equation.f[forceIndexRow - 1] += f.forceRow;
+        equation->f[forceIndexRow - 1] += f.forceRow;
         size_t forceIndexCol = cornerIndexCol.Value(f.attackCorner.row, f.attackCorner.col);
         if (!forceIndexCol)
         {
             // cout << f.attackCorner.row << ", " << f.attackCorner.col << " out of bounds" << endl;
             throw INFINITY;
         }
-        equation.f[forceIndexCol - 1] += f.forceCol;
+        equation->f[forceIndexCol - 1] += f.forceCol;
     }
 
     // Setup stiffness matrix
@@ -74,7 +74,7 @@ Equation PerformanceEvaluator::setupEquation(Field &field)
                 for (size_t i = 0; i < 6; i++)
                     for (size_t j = 0; j < 6; j++)
                         if (targetIndicesLower[i] && targetIndicesLower[j])
-                            equation.K.GetOrAllocateValue(targetIndicesLower[i] - 1, targetIndicesLower[j] - 1) += K[i][j];
+                            equation->K.GetOrAllocateValue(targetIndicesLower[i] - 1, targetIndicesLower[j] - 1) += K[i][j];
 
                 // Upper right triangle, get the index of each corner in the global equation system
                 const size_t targetIndicesUpper[6] = {
@@ -90,10 +90,8 @@ Equation PerformanceEvaluator::setupEquation(Field &field)
                 for (size_t i = 0; i < 6; i++)
                     for (size_t j = 0; j < 6; j++)
                         if (targetIndicesUpper[i] && targetIndicesUpper[j])
-                            equation.K.GetOrAllocateValue(targetIndicesUpper[i] - 1, targetIndicesUpper[j] - 1) += K[i][j];
-            }
-    
-    return equation;
+                            equation->K.GetOrAllocateValue(targetIndicesUpper[i] - 1, targetIndicesUpper[j] - 1) += K[i][j];
+            }    
 }
 
 void PerformanceEvaluator::calculateStress(Field &field, const vector<float> &q, vector<float> &stress)
@@ -201,19 +199,19 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         // Calculate residum
         double start = microtime();
         // Generates an equation system from the field / mesh
-        Equation equation = setupEquation(field);
+        setupEquation(field);
 
         #pragma omp parallel
         {
             // Solve equation
-            equation.SolveIterative();
+            equation->SolveIterative();
 
-            equation.K.Multiply(equation.GetSolution(), *fTilde);
-            subtract(*fTilde, equation.f, *resids);
+            equation->K.Multiply(equation->GetSolution(), *fTilde);
+            subtract(*fTilde, equation->f, *resids);
             l2square(*resids, residuum);
 
             // Calculate maximum stress
-            calculateStress(field, equation.GetSolution(), *stress);
+            calculateStress(field, equation->GetSolution(), *stress);
             #pragma omp for reduction(max:maxStress) schedule(static, 256)
             for (size_t i = 0; i < planes * 2; i++)
                 maxStress = max(maxStress, (*stress)[i]);
@@ -226,7 +224,7 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         if (outputFileName.has_value())
         {
             Plotter plotter(*outputFileName);
-            plotter.plot(field, equation.GetSolution(), cornerIndexRow, cornerIndexCol, supports, forces, equation.GetSteps(), residuum, *stress, stop - start); // steps, residum, sigma
+            plotter.plot(field, equation->GetSolution(), cornerIndexRow, cornerIndexCol, supports, forces, equation->GetSteps(), residuum, *stress, stop - start); // steps, residum, sigma
         }
         #pragma omp barrier
         return maxStress;

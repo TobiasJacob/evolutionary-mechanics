@@ -28,8 +28,9 @@ private:
     unique_ptr<vector<float> > fTilde;
     unique_ptr<vector<float> > resids;
     unique_ptr<vector<float> > stress;
+    unique_ptr<Equation> equation;
 
-    Equation setupEquation(Field &field);
+    void setupEquation(Field &field);
     void calculateStress(Field &field, const vector<float> &q, vector<float> &stress);
     void refreshCornerIndex(Field &field);
     bool isUnused(size_t equationRow);
