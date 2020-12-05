@@ -18,6 +18,10 @@ private:
     size_t planes;
     Matrix<size_t> cornerIndexRow; // A unique number for each corner for force in row direction
     Matrix<size_t> cornerIndexCol; // A unique number for each corner for force in col direction
+    Matrix<size_t> planeIndex; // A unique number for each corner for force in col direction
+
+    float residuum = 0;
+    float maxStress = 0;
 
     Equation setupEquation(Field &field);
     void calculateStress(Field &field, const vector<float> &q, vector<float> &stress);

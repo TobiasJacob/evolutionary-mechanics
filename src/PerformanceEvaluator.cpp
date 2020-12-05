@@ -20,7 +20,11 @@ const static float ETimesB[3][6] = {
     {-60,  -60,    0,   60,   60,    0}
 };
 
-PerformanceEvaluator::PerformanceEvaluator(const size_t rows, const size_t cols, const Support &supports, const vector<Force> &forces) : rows(rows), cols(cols), supports(supports), forces(forces), conditions(0), cornerIndexRow(rows + 1, cols + 1, 0), cornerIndexCol(rows + 1, cols + 1, 0)
+PerformanceEvaluator::PerformanceEvaluator(const size_t rows, const size_t cols, const Support &supports, const vector<Force> &forces)
+    : rows(rows), cols(cols), supports(supports), forces(forces), conditions(0)
+    , cornerIndexRow(rows + 1, cols + 1, 0)
+    , cornerIndexCol(rows + 1, cols + 1, 0)
+    , planeIndex(rows, cols, 0)
 {
     
 }
@@ -95,7 +99,7 @@ Equation PerformanceEvaluator::setupEquation(Field &field)
 void PerformanceEvaluator::calculateStress(Field &field, const vector<float> &q, vector<float> &stress)
 {
     // For every tile
-    size_t i = 0;
+    #pragma omp for
     for (size_t r = 0; r < rows; r++)
         for (size_t c = 0; c < cols; c++)
             if (field.Plane(r, c))
@@ -141,8 +145,9 @@ void PerformanceEvaluator::calculateStress(Field &field, const vector<float> &q,
                 // Van Mises Equation https://en.wikipedia.org/wiki/Von_Mises_yield_criterion
                 float squaredStressLower = sigmaLower[0] * sigmaLower[0] + sigmaLower[1] * sigmaLower[1] + sigmaLower[0] * sigmaLower[1] + 3 * sigmaLower[2] * sigmaLower[2];
                 float squaredStressUpper = sigmaUpper[0] * sigmaUpper[0] + sigmaUpper[1] * sigmaUpper[1] + sigmaUpper[0] * sigmaUpper[1] + 3 * sigmaUpper[2] * sigmaUpper[2];
-                stress[i++] = squaredStressLower;
-                stress[i++] = squaredStressUpper;
+                size_t i = planeIndex.Value(r, c);
+                stress[2 * i] = squaredStressLower;
+                stress[2 * i + 1] = squaredStressUpper;
             }
 }
 
@@ -154,10 +159,13 @@ void PerformanceEvaluator::refreshCornerIndex(Field &field)
     cornerIndexRow.SetTo(0);
     cornerIndexCol.SetTo(0);
     conditions = 0;
+    planes = 0;
+
     for (size_t r = 0; r < rows; r++)
         for (size_t c = 0; c < cols; c++)
             if (field.Plane(r, c))
             {
+                planeIndex.Value(r, c) = planes++;
                 if (!cornerIndexRow.Value(r, c) && !cornerRowUnused(r, c)) cornerIndexRow.Value(r, c) = ++conditions;
                 if (!cornerIndexCol.Value(r, c) && !cornerColUnused(r, c)) cornerIndexCol.Value(r, c) = ++conditions;
                 if (!cornerIndexRow.Value(r + 1, c) && !cornerRowUnused(r + 1, c)) cornerIndexRow.Value(r + 1, c) = ++conditions;
@@ -166,13 +174,7 @@ void PerformanceEvaluator::refreshCornerIndex(Field &field)
                 if (!cornerIndexRow.Value(r + 1, c + 1) && !cornerRowUnused(r + 1, c + 1)) cornerIndexRow.Value(r + 1, c + 1) = ++conditions;
                 if (!cornerIndexRow.Value(r, c + 1) && !cornerRowUnused(r, c + 1)) cornerIndexRow.Value(r, c + 1) = ++conditions;
                 if (!cornerIndexCol.Value(r, c + 1) && !cornerColUnused(r, c + 1)) cornerIndexCol.Value(r, c + 1) = ++conditions;
-
             }
-    planes = 0;
-    for (size_t r = 0; r < rows; r++)
-        for (size_t c = 0; c < cols; c++)
-            if (field.Plane(r, c))
-                planes++;
 }
 
 float PerformanceEvaluator::GetPerformance(Field &field, optional<string> outputFileName)
