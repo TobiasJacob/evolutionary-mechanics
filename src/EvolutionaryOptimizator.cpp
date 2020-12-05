@@ -51,9 +51,10 @@ EvolutionaryOptimizator::EvolutionaryOptimizator(const Support &supports, const 
 
 }
 
-void EvolutionaryOptimizator::mutate(Organism &dest) 
+void EvolutionaryOptimizator::mutate(Organism &dest, size_t alteratedFields) 
 {
-    for (size_t i = 0; i < dest.field.Cols * dest.field.Rows / 10; i++) { // TODO: Introdouce exponentially decaying mutation rate
+    size_t alterations = 0;
+    while (alterations < alteratedFields) {
         // Chooses a random Col and a random row to execute the mutation
         size_t mutationCol = rand() % orgCols;
         size_t mutationRow = rand() % orgRows;
@@ -67,18 +68,25 @@ void EvolutionaryOptimizator::mutate(Organism &dest)
         };
 
         // Unset value only if there is an element as neighbour 
-        if (!dest.field.Plane(mutationRow, mutationCol)) {
+        if (!dest.field.Plane(mutationRow, mutationCol))
+        {
             if (protectedAccess(mutationRow, mutationCol - 1) || 
                     protectedAccess(mutationRow, mutationCol + 1) ||
                     protectedAccess(mutationRow - 1, mutationCol) ||
-                    protectedAccess(mutationRow + 1, mutationCol)){
-
+                    protectedAccess(mutationRow + 1, mutationCol)) {
                 dest.field.Plane(mutationRow, mutationCol) = true;
+                alterations++;
             }
         }
         else
         {
+            bool isSupport = false;
+            for (const Point &p : supports.ColSupports) if ((p.col == mutationCol || p.col == mutationCol + 1) && (p.row == mutationRow || p.row == mutationRow + 1)) {isSupport = true; break;}
+            for (const Point &p : supports.RowSupports) if ((p.col == mutationCol || p.col == mutationCol + 1) && (p.row == mutationRow || p.row == mutationRow + 1)) {isSupport = true; break;}
+            if (isSupport) continue;
+            
             // If there is an element: removed only if it's not in the middle of two neighbours or the only connection on an edge
+            // And if it is not at a support
             // 00000
             // 11110 <- do not remove this edge
             // 00010
@@ -92,18 +100,22 @@ void EvolutionaryOptimizator::mutate(Organism &dest)
                                             protectedAccess(mutationRow - 1, mutationCol),
                                             protectedAccess(mutationRow - 1, mutationCol - 1)
                                             };
-            int switchCount = 0;
-            for (int i = 0; i < 9; i++)
+            size_t switchCount = 0;
+            for (size_t i = 0; i < 9; i++)
                 if (binaryValues[i] != binaryValues[i + 1]) switchCount++;
             // switchCount is ether 0, 2 or 4. Removing is fine, if it is not four
             if (switchCount < 4)
+            {
                 dest.field.Plane(mutationRow, mutationCol) = false;
+                alterations++;
+            }
         }
     }
 }
 
-void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxStress)
+void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxStress, const float alterationDecay)
 {
+    float alterations = orgRows * orgCols;
     for (size_t epoch = 0; epoch < generations; epoch++)
     {
         // Calculate loss for each organism
@@ -124,15 +136,16 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
 
         // Sort according to loss
         sort(currentGeneration->begin(), currentGeneration->end(), [](Organism &a, Organism &b) {return a.loss < b.loss; });
-        cout << (*currentGeneration)[0].loss << endl;
+        cout << epoch << " ALT:" << alterations << " Planes: " << (*currentGeneration)[0].loss << endl;
 
         // Setup a new organism, best 10% get children
         size_t childrenPerOrganism = currentGeneration->size() / 10;
         for (size_t i = 0; i < nextGeneration->size(); i++)
         {
             (*nextGeneration)[i] = (*currentGeneration)[i / childrenPerOrganism];
-            mutate((*nextGeneration)[i]);
+            mutate((*nextGeneration)[i], alterations);
         }
         swap(currentGeneration, nextGeneration);
+        alterations *= alterationDecay;
     }
 }

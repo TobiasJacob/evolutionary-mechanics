@@ -34,12 +34,12 @@ class EvolutionaryOptimizator
         unique_ptr<vector<Organism> > currentGeneration;
         unique_ptr<vector<Organism> > nextGeneration;
         
-        void mutate(Organism &dest);
+        void mutate(Organism &dest, size_t alteratedFields);
     public:
         EvolutionaryOptimizator();
         EvolutionaryOptimizator(const Support &supports, const vector<Force> &forces, const size_t organismsCount, const size_t orgRows, const size_t orgCols);
         
-        void Evolve(const size_t generations, const float maxStress);
+        void Evolve(const size_t generations, const float maxStress, const float alterationDecay);
 };
 
 #endif
