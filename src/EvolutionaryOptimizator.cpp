@@ -46,7 +46,7 @@ EvolutionaryOptimizator::EvolutionaryOptimizator(const Support &supports, const 
     : supports(supports), forces(forces), orgRows(orgRows), orgCols(orgCols)
     , evaluator(orgRows, orgCols, supports, forces)
     , currentGeneration(new vector<Organism>(organismsCount, Organism(orgRows, orgCols)))
-    , nextGeneration(new vector<Organism>(organismsCount, Organism(orgRows, orgCols))) // TODO: Make sure, fields get deep copied
+    , nextGeneration(new vector<Organism>(organismsCount, Organism(orgRows, orgCols)))
 {
 
 }
@@ -59,7 +59,6 @@ void EvolutionaryOptimizator::mutate(Organism &dest, size_t alteratedFields)
         size_t mutationCol = rand() % orgCols;
         size_t mutationRow = rand() % orgRows;
 
-        // TODO: Do not alter supports etc.
         auto protectedAccess = [&](size_t r, size_t c)
         {
             if (r < dest.field.Rows && c < dest.field.Cols) 
