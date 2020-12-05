@@ -7,11 +7,6 @@
 
 using namespace std;
 
-void progressDisplayer(unsigned int currentFitness)
-{
-	printf("fitness: %u\n", currentFitness);
-}
-
 int main(int argc, char **argv)
 {
     if (argc != 2) 
