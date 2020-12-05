@@ -58,16 +58,18 @@ size_t EvolutionaryOptimizator::Organism::countPlanes()
     return count;
 }
 
+unique_ptr<MPI_Datatype> EvolutionaryOptimizator::Organism::mpiDatatype = nullptr;
+
 MPI_Datatype& EvolutionaryOptimizator::Organism::getDatatype(size_t rows, size_t cols) 
 {
     if (!mpiDatatype)
     {
         mpiDatatype = make_unique<MPI_Datatype>();
-        int lengths = {1, 2, rows * cols};
-        MPI_Aint displacements = {0, sizeof(float), sizeof(float) + 2 * sizeof(unsigned long)};
-        MPI_Datatype types = {MPI_FLOAT, UNSIGNED_LONG, MPI_BOOL};
-        MPI_Type_create_struct(3, lengths, displacements, types, mpiDatatype);
-        MPI_Type_commit(mpiDatatype);
+        int lengths[3] = {1, 2, (int)rows * (int)cols};
+        MPI_Aint displacements[3] = {0, sizeof(float), sizeof(float) + 2 * sizeof(unsigned long)};
+        MPI_Datatype types[3] = {MPI_FLOAT, MPI_UNSIGNED_LONG, MPI_C_BOOL};
+        MPI_Type_create_struct(3, lengths, displacements, types, &*mpiDatatype);
+        MPI_Type_commit(&*mpiDatatype);
     }
     return *mpiDatatype;
 }

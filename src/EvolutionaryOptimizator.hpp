@@ -17,7 +17,7 @@ class EvolutionaryOptimizator
 {
     private:
         struct Organism { // float loss, size_t row, size_t cols, bool[row * col] dim
-            static unique_ptr<MPI_Datatype> mpiDatatype = nullptr;
+            static unique_ptr<MPI_Datatype> mpiDatatype;
             float loss = 0.0;
             unique_ptr<Field> field;
             Organism(size_t rows, size_t cols);
