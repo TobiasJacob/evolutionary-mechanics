@@ -112,7 +112,7 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
             Organism &org = (*currentGeneration)[i];
 
             optional<string> debugSave = nullopt;
-            if (i == 0)
+            if (i == 0 && epoch % 10 == 0)
                 debugSave = string("debug/Debug-") + to_string(epoch) + ".html";
             
             float stress = evaluator.GetPerformance(org.field, debugSave);
