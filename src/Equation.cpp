@@ -39,10 +39,10 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
         fillZeros(kTimesP);
         K.Multiply(*p_k, kTimesP);
         scalarProduct(*p_k, kTimesP, alpha_k_divider);
-        l2square(*r_k, alpha_k);
 
         if (alpha_k_divider < 1e-12) // Appears if f = 0
             break;
+        l2square(*r_k, alpha_k);
 
         multiply(alpha_k / alpha_k_divider, *p_k, scaledP_K);
         multiply(alpha_k / alpha_k_divider, kTimesP, scaledKTimesP);
