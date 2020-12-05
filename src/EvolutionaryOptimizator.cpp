@@ -89,6 +89,7 @@ void EvolutionaryOptimizator::experimentalCrossingOver(EvolutionaryOptimizator::
     copyOrganism(dest, org2, rowsOffset, colsOffset, crossingRows, crossingCols);
 }
 
+
 EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
 {   
     float rest = this->organismsCount % 2;
@@ -214,6 +215,7 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
 
     return orgToReturn;
 }
+
 
 EvolutionaryOptimizator::organism EvolutionaryOptimizator::reproduce(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizator::organism org2)
 {
