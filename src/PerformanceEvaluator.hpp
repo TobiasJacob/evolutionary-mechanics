@@ -33,6 +33,8 @@ private:
     unique_ptr<Equation> equation;
     unique_ptr<vector<omp_lock_t> > equationRowLock;
 
+    double lastSolvingTime = 0;
+
     void setupEquation(Field &field);
     void calculateStress(Field &field, const vector<float> &q, vector<float> &stress);
     void refreshCornerIndex(Field &field);
@@ -40,6 +42,7 @@ private:
 public:
     PerformanceEvaluator(const size_t rows, const size_t cols, const Support &supports, const vector<Force> &forces);
     float GetPerformance(Field &field, optional<string> outputFileName);
+    double GetLastSolvingTime();
 };
 
 #endif
