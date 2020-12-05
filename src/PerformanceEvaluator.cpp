@@ -182,17 +182,23 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
     // TODO: Check that structure is connected, and that supports are connected and row supports not in same column
     if (field.Rows != rows || field.Cols != cols)
         throw new exception();
-    // Get corner numbering, so each corner of a tile has a determined index, starting at 1
-    refreshCornerIndex(field);
+    
+    #pragma omp single
+    {
+        // Get corner numbering, so each corner of a tile has a determined index, starting at 1
+        refreshCornerIndex(field);
+        fTilde = make_unique<vector<float> >(conditions);
+        resids = make_unique<vector<float> >(conditions);
+        stress = make_unique<vector<float> >(planes * 2);
+        residuum = 0;
+        maxStress = 0;
+
+    }
+    #pragma omp barrier
     
     try
     {
         // Calculate residum
-        vector<float> fTilde(conditions, 0);
-        vector<float> resids(conditions);
-        vector<float> stress(planes * 2);
-        float residuum = 0;
-        float maxStress = 0;
         double start = microtime();
         // Generates an equation system from the field / mesh
         Equation equation = setupEquation(field);
@@ -202,26 +208,27 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
             // Solve equation
             equation.SolveIterative();
 
-            equation.K.Multiply(equation.GetSolution(), fTilde);
-            subtract(fTilde, equation.f, resids);
-            l2square(resids, residuum);
+            equation.K.Multiply(equation.GetSolution(), *fTilde);
+            subtract(*fTilde, equation.f, *resids);
+            l2square(*resids, residuum);
 
             // Calculate maximum stress
-            calculateStress(field, equation.GetSolution(), stress);
+            calculateStress(field, equation.GetSolution(), *stress);
             #pragma omp for reduction(max:maxStress) schedule(static, 256)
             for (size_t i = 0; i < planes * 2; i++)
-                maxStress = max(maxStress, stress[i]);
+                maxStress = max(maxStress, (*stress)[i]);
         }
 
         double stop = microtime();
 
         // Maybe put out debug view
+        #pragma omp single
         if (outputFileName.has_value())
         {
             Plotter plotter(*outputFileName);
-            plotter.plot(field, equation.GetSolution(), cornerIndexRow, cornerIndexCol, supports, forces, equation.GetSteps(), residuum, stress, stop - start); // steps, residum, sigma
+            plotter.plot(field, equation.GetSolution(), cornerIndexRow, cornerIndexCol, supports, forces, equation.GetSteps(), residuum, *stress, stop - start); // steps, residum, sigma
         }
-
+        #pragma omp barrier
         return maxStress;
     }
     catch(const float val)

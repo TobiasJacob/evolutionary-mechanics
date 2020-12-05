@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <optional>
+#include <memory>
 #include "Field.hpp"
 #include "plotting/Plotter.hpp"
 #include "VectorOperations.hpp"
@@ -22,6 +23,11 @@ private:
 
     float residuum = 0;
     float maxStress = 0;
+
+    // Used in the parallel GetPerformance
+    unique_ptr<vector<float> > fTilde;
+    unique_ptr<vector<float> > resids;
+    unique_ptr<vector<float> > stress;
 
     Equation setupEquation(Field &field);
     void calculateStress(Field &field, const vector<float> &q, vector<float> &stress);
