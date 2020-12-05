@@ -29,6 +29,8 @@ class EvolutionaryOptimizator
             size_t countPlanes();
             static MPI_Datatype &getDatatype(size_t rows, size_t cols);
             static size_t getSize(size_t rows, size_t cols);
+            void writeIntoBuffer(void *buffer);
+            void readFromBuffer(void *buffer);
         };
 
         const Support &supports;

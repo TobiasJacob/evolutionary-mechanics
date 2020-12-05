@@ -65,10 +65,10 @@ MPI_Datatype& EvolutionaryOptimizator::Organism::getDatatype(size_t rows, size_t
     if (!mpiDatatype)
     {
         mpiDatatype = make_unique<MPI_Datatype>();
-        int lengths[3] = {1, 2, (int)rows * (int)cols};
-        MPI_Aint displacements[3] = {0, sizeof(float), sizeof(float) + 2 * sizeof(unsigned long)};
-        MPI_Datatype types[3] = {MPI_FLOAT, MPI_UNSIGNED_LONG, MPI_C_BOOL};
-        MPI_Type_create_struct(3, lengths, displacements, types, &*mpiDatatype);
+        int lengths[2] = {1, (int)rows * (int)cols};
+        MPI_Aint displacements[2] = {0, sizeof(float)};
+        MPI_Datatype types[2] = {MPI_FLOAT, MPI_C_BOOL};
+        MPI_Type_create_struct(2, lengths, displacements, types, &*mpiDatatype);
         MPI_Type_commit(&*mpiDatatype);
     }
     return *mpiDatatype;
@@ -76,7 +76,27 @@ MPI_Datatype& EvolutionaryOptimizator::Organism::getDatatype(size_t rows, size_t
 
 size_t EvolutionaryOptimizator::Organism::getSize(size_t rows, size_t cols)
 {
-    return sizeof(float) + 2 * sizeof(unsigned long) + rows * cols * sizeof(bool);
+    return sizeof(float) + rows * cols * sizeof(bool);
+}
+
+void EvolutionaryOptimizator::Organism::writeIntoBuffer(void *buffer)
+{
+    float *lossPtr = (float *)buffer;
+    bool *fieldPtr = (bool *)(lossPtr + 1);
+    *lossPtr = loss;
+    for (size_t r = 0; r < field->Rows; r++)
+        for (size_t c = 0; c < field->Cols; c++)
+            fieldPtr[r * field->Cols + c] = field->Plane(r, c);
+}
+
+void EvolutionaryOptimizator::Organism::readFromBuffer(void *buffer)
+{
+    float *lossPtr = (float *)buffer;
+    bool *fieldPtr = (bool *)(lossPtr + 1);
+    loss = *lossPtr;
+    for (size_t r = 0; r < field->Rows; r++)
+        for (size_t c = 0; c < field->Cols; c++)
+            field->Plane(r, c) = fieldPtr[r * field->Cols + c];
 }
 
 EvolutionaryOptimizator::EvolutionaryOptimizator(const Support &supports, const vector<Force> &forces, const size_t organismsCount, const size_t orgRows, const size_t orgCols)
