@@ -28,6 +28,7 @@ class EvolutionaryOptimizator
             Organism &operator= (Organism &&other);
             size_t countPlanes();
             static MPI_Datatype &getDatatype(size_t rows, size_t cols);
+            unique_ptr<void> toBuffer();
         };
 
         const Support &supports;

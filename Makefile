@@ -5,15 +5,19 @@ CXXFLAGS = -Wall -I.. -I. -std=c++17 -O3 -fopenmp -DDEBUG
 SRC = src/Field.cpp src/Matrix.cpp src/Equation.cpp src/PerformanceEvaluator.cpp src/EvolutionaryOptimizator.cpp src/SparseMatrix.cpp src/Microtime.cpp src/plotting/Plotter.cpp src/VectorOperations.cpp
 # Those are the test files. Note that they provide a custom main function. Do not include src/test/test.cpp here!
 TESTS = src/test/testing-test.cpp src/test/SparseMatrix-test.cpp src/test/Equation-test.cpp src/test/PerformanceEvaluator-test.cpp src/test/PerformanceEvaluatorSpeedup-test.cpp
+# Those are the MPI Test
+MPITESTS = src/mpi-test/mpi-test.cpp
 
 # patsubst maps the source files to their object files
 OBJSRC = $(patsubst %.cpp,build/%.o, $(SRC))
 OBJHEADERS = $(patsubst %.cpp,%.hpp, $(SRC))
 OBJTESTS = $(patsubst %.cpp,build/%.o, $(TESTS))
+OBJMPITESTS = $(patsubst %.cpp,build/%.o, $(MPITESTS))
+EXECMPITESTS = $(patsubst src/mpi-test/%.cpp,build/mpi-test/%, $(MPITESTS))
 
 # This default target keeps everything up to date.
 .PHONY: all
-all: build/test build/program
+all: build/test build/program mpi-tests
 
 # Program provides the main function, OBJSRC all other object files
 build/program: $(OBJSRC) build/src/Program.o Makefile
@@ -31,12 +35,22 @@ build/src/test/test.o: src/test/test.cpp Makefile | build
 build/src/%.o: src/%.cpp $(OBJHEADERS) Makefile | build # Use "order-only prerequisites" when depending on directories
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
+# Link all test and source objects
+build/mpi-test/%: build/src/mpi-test/%.o $(OBJSRC) Makefile
+	echo "Test"
+	$(CXX) $(CXXFLAGS) -o $@ $< $(OBJSRC)
+
+.PHONY: mpi-tests
+mpi-tests: $(EXECMPITESTS)
+
 # Create build directory
 build: Makefile
 	mkdir -p build
 	mkdir -p build/src
 	mkdir -p build/src/plotting
 	mkdir -p build/src/test
+	mkdir -p build/src/mpi-test
+	mkdir -p build/mpi-test
 
 # Delete build dir
 .PHONY: clean
