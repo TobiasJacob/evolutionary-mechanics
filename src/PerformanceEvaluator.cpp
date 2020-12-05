@@ -35,8 +35,7 @@ void PerformanceEvaluator::setupEquation(Field &field)
     // Add forces to equation-> If force is not attached to model, model failed.
     // Forces on supports are not set
     // This one is easy to parallelize since each force HAS to be (by requirement) on a different position
-    //#pragma omp for schedule(static, 1)
-    #pragma omp single
+    #pragma omp for schedule(static, 1)
     for (const Force &f: forces)
     {
         size_t forceIndexRow = cornerIndexRow.Value(f.attackCorner.row, f.attackCorner.col);
@@ -51,8 +50,7 @@ void PerformanceEvaluator::setupEquation(Field &field)
         equation->f[forceIndexCol - 1] += f.forceCol;
     }
 
-    //#pragma omp for schedule(static, 16)
-    #pragma omp single
+    #pragma omp for schedule(static, 16)
     for (size_t r = 0; r < rows; r++)
         for (size_t c = 0; c < cols; c++)
             if (field.Plane(r, c))
@@ -73,9 +71,9 @@ void PerformanceEvaluator::setupEquation(Field &field)
                         if (targetIndicesLower[i] && targetIndicesLower[j])
                         {
                             const size_t targetRow = targetIndicesLower[i] - 1;
-                            //omp_set_lock(&(*equationRowLock)[targetRow]);
+                            omp_set_lock(&(*equationRowLock)[targetRow]);
                             equation->K.GetOrAllocateValue(targetRow, targetIndicesLower[j] - 1) += K[i][j];
-                            //omp_unset_lock(&(*equationRowLock)[targetRow]);
+                            omp_unset_lock(&(*equationRowLock)[targetRow]);
                         }
 
                 // Upper right triangle, get the index of each corner in the global equation system
@@ -94,9 +92,9 @@ void PerformanceEvaluator::setupEquation(Field &field)
                         if (targetIndicesUpper[i] && targetIndicesUpper[j])
                         {
                             const size_t targetRow = targetIndicesUpper[i] - 1;
-                            //omp_set_lock(&(*equationRowLock)[targetRow]);
+                            omp_set_lock(&(*equationRowLock)[targetRow]);
                             equation->K.GetOrAllocateValue(targetRow, targetIndicesUpper[j] - 1) += K[i][j];
-                            //omp_unset_lock(&(*equationRowLock)[targetRow]);
+                            omp_unset_lock(&(*equationRowLock)[targetRow]);
                         }
             }    
 }
@@ -199,17 +197,17 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         residuum = 0;
         maxStress = 0;
         equation = make_unique<Equation>(conditions);
-        // equationRowLock = make_unique<vector<omp_lock_t> >(conditions);
+        equationRowLock = make_unique<vector<omp_lock_t> >(conditions);
     }
     #pragma omp barrier
 
     // Calculate residum
     double start = microtime();
-    // Generates an equation system from the field / mesh
-    setupEquation(field);
 
     #pragma omp parallel
     {
+        // Generates an equation system from the field / mesh
+        setupEquation(field);
         // Solve equation
         equation->SolveIterative();
 
@@ -219,6 +217,7 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
 
         // Calculate maximum stress
         calculateStress(field, equation->GetSolution(), *stress);
+
         #pragma omp for reduction(max:maxStress) schedule(static, 256)
         for (size_t i = 0; i < planes * 2; i++)
             maxStress = max(maxStress, (*stress)[i]);

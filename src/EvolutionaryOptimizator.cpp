@@ -146,7 +146,8 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
             if (i == 0 && epoch % 10 == 0)
                 debugSave = string("debug/Debug-") + to_string(epoch) + ".html";
             
-            float stress = evaluator.GetPerformance(*org.field, debugSave);
+            float stress;
+            stress = evaluator.GetPerformance(*org.field, debugSave);
             if (stress > maxStress) // Mechanical structure broke, organism died
                 org.loss = INFINITY;
             else
