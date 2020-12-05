@@ -220,20 +220,25 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         // Calculate maximum stress
         calculateStress(field, equation->GetSolution(), *stress);
 
-        #pragma omp for reduction(max:maxStress) schedule(static, 256)
+        #pragma omp for reduction(max:maxStress) schedule(static, 32)
         for (size_t i = 0; i < planes * 2; i++)
             maxStress = max(maxStress, (*stress)[i]);
     }
 
-    double stop = microtime();
+    lastSolvingTime = microtime() - start;
 
     // Maybe put out debug view
     #pragma omp single
     if (outputFileName.has_value())
     {
         Plotter plotter(*outputFileName);
-        plotter.plot(field, equation->GetSolution(), cornerIndexRow, cornerIndexCol, supports, forces, equation->GetSteps(), residuum, *stress, stop - start); // steps, residum, sigma
+        plotter.plot(field, equation->GetSolution(), cornerIndexRow, cornerIndexCol, supports, forces, equation->GetSteps(), residuum, *stress, lastSolvingTime); // steps, residum, sigma
     }
     #pragma omp barrier
     return maxStress;
+}
+
+double PerformanceEvaluator::GetLastSolvingTime() 
+{
+    return lastSolvingTime;
 }

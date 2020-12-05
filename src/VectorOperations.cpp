@@ -7,7 +7,7 @@ void add(const vector<T> &a, const vector<T> &b, vector<T> &result)
     if (a.size() != b.size()) cerr << "Invalid vector addtion, first has " << a.size() << " rows and second has " << b.size() << " rows" << endl;
     if (a.size() != result.size()) cerr << "Invalid vector addtion, vectors have " << a.size() << " rows and result has " << result.size() << " rows" << endl;
     #endif
-    #pragma omp for schedule(static, 256)
+    #pragma omp for schedule(static, 32)
     for (size_t r = 0; r < a.size(); r++)
         result[r] = a[r] + b[r];
 }
@@ -19,7 +19,7 @@ void subtract(const vector<T> &a, const vector<T> &b, vector<T> &result)
     if (a.size() != b.size()) cerr << "Invalid vector subtract, first has " << a.size() << " rows and second has " << b.size() << " rows" << endl;
     if (a.size() != result.size()) cerr << "Invalid vector addtion, vectors have " << a.size() << " rows and result has " << result.size() << " rows" << endl;
     #endif
-    #pragma omp for schedule(static, 256)
+    #pragma omp for schedule(static, 32)
     for (size_t r = 0; r < a.size(); r++)
         result[r] = a[r] - b[r];
 }
@@ -30,7 +30,7 @@ void multiply(const T a, const vector<T> &b, vector<T> &result)
     #ifdef DEBUG
     if (b.size() != result.size()) cerr << "Invalid vector addtion, vector has " << b.size() << " rows and result has " << result.size() << " rows" << endl;
     #endif
-    #pragma omp for schedule(static, 256)
+    #pragma omp for schedule(static, 32)
     for (size_t r = 0; r < b.size(); r++)
         result[r] = a * b[r];
 }
@@ -38,7 +38,7 @@ void multiply(const T a, const vector<T> &b, vector<T> &result)
 template<typename T>
 void l2square(const vector<T> &a, T &resultL2Square)
 {
-    #pragma omp for reduction(+: resultL2Square) schedule(static, 256)
+    #pragma omp for reduction(+: resultL2Square) schedule(static, 32)
     for (size_t r = 0; r < a.size(); r++)
         resultL2Square += a[r] * a[r];
 }
@@ -49,7 +49,7 @@ void scalarProduct(const vector<T> &a, const vector<T> &b, T &resultScalar)
     #ifdef DEBUG
     if (a.size() != b.size()) cerr << "Invalid vector addtion, a has " << a.size() << " rows and b has " << b.size() << " rows" << endl;
     #endif
-    #pragma omp for reduction(+: resultScalar) schedule(static, 256)
+    #pragma omp for reduction(+: resultScalar) schedule(static, 32)
     for (size_t r = 0; r < a.size(); r++)
         resultScalar += a[r] * b[r];
 }
@@ -66,7 +66,7 @@ void printVector(const vector<T> &a)
 template<typename T>
 void fillZeros(vector<T> &a) 
 {
-    #pragma omp for schedule(static, 256)
+    #pragma omp for schedule(static, 32)
     for (size_t r = 0; r < a.size(); r++)
         a[r] = 0;
 }
@@ -77,7 +77,7 @@ void assign(vector<T> &src, vector<T> &dest)
     #ifdef DEBUG
     if (src.size() != dest.size()) cerr << "Invalid vector assignment, a has " << src.size() << " rows and b has " << dest.size() << " rows" << endl;
     #endif
-    #pragma omp for schedule(static, 256)
+    #pragma omp for schedule(static, 32)
     for (size_t r = 0; r < src.size(); r++)
         dest[r] = src[r];
 }
