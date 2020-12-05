@@ -87,9 +87,9 @@ void PerformanceEvaluator::setupEquation(Field &field)
                     for (size_t j = 0; j < 6; j++)
                         if (targetIndicesUpper[i] && targetIndicesUpper[j])
                         {
-                            const size_t targetRow = targetIndicesLower[i] - 1;
+                            const size_t targetRow = targetIndicesUpper[i] - 1;
                             //omp_set_lock(&(*equationRowLock)[targetRow]);
-                            equation->K.GetOrAllocateValue(targetRow, targetIndicesLower[j] - 1) += K[i][j];
+                            equation->K.GetOrAllocateValue(targetRow, targetIndicesUpper[j] - 1) += K[i][j];
                             //omp_unset_lock(&(*equationRowLock)[targetRow]);
                         }
             }    
