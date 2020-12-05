@@ -3,7 +3,6 @@
 #include "Equation.hpp"
 #include "Matrix.hpp"
 #include "Microtime.hpp"
-#include <fstream>
 #include <algorithm>
 #include <random>
 #include <iterator>
@@ -116,9 +115,10 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
 
     double totalFitness = 0;
 
-    //current generation organisms buffer
-     
+    //Build organisms vector
     std::vector<EvolutionaryOptimizator::organism> organisms_vector(organisms, this->organisms + this->organismsCount);
+   
+    //Current generation organisms buffer
     std::vector<EvolutionaryOptimizator::organism> currentGeneration;
 
     for(int i=0; i<organisms_vector.size(); i++){
@@ -131,11 +131,11 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
     vector<EvolutionaryOptimizator::organism> newGeneration;
 
     int totalChildren = this->organismsCount;
-
+    bool satisfied = false;
+    
+    //Instance evaluator with supports and force 
     PerformanceEvaluator evaluator(this->orgRows, this->orgCols, this->supports, this->forces);
     
-    bool satisfied = false;
-
     while(!satisfied){
         
         //*** Testing Phase for current generation ***
@@ -153,12 +153,13 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
 
             //if org found with satysfactory fitness
             if(orgFitness >= this->desiredFitness){
-                //check we need to save the new field s
-	            orgToReturn.field = new Field(this->orgRows, this->orgCols);
+                //check we need to save the new field  
+                orgToReturn.field = new Field(this->orgRows, this->orgCols);
                 copyOrganism(organisms_vector[i], orgToReturn, this->orgRows, this->orgCols, 0, 0);
                 
                 orgToReturn.fitness = orgFitness;
                 satisfied = true;
+                break;
             }
             
             organisms_vector[i].fitness = orgFitness;
@@ -168,8 +169,9 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
             totalFitness += orgFitness;
         }
 
-        
-        // *** Starting reproduction ***
+        if(satisfied)
+            break;
+        //*** Starting reproduction ***
         
         //Next generation array last index
         int newGenerationIndex = 0;
@@ -177,7 +179,6 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
         //Decides number of children to have
 
         int children = 0;
-        int randomNumber = 0;
         totalChildren = 0;
         int reproductions = 0;
 
@@ -220,9 +221,8 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
         totalFitness = 0;
    }
 
-    cout << "Winner Structure\n" << *orgToReturn.field << endl;
-    double fit = evaluator.GetPerformance(*orgToReturn.field, "debug.html");
-    cout << "Performance\n" << orgToReturn.fitness << endl;
+    cout << "Winner Structure" << endl << *orgToReturn.field << endl;
+    cout << "Performance" << endl << orgToReturn.fitness << endl;
 
     return orgToReturn;
 }
@@ -230,17 +230,8 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
 EvolutionaryOptimizator::organism EvolutionaryOptimizator::reproduce(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizator::organism org2)
 {
     EvolutionaryOptimizator::organism child;
-    //Decides at which index to start crossing with other parent
-    int crossingCols;
-    int crossingRows;
     //Number of mutations (in base pairs) in child
     int mutationCount;
-    //Base pair to mutate
-    int mutatedBasePair;
-    //Mutation base pair buffer
-    unsigned char basePairBuffer;
-    //Counter
-    int i;
 
     child.field = new Field(org1.field->Rows, org1.field->Cols);
 
@@ -249,7 +240,7 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::reproduce(Evolutionar
     //Mutating
     mutationCount = rand() % (2 * (int)round(MUTATIONS_PER_BASE_PAIR_CONSTANT * (double)this->orgRows * (double)this->orgCols * 8.0));
 
-    for (i = 0; i < mutationCount; i++) {
+    for (int i = 0; i < mutationCount; i++) {
 
         //Chooses a random Col and a random row to execute the mutation
         int mutationCol = (rand() % (this->orgCols));
