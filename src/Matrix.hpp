@@ -50,24 +50,9 @@ public:
     }
 
     void SetTo(T value);
-    vector<T> operator *(const vector<T> &vec);
+    void Multiply(const vector<T> &vec, vector<T> &result);
 
     friend ostream& operator<<<T>(ostream& os, const Matrix<T>& matrix);
 };
-
-template<typename T>
-vector<T> add(const vector<T> &a, const vector<T> &b);
-
-template<typename T>
-vector<T> subtract(const vector<T> &a, const vector<T> &b);
-
-template<typename T>
-vector<T> multiply(const T a, const vector<T> &b);
-
-template<typename T>
-float l2square(const vector<T> &a);
-
-template<typename T>
-void printVector(const vector<T> &a);
 
 #endif

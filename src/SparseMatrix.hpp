@@ -35,7 +35,7 @@ public:
     const T& GetValue(size_t row, size_t col) const;
     T& GetOrAllocateValue(size_t row, size_t col);
 
-    vector<T> operator *(const vector<T> &vec);
+    void Multiply(const vector<T> &vec, vector<T> &result);
     friend ostream& operator<< <T>(ostream& os, const SparseMatrix<T>& matrix);
 };
 

@@ -83,18 +83,18 @@ T& SparseMatrix<T>::GetOrAllocateValue(size_t row, size_t col)
 }
 
 template<typename T>
-vector<T> SparseMatrix<T>::operator *(const vector<T> &vec) 
+void SparseMatrix<T>::Multiply(const vector<T> &vec, vector<T> &result) 
 {
     #ifdef DEBUG
-    if (vec.size() != cols) throw invalid_argument("Vec has wrong size");
+    if (vec.size() != cols) {cerr << "Invalid sparse matrix multiplication, has " << cols << " cols and vector has " << vec.size() << " rows" << endl; throw new invalid_argument("Vector size"); }
+    if (rows != result.size()) {cerr << "Invalid sparse matrix multiplication, result has " << result.size() << " cols and matrix has " << rows << " rows" << endl; throw new invalid_argument("Result size"); }
     #endif
-    vector<T> result(rows, 0);
+    #pragma omp for schedule(static, 256)
     for (size_t r = 0; r < rows; r++)
         for (pair<size_t, T> &element: values[r])
         {
             result[r] += element.second * vec[element.first];
         }
-    return result;
 }
 
 template<typename T>
