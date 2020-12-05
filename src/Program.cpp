@@ -13,7 +13,7 @@ int main(int argc, char **argv)
         cout << "Usage: " << argv[0] << " <N>" << endl;
         exit(1);
     }
-    int N = stoi(argv[1]);
+    size_t N = (size_t)stoi(argv[1]);
 
     // Support and Forces should remain unchanged during the remaining part of the program
     Support support = {
@@ -26,7 +26,7 @@ int main(int argc, char **argv)
             .col = 0
         }}
     };
-    for (int i = 0; i < N; i++) {
+    for (size_t i = 0; i < N; i++) {
         support.RowSupports.push_back({
             .row = 0,
             .col = i
@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     }
 
     vector<Force> forces(N + 1);
-    for (int i = 0; i < forces.size(); i++)
+    for (size_t i = 0; i < forces.size(); i++)
     {
         forces[i] = {
             .attackCorner = {
@@ -49,8 +49,8 @@ int main(int argc, char **argv)
 
     // Field defines the structural layout
     Field field(N, N);
-    for (int i = 0; i < N; i++)
-        for (int i2 = 0; i2 < N; i2++)
+    for (size_t i = 0; i < N; i++)
+        for (size_t i2 = 0; i2 < N; i2++)
             if (i < N / 3 || i > 2 * N / 3 || (i2 > N / 3 && i2 < 2 * N / 3))
                 field.Plane(i, i2) = true;
     

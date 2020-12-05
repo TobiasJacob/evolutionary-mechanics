@@ -18,7 +18,7 @@ private:
     string tail;
 public:
     Plotter(string fileName);
-    void plot(const Field &field, const vector<float> &u, const Matrix<int> &cornerIndexRow, const Matrix<int> &cornerIndexCol, const Support &supports, const vector<Force> &forces, const int solutionSteps, const float residum, const vector<float> &stress, float time);
+    void plot(const Field &field, const vector<float> &u, const Matrix<size_t> &cornerIndexRow, const Matrix<size_t> &cornerIndexCol, const Support &supports, const vector<Force> &forces, const size_t solutionSteps, const float residum, const vector<float> &stress, float time);
     ~Plotter();
 };
 

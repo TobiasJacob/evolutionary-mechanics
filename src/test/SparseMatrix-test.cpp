@@ -95,7 +95,7 @@ TEST_CASE("SparseMatrixMultiplication", "[SparseMatrix]")
     SECTION( "multiply only with default values" ) {
         vector<float> result1 = matrix * vec1;
         vector<float> result1Require = {0, 0, 0, 0, 0};
-        for (int i = 0; i < 5; i++)
+        for (size_t i = 0; i < 5; i++)
         {
             INFO(result1[i] << " == " << result1Require[i]);
             REQUIRE(result1[i] == Approx(result1Require[i]).margin(1e-30));
@@ -117,7 +117,7 @@ TEST_CASE("SparseMatrixMultiplication", "[SparseMatrix]")
         matrix.SetValue(3, 7, -1343);
         vector<float> result = matrix * vec1;
         vector<float> resultRequire = {1, -1, 0, 0, 0};
-        for (int i = 0; i < 5; i++)
+        for (size_t i = 0; i < 5; i++)
         {
             INFO(result[i] << " == " << resultRequire[i]);
             REQUIRE(result[i] == Approx(resultRequire[i]).margin(1e-30));
