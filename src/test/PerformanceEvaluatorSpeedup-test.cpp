@@ -48,7 +48,7 @@ void testWithSize(ostream &out, size_t N, size_t C)
 
     PerformanceEvaluator evaluator(N, N, support, forces);
     
-    evaluator.GetPerformance(field, "Debug.html");
+    evaluator.GetPerformance(field, nullopt);
 
     out << N << ", " << C << ", " << evaluator.GetLastSolvingTime() << endl;
 }
