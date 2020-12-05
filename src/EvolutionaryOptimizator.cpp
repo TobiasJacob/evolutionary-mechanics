@@ -74,6 +74,11 @@ MPI_Datatype& EvolutionaryOptimizator::Organism::getDatatype(size_t rows, size_t
     return *mpiDatatype;
 }
 
+size_t EvolutionaryOptimizator::Organism::getSize(size_t rows, size_t cols)
+{
+    return sizeof(float) + 2 * sizeof(unsigned long) + rows * cols * sizeof(bool);
+}
+
 EvolutionaryOptimizator::EvolutionaryOptimizator(const Support &supports, const vector<Force> &forces, const size_t organismsCount, const size_t orgRows, const size_t orgCols)
     : supports(supports), forces(forces), orgRows(orgRows), orgCols(orgCols)
     , evaluator(orgRows, orgCols, supports, forces)
