@@ -11,6 +11,7 @@ Following the [Project Description](latex/sources/ProjectDescription.md)
 - Tobi: Try out hashmap or BST instead of list container.
 - Tobi: Check the indexes of supports and forces to make sure they are valid
 - Tobi: Use unsigned int as index for corners, as is uses half space of size_t
+- Tobi: Introduce exponentially decaying mutation rate
 - Create a overload for const Matrix::Value, so that it can be used as a const reference in if type is const Matrix.
 - Create a Sparse Matrix implementation / class
 - Use a floodfilling algorithm to make sure that the planes are connected
