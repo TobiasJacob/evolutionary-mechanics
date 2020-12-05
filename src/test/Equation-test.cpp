@@ -11,8 +11,9 @@ TEST_CASE("Solve1", "[Equation]")
     equation.K.GetOrAllocateValue(1, 1) = 2;
     equation.f[0] = 4.1;
     equation.f[1] = 2.2;
-    pair<unique_ptr<vector<float>>, int> solution = equation.SolveIterative();
-    INFO("Required " << solution.second << " steps");
-    REQUIRE((*solution.first)[0] == Approx(2).margin(1e-10));
-    REQUIRE((*solution.first)[1] == Approx(1).margin(1e-10));
+    #pragma omp parallel
+    equation.SolveIterative();
+    INFO("Required " << equation.GetSteps() << " steps");
+    REQUIRE(equation.GetSolution()[0] == Approx(2).margin(1e-10));
+    REQUIRE(equation.GetSolution()[1] == Approx(1).margin(1e-10));
 }

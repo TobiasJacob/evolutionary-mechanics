@@ -185,27 +185,27 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
     
     try
     {
-        double start = microtime();
-        // Generates an equation system from the field / mesh
-        Equation equation = setupEquation(field);
-        
-        // Solve equation
-        pair<unique_ptr<vector<float>>, int> solution = equation.SolveIterative();
-
         // Calculate residum
         vector<float> fTilde(conditions, 0);
         vector<float> resids(conditions);
         vector<float> stress(planes * 2);
         float residuum = 0;
         float maxStress = 0;
+        double start = microtime();
+        // Generates an equation system from the field / mesh
+        Equation equation = setupEquation(field);
+
         #pragma omp parallel
         {
-            equation.K.Multiply(*(solution.first), fTilde);
+            // Solve equation
+            equation.SolveIterative();
+
+            equation.K.Multiply(equation.GetSolution(), fTilde);
             subtract(fTilde, equation.f, resids);
             l2square(resids, residuum);
 
             // Calculate maximum stress
-            calculateStress(field, *solution.first, stress);
+            calculateStress(field, equation.GetSolution(), stress);
             #pragma omp for reduction(max:maxStress) schedule(static, 256)
             for (size_t i = 0; i < planes * 2; i++)
                 maxStress = max(maxStress, stress[i]);
@@ -217,7 +217,7 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         if (outputFileName.has_value())
         {
             Plotter plotter(*outputFileName);
-            plotter.plot(field, *solution.first, cornerIndexRow, cornerIndexCol, supports, forces, solution.second, residuum, stress, stop - start); // steps, residum, sigma
+            plotter.plot(field, equation.GetSolution(), cornerIndexRow, cornerIndexCol, supports, forces, equation.GetSteps(), residuum, stress, stop - start); // steps, residum, sigma
         }
 
         return maxStress;
