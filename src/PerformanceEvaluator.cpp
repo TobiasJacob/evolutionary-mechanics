@@ -32,30 +32,20 @@ PerformanceEvaluator::PerformanceEvaluator(const size_t rows, const size_t cols,
 
 void PerformanceEvaluator::setupEquation(Field &field)
 {
-    // Add three constrains for global position and rotation
-    equation = make_unique<Equation>(conditions);
-
     // Add forces to equation-> If force is not attached to model, model failed.
-    // Forces on supports are automatically removed later
+    // Forces on supports are not set
+    // This one is easy to parallelize since each force HAS to be (by requirement) on a different position
+    #pragma omp for schedule(static, 16)
     for (const Force &f: forces)
     {
         size_t forceIndexRow = cornerIndexRow.Value(f.attackCorner.row, f.attackCorner.col);
-        if (!forceIndexRow)
-        {
-            // cout << f.attackCorner.row << ", " << f.attackCorner.col << " out of bounds" << endl;
-            throw INFINITY;
-        }
         equation->f[forceIndexRow - 1] += f.forceRow;
         size_t forceIndexCol = cornerIndexCol.Value(f.attackCorner.row, f.attackCorner.col);
-        if (!forceIndexCol)
-        {
-            // cout << f.attackCorner.row << ", " << f.attackCorner.col << " out of bounds" << endl;
-            throw INFINITY;
-        }
         equation->f[forceIndexCol - 1] += f.forceCol;
     }
 
-    // Setup stiffness matrix
+    //#pragma omp for schedule(static, 16)
+    #pragma omp single
     for (size_t r = 0; r < rows; r++)
         for (size_t c = 0; c < cols; c++)
             if (field.Plane(r, c))
@@ -97,7 +87,7 @@ void PerformanceEvaluator::setupEquation(Field &field)
 void PerformanceEvaluator::calculateStress(Field &field, const vector<float> &q, vector<float> &stress)
 {
     // For every tile
-    #pragma omp for
+    #pragma omp for schedule(static, 16)
     for (size_t r = 0; r < rows; r++)
         for (size_t c = 0; c < cols; c++)
             if (field.Plane(r, c))
@@ -175,6 +165,7 @@ void PerformanceEvaluator::refreshCornerIndex(Field &field)
             }
 }
 
+// Requirements: Field must have connected Planes, and no more than one force per position, since race-condition may occur otherwise. Also, all forces have to be connected to the model.
 float PerformanceEvaluator::GetPerformance(Field &field, optional<string> outputFileName)
 {
     // TODO: Check that structure is connected, and that supports are connected and row supports not in same column
@@ -190,7 +181,8 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         stress = make_unique<vector<float> >(planes * 2);
         residuum = 0;
         maxStress = 0;
-
+        equation = make_unique<Equation>(conditions);
+        equationRowLock = make_unique<vector<omp_lock_t> >(conditions);
     }
     #pragma omp barrier
     

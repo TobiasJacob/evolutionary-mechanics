@@ -4,6 +4,7 @@
 #include <vector>
 #include <optional>
 #include <memory>
+#include <omp.h>
 #include "Field.hpp"
 #include "plotting/Plotter.hpp"
 #include "VectorOperations.hpp"
@@ -28,7 +29,9 @@ private:
     unique_ptr<vector<float> > fTilde;
     unique_ptr<vector<float> > resids;
     unique_ptr<vector<float> > stress;
+    
     unique_ptr<Equation> equation;
+    unique_ptr<vector<omp_lock_t> > equationRowLock;
 
     void setupEquation(Field &field);
     void calculateStress(Field &field, const vector<float> &q, vector<float> &stress);
