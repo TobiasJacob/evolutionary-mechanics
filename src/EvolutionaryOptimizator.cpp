@@ -21,12 +21,6 @@ Iter select_randomly(Iter start, Iter end) {
     return select_randomly(start, end, gen);
 }
 
-struct sorting_element{
-    unsigned int fitness;
-    int state;
-    struct sorting_element *nextElement;
-};
-
 bool compareByFitness(const EvolutionaryOptimizator::organism &a, const EvolutionaryOptimizator::organism &b)
 {
     return a.fitness < b.fitness;
