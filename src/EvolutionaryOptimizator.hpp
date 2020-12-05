@@ -17,11 +17,14 @@ class EvolutionaryOptimizator
     private:
         struct Organism {
             float loss = 0.0;
-            Field field;
+            unique_ptr<Field> field;
             Organism(size_t rows, size_t cols);
             // Organism is copyable
             Organism(Organism const &other);
             Organism &operator= (Organism const &other);
+            Organism(Organism &&other);
+            Organism &operator= (Organism &&other);
+            // Move able too
             size_t countPlanes();
         };
 

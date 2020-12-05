@@ -8,37 +8,53 @@
 #include <iterator>
 
 EvolutionaryOptimizator::Organism::Organism(size_t rows, size_t cols)
-    : field(rows, cols, true)
+    : field(new Field(rows, cols, true))
 {
     
 }
 
 EvolutionaryOptimizator::Organism::Organism(Organism const &other)
-    : loss(other.loss), field(other.field.Rows, other.field.Cols)
+    : loss(other.loss), field(new Field(other.field->Rows, other.field->Cols))
 {
-    for (size_t r = 0; r < field.Rows; r++)
-        for (size_t c = 0; c < field.Cols; c++)
-            field.Plane(r, c) = other.field.Plane(r, c);    
+    for (size_t r = 0; r < field->Rows; r++)
+        for (size_t c = 0; c < field->Cols; c++)
+            field->Plane(r, c) = other.field->Plane(r, c);    
 }
 
 EvolutionaryOptimizator::Organism &EvolutionaryOptimizator::Organism::operator= (Organism const &other)
 {
     #ifdef DEBUG
-    if (field.Rows != other.field.Rows || field.Cols != other.field.Cols) throw "Fields have different sizes";
+    if (field->Rows != other.field->Rows || field->Cols != other.field->Cols) throw "Fields have different sizes";
     #endif
     loss = other.loss;
-    for (size_t r = 0; r < field.Rows; r++)
-        for (size_t c = 0; c < field.Cols; c++)
-            field.Plane(r, c) = other.field.Plane(r, c);    
+    for (size_t r = 0; r < field->Rows; r++)
+        for (size_t c = 0; c < field->Cols; c++)
+            field->Plane(r, c) = other.field->Plane(r, c);    
+    return *this;
+}
+
+EvolutionaryOptimizator::Organism::Organism(Organism &&other) 
+{
+    field = move(other.field);
+    loss = other.loss;
+}
+
+EvolutionaryOptimizator::Organism& EvolutionaryOptimizator::Organism::operator= (Organism &&other) 
+{
+    if (this != &other) 
+    {
+        field = move(other.field);
+        loss = other.loss;
+    }
     return *this;
 }
 
 size_t EvolutionaryOptimizator::Organism::countPlanes() 
 {
     size_t count = 0;
-    for (size_t r = 0; r < field.Rows; r++)
-        for (size_t c = 0; c < field.Cols; c++)
-            if (field.Plane(r, c)) count++;
+    for (size_t r = 0; r < field->Rows; r++)
+        for (size_t c = 0; c < field->Cols; c++)
+            if (field->Plane(r, c)) count++;
     return count;
 }
 
@@ -61,19 +77,19 @@ void EvolutionaryOptimizator::mutate(Organism &dest, size_t alteratedFields)
 
         auto protectedAccess = [&](size_t r, size_t c)
         {
-            if (r < dest.field.Rows && c < dest.field.Cols) 
-                return dest.field.Plane(r, c); 
+            if (r < dest.field->Rows && c < dest.field->Cols) 
+                return dest.field->Plane(r, c); 
             return false; // Structures out of view count as not set
         };
 
         // Unset value only if there is an element as neighbour 
-        if (!dest.field.Plane(mutationRow, mutationCol))
+        if (!dest.field->Plane(mutationRow, mutationCol))
         {
             if (protectedAccess(mutationRow, mutationCol - 1) || 
                     protectedAccess(mutationRow, mutationCol + 1) ||
                     protectedAccess(mutationRow - 1, mutationCol) ||
                     protectedAccess(mutationRow + 1, mutationCol)) {
-                dest.field.Plane(mutationRow, mutationCol) = true;
+                dest.field->Plane(mutationRow, mutationCol) = true;
                 alterations++;
             }
         }
@@ -105,7 +121,7 @@ void EvolutionaryOptimizator::mutate(Organism &dest, size_t alteratedFields)
             // switchCount is ether 0, 2 or 4. Removing is fine, if it is not four
             if (switchCount < 4)
             {
-                dest.field.Plane(mutationRow, mutationCol) = false;
+                dest.field->Plane(mutationRow, mutationCol) = false;
                 alterations++;
             }
         }
@@ -126,7 +142,7 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
             if (i == 0 && epoch % 10 == 0)
                 debugSave = string("debug/Debug-") + to_string(epoch) + ".html";
             
-            float stress = evaluator.GetPerformance(org.field, debugSave);
+            float stress = evaluator.GetPerformance(*org.field, debugSave);
             if (stress > maxStress) // Mechanical structure broke, organism died
                 org.loss = INFINITY;
             else
