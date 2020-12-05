@@ -32,7 +32,6 @@ EvolutionaryOptimizator::EvolutionaryOptimizator(EvolutionaryOptimizator::organi
 void EvolutionaryOptimizator::copyOrganism(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizator::organism org2, int rows, int cols, int startingRow, int startingCol)
 {   
     for(int r = startingRow; r < rows; r++){
-
         for(int c = startingCol; c < cols; c++){
             org2.field->Plane(r,c) = org1.field->Plane(r,c);
         }
@@ -45,9 +44,7 @@ void EvolutionaryOptimizator::copyOrganism(EvolutionaryOptimizator::organism org
 void EvolutionaryOptimizator::simpleCrossingOver(EvolutionaryOptimizator::organism org1, EvolutionaryOptimizator::organism org2, EvolutionaryOptimizator::organism dest, int rows, int cols)
 {
     for(int r = 0; r < rows; r++){
-        
         for(int c = 0; c < cols; c++){
-            
             if(org1.field->Plane(r,c) && org2.field->Plane(r,c)){
                 dest.field->Plane(r,c) = true; 
             }
@@ -104,42 +101,39 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
     srand(time(NULL));
 
     EvolutionaryOptimizator::organism orgToReturn;
-    orgToReturn.rows = 0;
-    orgToReturn.cols = 0;
 
     double totalFitness = 0;
 
-    //Build organisms vector
-    std::vector<EvolutionaryOptimizator::organism> organisms_vector(organisms, this->organisms + this->organismsCount);
+    //Build first generation vector
+    std::vector<EvolutionaryOptimizator::organism> startingGeneration(organisms, this->organisms + this->organismsCount);
    
     //Current generation organisms buffer
     std::vector<EvolutionaryOptimizator::organism> currentGeneration;
 
-    for(int i=0; i<organisms_vector.size(); i++){
-        
-        currentGeneration.push_back(organisms_vector[i]);
+    for(int i=0; i<startingGeneration.size(); i++){
+        currentGeneration.push_back(startingGeneration[i]);
 	}
 
-    //next generation organisms buffer
-    
+    //next generation organisms buffer 
     vector<EvolutionaryOptimizator::organism> newGeneration;
 
     int totalChildren = this->organismsCount;
+    int totalGenerations = 1;
     bool satisfied = false;
     
     //Instance evaluator with supports and force 
     PerformanceEvaluator evaluator(this->orgRows, this->orgCols, this->supports, this->forces);
     
     while(!satisfied){
-        
         //*** Testing Phase for current generation ***
         double orgFitness = 0;
 
         //Loops thru organisms and tests fitness + sorting
-        organisms_vector = currentGeneration;
+        std::vector<EvolutionaryOptimizator::organism> organisms_vector = currentGeneration;
+        
+        cout << "Evaluating Generation: " << totalGenerations << endl;
 
         for(int i=0; i < totalChildren; i++){
-
             orgFitness = evaluator.GetPerformance(*organisms_vector[i].field, "debug.html");
 
             cout << "**Debug - Structure:\n" << *organisms_vector[i].field  << endl;  
@@ -158,13 +152,14 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
             
             organisms_vector[i].fitness = orgFitness;
             organisms_vector[i].state = 1;
-            
+           
             elements.push_back(organisms_vector[i]);
             totalFitness += orgFitness;
         }
 
         if(satisfied)
             break;
+
         //*** Starting reproduction ***
         
         //Next generation array last index
@@ -177,16 +172,13 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
         int reproductions = 0;
 
         while(reproductions != MAX_NUMBER_OF_REPRODUCTIONS){
-          
             EvolutionaryOptimizator::organism to_replicate = *select_randomly(elements.begin(), elements.end());
             EvolutionaryOptimizator::organism mate = *select_randomly(elements.begin(), elements.end());
  
             //Calculates number of children based on both parents fitness
             children = (int) (this->organismsCount * (double) (to_replicate.fitness + mate.fitness)/totalFitness);
             
-            totalChildren += children;
             for(int j = 0; j<children; j++){
-                
                 newGeneration.push_back(reproduce(to_replicate, mate));
                 newGenerationIndex ++;
             }
@@ -198,25 +190,27 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::evolve()
         //This is just some clean-up. It makes sure there are an even number of organisms in the population
        
         if((totalChildren % 2)){
-            
             EvolutionaryOptimizator::organism dummyOrg;
-            dummyOrg.rows = 0;
-            dummyOrg.cols = 0;
             dummyOrg.field = new Field(0,0);
 
             newGeneration.push_back(dummyOrg);
-            totalChildren ++;
         }
 
+        totalChildren = newGeneration.size();
+        
+        currentGeneration.clear();
         currentGeneration = newGeneration;
         
         newGeneration.clear();
         elements.clear();
         totalFitness = 0;
+        totalGenerations++;
    }
 
     cout << "Winner Structure" << endl << *orgToReturn.field << endl;
     cout << "Performance" << endl << orgToReturn.fitness << endl;
+    cout << "Total generations produced: " << totalGenerations << endl;
+    cout << "Total children produced: " << totalChildren << endl;
 
     return orgToReturn;
 }
@@ -235,7 +229,6 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::reproduce(Evolutionar
     mutationCount = rand() % (2 * (int)round(MUTATIONS_PER_BASE_PAIR_CONSTANT * (double)this->orgRows * (double)this->orgCols * 8.0));
 
     for (int i = 0; i < mutationCount; i++) {
-
         //Chooses a random Col and a random row to execute the mutation
         int mutationCol = (rand() % (this->orgCols));
         int mutationRow = (rand() % (this->orgRows));
@@ -253,16 +246,12 @@ EvolutionaryOptimizator::organism EvolutionaryOptimizator::reproduce(Evolutionar
             }
         
            //If there is an element: mutate only if it's not in the middle of two neighbours
-           else{
-
-               if(!(child.field->Plane(mutationRow, mutationCol -1) && (child.field->Plane(mutationRow, mutationCol + 1))) ||
+           else if(!(child.field->Plane(mutationRow, mutationCol -1) && (child.field->Plane(mutationRow, mutationCol + 1))) ||
                            !((child.field->Plane(mutationRow -1, mutationCol) && (child.field->Plane(mutationRow + 1, mutationCol))))){
                    
                    child.field->Plane(mutationRow, mutationCol) = false;
-               }
            }
         }
-
     }
 
     return child;

@@ -17,7 +17,6 @@ class EvolutionaryOptimizator
     public:
         typedef struct{
             Field* field;
-            int rows, cols;
             double fitness = 0.0;
             int state = 0;
         }organism;

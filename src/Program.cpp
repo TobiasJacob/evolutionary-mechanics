@@ -7,16 +7,6 @@
 
 using namespace std;
 
-typedef struct{
-    Field* field;
-    int rows, cols;
-}organism;
-
-unsigned int testOrg(organism orgToTest)
-{
-	return *(unsigned int *)orgToTest.field;
-}
-
 void progressDisplayer(unsigned int currentFitness)
 {
 	printf("fitness: %u\n", currentFitness);
@@ -72,24 +62,31 @@ int main(int argc, char **argv)
     
 
     PerformanceEvaluator evaluator(N, N, support, forces); 
+    int desiredFitness = 100000000;
+    int numberOfOrganisms = 4;
+
     float perf = evaluator.GetPerformance(field, "debug.html");
 
     cout << "Starting Performance: " << perf << endl;
-    EvolutionaryOptimizator::organism *orgs = new EvolutionaryOptimizator::organism[2];
-    EvolutionaryOptimizator::organism org1, org2;
+    cout << "Desired Fitness: " << desiredFitness << endl;
+    cout << "Starting number of organisms: " << numberOfOrganisms << endl;
+    
+    EvolutionaryOptimizator::organism *orgs = new EvolutionaryOptimizator::organism[4];
+    EvolutionaryOptimizator::organism org1, org2, org3, org4, org5;
+
     org1.field = &field;
     org2.field = &field;
-    
-    org1.rows = N;
-    org1.cols = N;
-    org2.rows = N;
-    org2.cols = N;
+    org3.field = &field;
+    org4.field = &field;
     
     orgs[0] = org1;
     orgs[1] = org2;
+    orgs[2] = org3;
+    orgs[3] = org4;
 
-    EvolutionaryOptimizator ea(orgs, support, forces, 2, 20, N, N);
+    EvolutionaryOptimizator evolutionary_optimizator(orgs, support, forces, numberOfOrganisms, desiredFitness, N, N);
     
-    EvolutionaryOptimizator::organism finishedOrg = ea.evolve();
+    evolutionary_optimizator.evolve();
     cout <<"Done"<<endl;
 }
+
