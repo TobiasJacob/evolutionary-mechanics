@@ -24,7 +24,7 @@ EvolutionaryOptimizator::Organism::Organism(Organism const &other)
 EvolutionaryOptimizator::Organism &EvolutionaryOptimizator::Organism::operator= (Organism const &other)
 {
     #ifdef DEBUG
-    if (field.Rows != other.field.Rows || field.Cols != other.field.Cols) throw new exception("Fields have different sizes");
+    if (field.Rows != other.field.Rows || field.Cols != other.field.Cols) throw "Fields have different sizes";
     #endif
     loss = other.loss;
     for (size_t r = 0; r < field.Rows; r++)
@@ -59,13 +59,19 @@ void EvolutionaryOptimizator::mutate(Organism &dest)
         size_t mutationRow = rand() % orgRows;
 
         // TODO: Do not alter supports etc.
+        auto protectedAccess = [&](size_t r, size_t c)
+        {
+            if (r < dest.field.Rows && c < dest.field.Cols) 
+                return dest.field.Plane(r, c); 
+            return false; // Structures out of view count as not set
+        };
 
         // Unset value only if there is an element as neighbour 
         if (!dest.field.Plane(mutationRow, mutationCol)) {
-            if (dest.field.Plane(mutationRow, mutationCol - 1) || 
-                    dest.field.Plane(mutationRow, mutationCol + 1) ||
-                    dest.field.Plane(mutationRow - 1, mutationCol) ||
-                    dest.field.Plane(mutationRow + 1, mutationCol)){
+            if (protectedAccess(mutationRow, mutationCol - 1) || 
+                    protectedAccess(mutationRow, mutationCol + 1) ||
+                    protectedAccess(mutationRow - 1, mutationCol) ||
+                    protectedAccess(mutationRow + 1, mutationCol)){
 
                 dest.field.Plane(mutationRow, mutationCol) = true;
             }
@@ -76,15 +82,15 @@ void EvolutionaryOptimizator::mutate(Organism &dest)
             // 00000
             // 11110 <- do not remove this edge
             // 00010
-            array<bool, 10> binaryValues = { dest.field.Plane(mutationRow - 1, mutationCol - 1),
-                                            dest.field.Plane(mutationRow, mutationCol - 1),
-                                            dest.field.Plane(mutationRow + 1, mutationCol - 1),
-                                            dest.field.Plane(mutationRow + 1, mutationCol),
-                                            dest.field.Plane(mutationRow + 1, mutationCol + 1),
-                                            dest.field.Plane(mutationRow, mutationCol + 1),
-                                            dest.field.Plane(mutationRow - 1, mutationCol + 1),
-                                            dest.field.Plane(mutationRow - 1, mutationCol),
-                                            dest.field.Plane(mutationRow - 1, mutationCol - 1)
+            array<bool, 10> binaryValues = { protectedAccess(mutationRow - 1, mutationCol - 1),
+                                            protectedAccess(mutationRow, mutationCol - 1),
+                                            protectedAccess(mutationRow + 1, mutationCol - 1),
+                                            protectedAccess(mutationRow + 1, mutationCol),
+                                            protectedAccess(mutationRow + 1, mutationCol + 1),
+                                            protectedAccess(mutationRow, mutationCol + 1),
+                                            protectedAccess(mutationRow - 1, mutationCol + 1),
+                                            protectedAccess(mutationRow - 1, mutationCol),
+                                            protectedAccess(mutationRow - 1, mutationCol - 1)
                                             };
             int switchCount = 0;
             for (int i = 0; i < 9; i++)

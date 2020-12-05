@@ -187,13 +187,12 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
     
     try
     {
+        double start = microtime();
         // Generates an equation system from the field / mesh
         Equation equation = setupEquation(field);
         
         // Solve equation
-        double start = microtime();
         pair<unique_ptr<vector<float>>, int> solution = equation.SolveIterative();
-        double stop = microtime();
 
         // Calculate residum
         vector<float> fTilde(conditions, 0);
@@ -205,11 +204,11 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
             subtract(fTilde, equation.f, resids);
             l2square(resids, residuum);
         }
-        cout << "\tRes: " << residuum << endl;
 
         // Calculate maximum stress
         vector<float> stress = calculateStress(field, *solution.first);
         float maxStress = *max_element(stress.begin(), stress.end());
+        double stop = microtime();
 
         // Maybe put out debug view
         if (outputFileName.has_value())

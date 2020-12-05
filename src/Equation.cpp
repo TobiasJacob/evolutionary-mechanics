@@ -28,7 +28,6 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
     float alpha_k_divider = 0;
     float alpha_k = 0;
 
-    double start = microtime();
     K.Multiply(*x_k, kTimesx_k);
     subtract(f, kTimesx_k, *r_k);
     *p_k = *r_k;
@@ -70,8 +69,6 @@ pair<unique_ptr<vector<float>>, int> Equation::SolveIterative()
         }
         #pragma omp barrier
     }
-    double stop = microtime();
-    cout << "Solution time: " << stop - start;
     
     if (counter == maxSteps) {
         cerr << "Warning, EquationSolver did not converge" << endl;
