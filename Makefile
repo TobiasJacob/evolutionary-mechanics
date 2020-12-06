@@ -6,7 +6,7 @@ SRC = src/Field.cpp src/Matrix.cpp src/Equation.cpp src/PerformanceEvaluator.cpp
 # Those are the test files. Note that they provide a custom main function. Do not include src/test/test.cpp here!
 TESTS = src/test/testing-test.cpp src/test/SparseMatrix-test.cpp src/test/Equation-test.cpp src/test/PerformanceEvaluator-test.cpp src/test/PerformanceEvaluatorSpeedup-test.cpp src/test/Organism-test.cpp
 # Those are the MPI Test
-MPITESTS = src/mpi-test/mpi-test.cpp
+MPITESTS = src/mpi-test/mpi-test.cpp src/mpi-test/mpi-sendRec.cpp
 
 # patsubst maps the source files to their object files
 OBJSRC = $(patsubst %.cpp,build/%.o, $(SRC))
