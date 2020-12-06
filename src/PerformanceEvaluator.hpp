@@ -42,6 +42,7 @@ private:
 public:
     PerformanceEvaluator(const size_t rows, const size_t cols, const Support &supports, const vector<Force> &forces);
     float GetPerformance(Field &field, optional<string> outputFileName);
+    size_t GetConditions();
     double GetLastSolvingTime();
 };
 

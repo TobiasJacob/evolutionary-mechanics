@@ -250,6 +250,11 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
     return maxStress;
 }
 
+size_t PerformanceEvaluator::GetConditions() 
+{
+    return conditions;
+}
+
 double PerformanceEvaluator::GetLastSolvingTime() 
 {
     return lastSolvingTime;
