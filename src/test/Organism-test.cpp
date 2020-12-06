@@ -11,7 +11,7 @@ TEST_CASE("OrganismEncodeAndDecode", "[Equation]")
     orgA.loss = 22321.32;
     for (size_t r = 0; r < orgA.field->Rows; r++)
         for (size_t c = 0; c < orgA.field->Cols; c++)
-            orgA.field->Plane(r, c) = rand(0) % 2;
+            orgA.field->Plane(r, c) = rand() % 2;
         
     vector<byte> buffer(Organism::getSize(10, 10));
     orgA.writeIntoBuffer(buffer.data());
