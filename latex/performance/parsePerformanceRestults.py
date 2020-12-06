@@ -27,9 +27,9 @@ df.columns
 
 # %% Plot equation solver
 plt.figure(figsize=(8.27, 5.83))
-for (N, runTimes) in df.groupby('N'):
-    plt.plot(runTimes.C, runTimes.Time.max() / runTimes.Time, color=cmap((1 - N / 200) ** 3), label='$N = ' + str(N) + '$')
 plt.plot(runTimes.C, runTimes.C, '--', color='gray', label='ideal')
+for (N, runTimes) in reversed(list(df.groupby('N'))):
+    plt.plot(runTimes.C, runTimes.Time.iloc[0] / runTimes.Time, color=cmap((1 - N / 200) ** 3), label='$N = ' + str(N) + '$')
 plt.xlabel("Core count")
 plt.ylabel("Speedup")
 plt.legend(loc='upper left')
