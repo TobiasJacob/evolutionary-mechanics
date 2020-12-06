@@ -1,3 +1,14 @@
+/**
+ * @file PerformanceEvaluator.hpp
+ * @author Tobias Jacob (tj75@students.uwf.edu)
+ * @brief Implements Performance Evaluator
+ * @version 1.0
+ * @date 2020-12-06
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
+
 #ifndef PERFORMANCEEVALUATOR
 #define PERFORMANCEEVALUATOR
 
