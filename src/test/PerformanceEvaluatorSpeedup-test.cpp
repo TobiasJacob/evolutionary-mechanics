@@ -52,6 +52,7 @@ void testWithSize(ostream &out, size_t N, size_t C, optional<string> debugPlot)
     evaluator.GetPerformance(field, debugPlot);
 
     out << N << ", " << C << ", " << evaluator.GetLastSolvingTime() << ", " << evaluator.GetConditions() << endl;
+    cout << N << ", " << C << ", " << evaluator.GetLastSolvingTime() << ", " << evaluator.GetConditions() << endl;
 }
 
 TEST_CASE("PerformanceEvaluatorSpeedup", "[.][PerformanceEvaluator]")
