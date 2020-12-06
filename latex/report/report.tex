@@ -58,29 +58,7 @@ Nevertheless, the Equation Solver is a powerful solver, that scales well with co
 
 \begin{figure}[t]
     \centering
-    \begin{tikzpicture}[scale=0.8]
-        \begin{axis}[
-        xlabel=Cores $C$,
-        ylabel=Execution Time
-        ]
-            \addplot [
-                thick,
-                color= darkgray,
-                solid]
-                table[row sep=crcr] {
-                    1 9.79319e+07 \\
-                    2 4.29338e+07 \\
-                    4 1.52511e+07 \\
-                    8 9.47728e+06 \\
-                    11 6.31084e+06 \\
-                    16 5.0674e+06 \\
-                    20 3.44335e+06 \\
-                    24 3.31805e+06 \\
-                    28 2.73285e+06 \\
-                    32 5.98568e+06 \\
-                };
-        \end{axis}
-    \end{tikzpicture}
+    \include{graphs/mechanicsSolverResults}
     \caption{Execution time}
     \label{fig:Speedup}
 \end{figure}
@@ -110,7 +88,27 @@ Evolutionary algoirthms are very parallel by nature. Each organism can be evalua
     \label{alg:Evolution}
 \end{algorithm}
 
-We typically simulate grid sizes of 20, meaning the message has a size of 404 bytes. Since all processes will be initialized with the same field size it has not to be stored in the message. Our evolution works like shown in algorith~\ref{alg:Evolution}.
+We typically simulate grid sizes of 20, meaning the message has a size of 404 bytes. Since all processes will be initialized with the same field size it has not to be stored in the message. Our evolution works like shown in algorith~\ref{alg:Evolution}. The result of the finished evolution is shown on figure~\ref{fig:Evolution}.
+
+
+
+\begin{figure}[p]
+    \begin{subfigure}[b]{0.5\textwidth}
+        \includegraphics[width=\linewidth]{images/debug0.png} 
+    \end{subfigure}%
+    \begin{subfigure}[b]{0.5\textwidth}
+        \includegraphics[width=\linewidth]{images/debug900.png} 
+    \end{subfigure}
+
+    \begin{subfigure}[b]{0.5\textwidth}
+        \includegraphics[width=\linewidth]{images/debug1500.png} 
+    \end{subfigure}%
+    \begin{subfigure}[b]{0.5\textwidth}
+        \includegraphics[width=\linewidth]{images/debug8625.png} 
+    \end{subfigure}
+    \caption{Result of a evoultion, using $20\times20$ gird, 100 organisms per epoch, 1000 epochs and a alterations decay of 0.995. Note, how the structure gets wider on the top to deal with the increased bending stress.}
+    \label{fig:Evolution}
+\end{figure}
 
 
 \end{document}
