@@ -51,20 +51,19 @@ size_t Organism::countPlanes()
     return count;
 }
 
-unique_ptr<MPI_Datatype> Organism::mpiDatatype = nullptr;
+MPI_Datatype Organism::mpiDatatype = 0;
 
-MPI_Datatype& Organism::getDatatype(size_t rows, size_t cols) 
+MPI_Datatype Organism::getDatatype(size_t rows, size_t cols) 
 {
     if (!mpiDatatype)
     {
-        mpiDatatype = make_unique<MPI_Datatype>();
         int lengths[2] = {1, (int)rows * (int)cols};
         MPI_Aint displacements[2] = {0, sizeof(float)};
         MPI_Datatype types[2] = {MPI_FLOAT, MPI_C_BOOL};
-        MPI_Type_create_struct(2, lengths, displacements, types, &*mpiDatatype);
-        MPI_Type_commit(&*mpiDatatype);
+        MPI_Type_create_struct(2, lengths, displacements, types, &mpiDatatype);
+        MPI_Type_commit(&mpiDatatype);
     }
-    return *mpiDatatype;
+    return mpiDatatype;
 }
 
 size_t Organism::getSize(size_t rows, size_t cols)

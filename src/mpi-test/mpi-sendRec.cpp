@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     MPI_Comm_rank(MPI_COMM_WORLD, &world_rank);
     int world_size;
     MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-    MPI_Datatype &orgDtype = Organism::getDatatype(10, 10);
+    MPI_Datatype orgDtype = Organism::getDatatype(10, 10);
 
     // Setup organism
     srand(0);
@@ -29,9 +29,9 @@ int main(int argc, char **argv)
 
     if (world_rank == 0) {
         orgA.writeIntoBuffer(buffer.data());
-        MPI_Send(buffer.data(), buffer.size(), MPI_BYTE, 1, 0, MPI_COMM_WORLD);
+        MPI_Send(buffer.data(), 1, orgDtype, 1, 0, MPI_COMM_WORLD);
     } else if (world_rank == 1) {
-        MPI_Recv(buffer.data(), buffer.size(), MPI_BYTE, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(buffer.data(), 1, orgDtype, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         Organism orgB(10, 10);
         orgB.readFromBuffer(buffer.data());
 
