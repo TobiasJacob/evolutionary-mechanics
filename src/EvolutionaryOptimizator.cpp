@@ -163,8 +163,8 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
     if (rank == 0) {
         cout << std::fixed << std::setprecision(3) << "Time: " << maxtime << ", Generations: " << generations << ", Epochs per Second: " << generations / maxtime << endl;
         cout << "Used " << size << " node(s) and " << omp_get_max_threads() << " core(s) per node " << endl;
-        cout << "Processsed " << this->orgCols << "x" << this->orgRows << " grid and " << organismsCount << " organisms per epoch, resulting in " << organismsPerNode << " organisms per node" << endl;
+        cout << "Processsed " << this->orgCols << "x" << this->orgRows << " grid and " << organismsCount << " organisms per epoch, resulting in " << organismsPerNode << " organisms per node. Best " << bestN << " were broadcasted." << endl;
         cout << "Processing speed: " << generations * organismsCount / maxtime << " organisms per second" << endl;
-        cout << "final performance is " << (*globalGeneration)[0].loss << endl;
+        cout << "Final performance is " << (*globalGeneration)[0].loss << endl;
     }
 }

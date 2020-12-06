@@ -11,7 +11,6 @@ using namespace std;
 int main(int argc, char **argv)
 {
     MPI_Init(&argc, &argv);
-    srand(0); // Reproducable behaviour
 
     if (argc != 2) 
     {
