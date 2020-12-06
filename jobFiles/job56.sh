@@ -1,6 +1,6 @@
 #!/bin/bash
-#SBATCH --nodes=4
-#SBATCH --ntasks=112
+#SBATCH --nodes=2
+#SBATCH --ntasks=56
 #SBATCH --cpus-per-task=1
 #SBATCH --time=00:10:00
 #SBATCH --job-name=hybrid
