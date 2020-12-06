@@ -42,6 +42,20 @@ The second stage is the evolutionary algorithm. The best 10\% survive in each ro
 
 \subsection{Speeding up the equation solver}
 
+\begin{figure}[p]
+    \centering
+    \include{graphs/mechanicsSolverResults}
+    \caption{Speedup of the equation solver for different proplem sizes $N$.}
+    \label{fig:Speedup}
+\end{figure}
+
+\begin{table}[p]
+    \centering
+    \include{tables/executionSpeedTable}
+    \caption{Execution time for the equation solver for different field sizes $N$ and cores $C$}
+    \label{tab:Speedup}
+\end{table}
+
 The reason for usign \texttt{OpenMP} is the tight coupeling between the data in the sparse matrix multiplication. \texttt{gprof} revealed that the equation solver spends most of it's time in the sparse matrix multiplication, however the whole equation solver class works parallelized.
 
 \begin{itemize}
@@ -56,38 +70,24 @@ The reason for usign \texttt{OpenMP} is the tight coupeling between the data in 
 The time complexity of the sequential equation solver is dominated by the sparse matrix multiplication, having a complexity of 
 
 \begin{equation}
-    O_{seqSolve}(N) = O(N^3) 
+    O_\mathit{seqSolve}(N) = O(N^3) 
 \end{equation}
 
-as explained in the progress report. The sparse matrix multiplication is fully parallel, so leaving the overhead for thread creation aside, the runtime complexity is 
+as explained in the progress report. The sparse matrix multiplication is fully parallel. The indexing of the equation requires $O(N^2)$. Leaving the overhead for thread creation aside, the runtime complexity is 
 
 \begin{equation}
-    O_{parSolve}(N, C) = O \left(\frac{N^3}{C}\right) + O(N^2)
+    O_\mathit{parSolve}(N, C) = O \left(\frac{N^3}{C}\right) + O(N^2)
 \end{equation}
 
-for a sufficiently large $N$. 
+for a sufficiently large $N$. The efficency is
 
+\begin{equation}
+    E = \frac{O_\mathit{seqSolve}}{O_\mathit{parSolve} C} = O\left(\frac{N^3}{N^3 + C^2}\right)
+\end{equation}
 
+The equation solver has weak scalability, because efficency remains only at the same level if $N \propto C$. In practice however, there is a significant overhead in creating the threads. The speedup becomes only notable for problem sizes $N > 50$.
 
-The equation solver has weak scalability, . In practice however, there is a significant overhead in creating the threads. This means, that the speedup becomes only notable for problem sizes above 50.
-
-Also, the evolutionary algorithm easily solves several thousand equation systems per second, and for the problem sizes that we evaluated the algorithm on, the thread creation becomes the significant overhead. So while the program is still capable of utilizing multiple cores for solving the equation, we rather decided to let each core process one or multiple structures per generation.
-
-Nevertheless, the Equation Solver is a powerful solver, that scales well with core-count. It is able to solve a mechanical structure that consists of 80600 equations in \SI{2.732}{\second} using 28 cores on bridges. It also showcases OpenMP and locks well, we therefore decided to leave the code there. The speeup is shown in figure~\ref{fig:Speedup}.
-
-\begin{figure}[p]
-    \centering
-    \include{graphs/mechanicsSolverResults}
-    \caption{Speedup of the equation solver for different proplem sizes $N$.}
-    \label{fig:Speedup}
-\end{figure}
-
-\begin{table}[p]
-    \centering
-    \include{tables/executionSpeedTable}
-    \caption{Execution time for the equation solver for different field sizes $N$ and cores $C$}
-    \label{tab:Speedup}
-\end{table}
+The Equation Solver is still a powerful solver. It is able to solve a mechanical structure with 80600 equations in \SI{2.732}{\second} using 28 cores on bridges. It also showcases OpenMP and locks well. The speedup of the execution time of table~\ref{fig:Speedup} are shown in figure~\ref{tab:Speedup}.
 
 \subsection{Speeding up the evolutionary algorithm}
 
