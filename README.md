@@ -2,6 +2,10 @@
 
 Following the [Project Description](latex/sources/ProjectDescription.md)
 
+## Compile on bridges
+
+    module load gcc/9.2.0 
+
 ## Todo
 
 - Use catch2 as testing framework

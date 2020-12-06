@@ -10,16 +10,18 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-    if (argc != 3) 
+    MPI_Init(&argc, &argv);
+
+    if (argc != 5) 
     {
-        cout << "Usage: " << argv[0] << " <N> <C>" << endl;
+        cout << "Usage: " << argv[0] << " <N> <Organisms> <Epochs> <Decay>, recommend 20 100 1000 0.995f" << endl;
         exit(1);
     }
+    
     size_t N = (size_t)stoi(argv[1]);
-    size_t C = (size_t)stoi(argv[2]);
-    srand(0); // Reproducable behaviour
-
-    omp_set_num_threads(C);
+    size_t organisms = (size_t)stoi(argv[2]);
+    size_t epochs = (size_t)stoi(argv[3]);
+    float decay = atof(argv[4]);
 
     // Support and Forces should remain unchanged during the remaining part of the program
     Support support = {
@@ -48,12 +50,17 @@ int main(int argc, char **argv)
                 .col = i
             },
             .forceRow = .01,
-            .forceCol = .1
+            .forceCol = 1.f / (float)N
         };
     }
+    int size;
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    EvolutionaryOptimizator evolutionary_optimizator(support, forces, 100, N, N);
+    organisms = organisms - organisms % size;
+    EvolutionaryOptimizator evolutionary_optimizator(support, forces, organisms, N, N);
     
-    evolutionary_optimizator.Evolve(1000, 1.f, 0.995f);
+    evolutionary_optimizator.Evolve(epochs, 1.f, decay);
+
+    MPI_Finalize();
 }
 

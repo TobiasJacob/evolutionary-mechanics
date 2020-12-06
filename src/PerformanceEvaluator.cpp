@@ -42,12 +42,24 @@ void PerformanceEvaluator::setupEquation(Field &field)
         const Force &f = forces[i];
         size_t forceIndexRow = cornerIndexRow.Value(f.attackCorner.row, f.attackCorner.col);
         #ifdef DEBUG
-        if (!forceIndexRow) throw std::runtime_error("Force not attached");
+        if (!forceIndexRow)
+        {
+            cerr << field << endl;
+            cerr << f.attackCorner.row  << ", " << f.attackCorner.col << endl;
+            cerr << cornerIndexRow << endl;
+            throw std::runtime_error("Force not attached (row)");
+        }
         #endif
         equation->f[forceIndexRow - 1] += f.forceRow;
         size_t forceIndexCol = cornerIndexCol.Value(f.attackCorner.row, f.attackCorner.col);
         #ifdef DEBUG
-        if (!forceIndexRow) throw std::runtime_error("Force not attached");
+        if (!forceIndexCol)
+        {
+            cerr << field << endl;
+            cerr << f.attackCorner.row << ", " << f.attackCorner.col << endl;
+            cerr << cornerIndexCol << endl;
+            throw std::runtime_error("Force not attached (col)");
+        }
         #endif
         equation->f[forceIndexCol - 1] += f.forceCol;
     }

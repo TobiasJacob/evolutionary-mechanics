@@ -1,0 +1,26 @@
+Time: 5.427, Generations: 200, Epochs per Second: 36.850
+Used 8 node(s) and 1 core(s) per node 
+Processsed 10x10 grid and 96 organisms per epoch, resulting in 12 organisms per node
+Processing speed: 3537.579 organisms per second
+final performance is 57.000
+
+
+Time: 5.544, Generations: 100, Epochs per Second: 18.037
+Used 4 node(s) and 1 core(s) per node 
+Processsed 10x10 grid and 100 organisms per epoch, resulting in 25 organisms per node
+Processing speed: 1803.660 organisms per second
+final performance is 49.000
+
+
+Time: 9.976, Generations: 100, Epochs per Second: 10.024
+Used 2 node(s) and 1 core(s) per node 
+Processsed 10x10 grid and 100 organisms per epoch, resulting in 50 organisms per node
+Processing speed: 1002.437 organisms per second
+final performance is 39.000
+
+
+Time: 18.159, Generations: 100, Epochs per Second: 5.507
+Used 1 node(s) and 1 core(s) per node 
+Processsed 10x10 grid and 100 organisms per epoch, resulting in 100 organisms per node
+Processing speed: 550.682 organisms per second
+final performance is 35.000
