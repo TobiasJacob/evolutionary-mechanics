@@ -302,3 +302,4 @@ debug.out
 
 debug*.html
 debug
+createJobFiles.bash

@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --nodes=4
+#SBATCH --nodes=8
 #SBATCH --ntasks=112
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=2
 #SBATCH --time=00:10:00
 #SBATCH --job-name=hybrid
 cd $SLURM_SUBMIT_DIR
