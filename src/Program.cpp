@@ -10,16 +10,17 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+    MPI_Init(&argc, &argv);
+    srand(0); // Reproducable behaviour
+    omp_set_num_threads(C);
+
     if (argc != 3) 
     {
-        cout << "Usage: " << argv[0] << " <N> <C>" << endl;
+        cout << "Usage: " << argv[0] << " <N> " << endl;
         exit(1);
     }
+    
     size_t N = (size_t)stoi(argv[1]);
-    size_t C = (size_t)stoi(argv[2]);
-    srand(0); // Reproducable behaviour
-
-    omp_set_num_threads(C);
 
     // Support and Forces should remain unchanged during the remaining part of the program
     Support support = {

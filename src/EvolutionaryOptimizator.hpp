@@ -19,10 +19,11 @@ class EvolutionaryOptimizator
         const size_t orgCols;
         PerformanceEvaluator evaluator;
 
+        unique_ptr<vector<Organism>> currentGeneration;
+        
         unique_ptr<Organism> currentOrganism;
         unique_ptr<Organism> nextOrganism;
         
-        unique_ptr<vector<Organism>> currentGeneration;
 
         void mutate(Organism &dest, size_t alteratedFields);
     public:
