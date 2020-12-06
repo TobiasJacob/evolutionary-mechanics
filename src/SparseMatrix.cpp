@@ -1,16 +1,13 @@
 #include "SparseMatrix.hpp"
 
 template<typename T>
-SparseMatrix<T>::SparseMatrix(size_t rows, size_t cols) : rows(rows), cols(cols), defaultValue(0)
+SparseMatrix<T>::SparseMatrix(size_t rows, size_t cols) : rows(rows), cols(cols), defaultValue(0), values(rows)
 {
-    values = (list<pair<size_t, T>> *)malloc(rows * sizeof(list<pair<size_t, T>>));
-    new (values) list<pair<size_t, T>>[rows]; // Use replacement new to construct vectors in already allocated (and later also aligned) memory
 }
 
 template<typename T>
 SparseMatrix<T>::~SparseMatrix() 
 {
-    free(values);
 }
 
 template<typename T>
