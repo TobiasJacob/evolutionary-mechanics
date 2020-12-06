@@ -4,6 +4,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import tikzplotlib
 
+from matplotlib import cm
+import matplotlib.colors
+cmap = matplotlib.colors.LinearSegmentedColormap.from_list("", ["green","gold","red"])
+
 t = np.arange(0.0, 2.0, 0.1)
 s = np.sin(2 * np.pi * t)
 s2 = np.cos(2 * np.pi * t)
@@ -24,8 +28,8 @@ df.columns
 # %%
 plt.figure(figsize=(8.27, 5.83))
 for (N, runTimes) in df.groupby('N'):
-    plt.plot(runTimes.C, runTimes.Time.max() / runTimes.Time, label='$N = ' + str(N) + '$')
-plt.plot(runTimes.C, runTimes.C, '--', label='ideal')
+    plt.plot(runTimes.C, runTimes.Time.max() / runTimes.Time, color=cmap((1 - N / 200) ** 3), label='$N = ' + str(N) + '$')
+plt.plot(runTimes.C, runTimes.C, '--', color='gray', label='ideal')
 plt.xlabel("Core count")
 plt.ylabel("Speedup")
 plt.legend(loc='upper left')
@@ -35,3 +39,4 @@ plt.grid(True)
 
 tikzplotlib.save("../report/graphs/mechanicsSolverResults.tex", axis_width="\\textwidth", axis_height="0.618\\textwidth")
 # %%
+cmaps
