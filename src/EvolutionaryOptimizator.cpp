@@ -11,7 +11,6 @@ EvolutionaryOptimizator::EvolutionaryOptimizator(const Support &supports, const 
     : supports(supports), forces(forces), orgRows(orgRows), orgCols(orgCols)
     , evaluator(orgRows, orgCols, supports, forces)
     , currentGeneration(new vector<Organism>(organismsCount, Organism(orgRows, orgCols)))
-    , nextGeneration(new vector<Organism>(organismsCount, Organism(orgRows, orgCols)))
 {
 
 }
@@ -83,78 +82,74 @@ void EvolutionaryOptimizator::mutate(Organism &dest, size_t alteratedFields)
 
 void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxStress, const float alterationDecay)
 {
-    int rank, size, namelen;
-    double time,maxtime,mintime,avgtime;
+    int rank;
+    double time;
     
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    size_t organismsCount = currentGeneration->size();
     
-    vector<byte> buffer(Organism::getSize(this->orgCols, this->orgRows));
-    size_t bufferSize = Organism::getSize(this->orgCols, this->orgRows);
+    size_t orgSize = Organism::getSize(this->orgCols, this->orgRows);
+    vector<byte> singleBuffer(orgSize);
+    vector<byte> allBuffer(orgSize * organismsCount);
+    MPI_Datatype orgDType = Organism::getDatatype(this->orgCols, this->orgRows);
 
-    MPI_Barrier(MPI_COMM_WORLD);
     time = MPI_Wtime();
 
     float alterations = orgRows * orgCols / 10;
     for (size_t epoch = 0; epoch < generations; epoch++)
     {
         // Calculate loss for organis
-        Organism &org = (*currentOrganism);
+        Organism &org = *currentOrganism;
+        mutate(org, alterations);
 
-        float stress;
-        stress = evaluator.GetPerformance(*org.field, debugSave);
+        optional<string> debugSave = nullopt;
+        if (rank == 0 && epoch % 10 == 0)
+            debugSave = string("debug/Debug-") + to_string(epoch) + ".html";
+
+        float stress = evaluator.GetPerformance(*org.field, debugSave);
         if (stress > maxStress) // Mechanical structure broke, organism died
             org.loss = INFINITY;
         else
             org.loss = org.countPlanes();
 
-        if(rank == 0){
-            unique_ptr<<vector<organism>> producedGeneration;
-            vector<byte> rbuffer(Organism::getSize(this->orgCols, this->orgRows) * size);
-        }
-
         //Node serialize the organism
-        org.writeIntoBuffer(buffer.data());
+        org.writeIntoBuffer(singleBuffer.data());
 
         //Gather all the organisms
-        MPI_Gather(buffer.data(), (int)bufferSize, MPI_BYTE, rbuffer.data(), ((int)buffersize * size), MPI_BYTE, 0, MPI_COMM_WORLD);
+        MPI_Gather(singleBuffer.data(), 1, orgDType, allBuffer.data(), organismsCount, orgDType, 0, MPI_COMM_WORLD);
 
-        if(rank == 0){
-         
+        if (rank == 0)
+        {
             //deserialize and populate vector
+            for (size_t i = 0; i < organismsCount; i++)
+                (*currentGeneration)[i].readFromBuffer(singleBuffer.data() + i * orgSize);
 
             // Sort according to loss
-            sort(producedGeneration->begin(), producedGeneration->end(), [](Organism &a, Organism &b) {return a.loss   < b.loss; });
-            cout << epoch << " ALT:" << alterations << " Planes: " << (*currentOrganism)[0].loss << endl;
+            sort(currentGeneration->begin(), currentGeneration->end(), [](Organism &a, Organism &b) {return a.loss < b.loss; });
+            cout << epoch << " ALT: " << alterations << " Planes: " << (*currentGeneration)[0].loss << endl;
 
             //serialize best one
-            producedGeneration.front();
-            org.writeIntoBuffer(buffer.data()); 
+            (*currentGeneration)[0].writeIntoBuffer(singleBuffer.data()); 
         }
 
-
-        MPI_BCast(buffer.data(), 1, MPI_BYTE, 0, MPI_COMM_WORLD);
-
-        //Deserialize the organism
-        
-        nextOrganism.readFromBuffer(buffer.data());
+        MPI_Bcast(singleBuffer.data(), 1, orgDType, 0, MPI_COMM_WORLD);
+        currentOrganism->readFromBuffer(singleBuffer.data());
 
         // Restart from the best elected organism
-        mutate((*nextOrganism), alterations);
-        currentOrganism = nextOrganism;
+        mutate(*currentOrganism, alterations);
         alterations *= alterationDecay;
     }
 
     time = MPI_Wtime() - time;
 
-    MPI_Reduce(&mytime, &maxtime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-    MPI_Reduce(&mytime, &mintime, 1, MPI_DOUBLE, MPI_MIN, 0,MPI_COMM_WORLD);
-    MPI_Reduce(&mytime, &avgtime, 1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
+    double maxtime, mintime, avgtime;
 
-    if (my_rank == 0) {
-        avgtime /= size;
-        cout << std::fixed << std:setprecision(2) << "Min: " << mintime << " Max: << " << maxtime "  Avg: " << avgtime << endl;
-     }
+    MPI_Reduce(&time, &maxtime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&time, &mintime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&time, &avgtime, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
-     MPI_FINALIZE();
+    if (rank == 0) {
+        avgtime /= organismsCount;
+        cout << std::fixed << std::setprecision(2) << "Mintime: " << mintime << " Maxtime: " << maxtime << " Avgtime: " << avgtime << endl;
+    }
 }

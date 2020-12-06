@@ -12,9 +12,8 @@ int main(int argc, char **argv)
 {
     MPI_Init(&argc, &argv);
     srand(0); // Reproducable behaviour
-    omp_set_num_threads(C);
 
-    if (argc != 3) 
+    if (argc != 2) 
     {
         cout << "Usage: " << argv[0] << " <N> " << endl;
         exit(1);
@@ -53,8 +52,13 @@ int main(int argc, char **argv)
         };
     }
 
-    EvolutionaryOptimizator evolutionary_optimizator(support, forces, 100, N, N);
+    int size;
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    EvolutionaryOptimizator evolutionary_optimizator(support, forces, size, N, N);
     
     evolutionary_optimizator.Evolve(1000, 1.f, 0.995f);
+
+    MPI_Finalize();
 }
 

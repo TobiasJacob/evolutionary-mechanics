@@ -22,8 +22,6 @@ class EvolutionaryOptimizator
         unique_ptr<vector<Organism> > currentGeneration;
 
         unique_ptr<Organism> currentOrganism;
-        unique_ptr<Organism> nextOrganism;
-        
 
         void mutate(Organism &dest, size_t alteratedFields);
     public:
