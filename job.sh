@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --nodes=2
+#SBATCH --nodes=1
 #SBATCH --ntasks=28
 #SBATCH --cpus-per-task=1
 #SBATCH --time=00:10:00
@@ -13,4 +13,4 @@ export I_MPI_JOB_RESPECT_PROCESS_PLACEMENT=0
 
 mpirun -print-rank-map -n $SLURM_NTASKS -genv \
  OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK -genv I_MPI_PIN_DOMAIN=omp \
- build/program 50 150 10000 0.9995
+ build/program 30 150 1000 0.999
