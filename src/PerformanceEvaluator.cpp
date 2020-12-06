@@ -32,7 +32,6 @@ PerformanceEvaluator::PerformanceEvaluator(const size_t rows, const size_t cols,
     
 }
 
-
 void PerformanceEvaluator::setupEquation(Field &field)
 {
     // This adds forces to the equation system. It is easy to parallelize since each force HAS to be (by requirement) on a different position
