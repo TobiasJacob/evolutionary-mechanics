@@ -21,9 +21,11 @@ Equation::Equation(const size_t N)
 // The details of the algorithm are complicated, but the important thing is, that it can solve a quadratic, symmetric and positive definite matrix in a short time.
 void Equation::SolveIterative() 
 {
+    // Main thread resets counter
     #pragma omp single
     counter = 0;
-    // Reset solution
+
+    // Reset solution. Each thread is processing its own batch of rows
     fillZeros(*x_k);
     fillZeros(kTimesx_k);
     K.Multiply(*x_k, kTimesx_k);
@@ -57,7 +59,7 @@ void Equation::SolveIterative()
             alpha_k = 0;
             r_k1_squared = 0;
             alpha_k_divider = 0;
-            x_k.swap(x_k1);
+            x_k.swap(x_k1); // Swap current solution with next solution
             r_k.swap(r_k1);
             p_k.swap(p_k1);
             counter++;
