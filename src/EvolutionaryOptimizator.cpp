@@ -175,38 +175,79 @@ void EvolutionaryOptimizator::mutate(Organism &dest, size_t alteratedFields)
 
 void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxStress, const float alterationDecay)
 {
+    int rank, size, namelen;
+    double time,maxtime,mintime,avgtime;
+    
+    unique_ptr<<vector<organism>> producedGeneration;
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    
+    vector<byte> rbuffer(Organism::getSize(this->orgCols, this->orgRows) * size);
+    vector<byte> buffer(Organism::getSize(this->orgCols, this->orgRows));
+    size_t bufferSize = Organism::getSize(this->orgCols, this->orgRows);
+
+    MPI_Barrier(MPI_COMM_WORLD);
+    time = MPI_Wtime();
+
     float alterations = orgRows * orgCols / 10;
     for (size_t epoch = 0; epoch < generations; epoch++)
     {
-        // Calculate loss for each organism
-        for (size_t i = 0; i < currentGeneration->size(); i++)
-        {
-            Organism &org = (*currentGeneration)[i];
+        // Calculate loss for organis
+        Organism &org = (*currentOrganism);
 
-            optional<string> debugSave = nullopt;
-            if (i == 0 && epoch % 10 == 0)
-                debugSave = string("debug/Debug-") + to_string(epoch) + ".html";
-            
-            float stress;
-            stress = evaluator.GetPerformance(*org.field, debugSave);
-            if (stress > maxStress) // Mechanical structure broke, organism died
-                org.loss = INFINITY;
-            else
-                org.loss = org.countPlanes();
+        float stress;
+        stress = evaluator.GetPerformance(*org.field, debugSave);
+        if (stress > maxStress) // Mechanical structure broke, organism died
+            org.loss = INFINITY;
+        else
+            org.loss = org.countPlanes();
+
+        if(rank == 0){
+            rbuf = (unsigned char)
         }
 
-        // Sort according to loss
-        sort(currentGeneration->begin(), currentGeneration->end(), [](Organism &a, Organism &b) {return a.loss < b.loss; });
-        cout << epoch << " ALT:" << alterations << " Planes: " << (*currentGeneration)[0].loss << endl;
+        //Node serialize the organism
+        org.writeIntoBuffer(buffer.data());
 
-        // Setup a new organism, best 10% get children
-        size_t childrenPerOrganism = currentGeneration->size() / 10;
-        for (size_t i = 0; i < nextGeneration->size(); i++)
-        {
-            (*nextGeneration)[i] = (*currentGeneration)[i / childrenPerOrganism];
-            mutate((*nextGeneration)[i], alterations);
+        //Gather all the organisms
+        MPI_Gather(buffer.data(), (int)bufferSize, MPI_BYTE, rbuffer.data(), ((int)buffersize * size), MPI_BYTE, 0, MPI_COMM_WORLD);
+
+        if(rank == 0){
+         
+            //deserialize and populate vector
+
+            // Sort according to loss
+            sort(producedGeneration->begin(), producedGeneration->end(), [](Organism &a, Organism &b) {return a.loss   < b.loss; });
+            cout << epoch << " ALT:" << alterations << " Planes: " << (*currentOrganism)[0].loss << endl;
+
+            //serialize best one
+            producedGeneration.front();
+            org.writeIntoBuffer(buffer.data()); 
         }
-        swap(currentGeneration, nextGeneration);
+
+
+        MPI_BCast(buffer.datA(), 1, MPI_BYTE, 0, MPI_COMM_WORLD);
+
+        //Deserialize the organism
+        
+        nextOrganism.readFromBuffer(buffer.data());
+
+        // Restart from the best elected organism
+        mutate((*nextOrganism), alterations);
+        currentOrganism = nextOrganism;
         alterations *= alterationDecay;
     }
+
+    time = MPI_Wtime() - time;
+
+    MPI_Reduce(&mytime, &maxtime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&mytime, &mintime, 1, MPI_DOUBLE, MPI_MIN, 0,MPI_COMM_WORLD);
+    MPI_Reduce(&mytime, &avgtime, 1, MPI_DOUBLE, MPI_SUM, 0,MPI_COMM_WORLD);
+
+    if (my_rank == 0) {
+        avgtime /= size;
+        cout << std::fixed << std:setprecision(2) << "Min: " << mintime << " Max: << " << maxtime "  Avg: " << avgtime << endl;
+     }
+
+     MPI_FINALIZE();
 }
