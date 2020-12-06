@@ -17,16 +17,18 @@ void SparseMatrix<T>::SetValue(size_t row, size_t col, T value)
     if (row >= rows || col >= cols) throw new out_of_range("SparseMatrix");
     #endif
 
+    // Get row
     list<pair<size_t, T>> &rowVals = values[row];
 
-    // Find end or first value bigger than cursor
+    // Find end or first value greater or equal to cursor
     auto cursorIterator = rowVals.begin();
     while (cursorIterator != rowVals.end())
     {
         if (cursorIterator->first >= col) break;
         cursorIterator++;
     }
-
+    
+    // Check if cell with that col index is found
     if (cursorIterator != rowVals.end() && cursorIterator->first == col)
         cursorIterator->second = value; // Set this value
     else
@@ -40,16 +42,21 @@ const T& SparseMatrix<T>::GetValue(size_t row, size_t col) const
     if (row >= rows || col >= cols) throw new out_of_range("SparseMatrix");
     #endif
 
+    // Get row
     const list<pair<size_t, T>> &rowVals = values[row];
 
+    // Iterate through the row
     auto cursorIterator = rowVals.begin();
     while (cursorIterator != rowVals.end())
     {
         const pair<size_t, T> &cursor = *cursorIterator;
+        // If curser is the current value, return it
         if (cursor.first == col) return cursor.second;
+        if (cursorIterator->first > col) break;
         cursorIterator++;
     }
 
+    // If nothing is found, return the default value
     return defaultValue;
 }
 
@@ -60,6 +67,7 @@ T& SparseMatrix<T>::GetOrAllocateValue(size_t row, size_t col)
     if (row >= rows || col >= cols) throw new out_of_range("SparseMatrix");
     #endif
 
+    // 
     list<pair<size_t, T>> &rowVals = values[row];
 
     // Find end or first value bigger than cursor
