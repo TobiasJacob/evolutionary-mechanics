@@ -1,3 +1,4 @@
+#!/bin/sh
 sbatch jobFiles/job7.sh
 sbatch jobFiles/job14.sh
 sbatch jobFiles/job28.sh
