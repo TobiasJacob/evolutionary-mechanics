@@ -21,8 +21,7 @@
 using namespace std;
 
 /**
- * @brief This class takes care of updating the "Plotter.html" (by default) file located in the /src/plotting, defining Javascript refenrece to values
-  of the given structure
+ * @brief This class takes care of updating the "Plotter.html" (by default) file located in the /src/plotting, defining Javascript variables of the given structure
  * 
  */
 class Plotter

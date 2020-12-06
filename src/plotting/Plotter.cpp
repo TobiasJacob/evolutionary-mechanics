@@ -1,3 +1,13 @@
+/**
+ * @file Plotter.cpp
+ * @author Tobias Jacob - Raffaele Galliera - Ali Muddasar
+ * @brief 
+ * @version 1.0
+ * @date 2020-12-06
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
 #include "Plotter.hpp"
 
 Plotter::Plotter(string fileName): output(fileName)
