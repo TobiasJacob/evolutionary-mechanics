@@ -2,11 +2,11 @@ CXX = mpic++
 CXXFLAGS = -Wall -I.. -I. -std=c++17 -O3 -fopenmp -DDEBUG
 
 # SRC are the object files, that are included by tests and by the program. Do not include src/Program.cpp here!
-SRC = src/Field.cpp src/Matrix.cpp src/Equation.cpp src/PerformanceEvaluator.cpp src/EvolutionaryOptimizator.cpp src/SparseMatrix.cpp src/Microtime.cpp src/plotting/Plotter.cpp src/VectorOperations.cpp
+SRC = src/Field.cpp src/Matrix.cpp src/Equation.cpp src/PerformanceEvaluator.cpp src/EvolutionaryOptimizator.cpp src/SparseMatrix.cpp src/Microtime.cpp src/plotting/Plotter.cpp src/VectorOperations.cpp src/Organism.cpp
 # Those are the test files. Note that they provide a custom main function. Do not include src/test/test.cpp here!
-TESTS = src/test/testing-test.cpp src/test/SparseMatrix-test.cpp src/test/Equation-test.cpp src/test/PerformanceEvaluator-test.cpp src/test/PerformanceEvaluatorSpeedup-test.cpp
+TESTS = src/test/testing-test.cpp src/test/SparseMatrix-test.cpp src/test/Equation-test.cpp src/test/PerformanceEvaluator-test.cpp src/test/PerformanceEvaluatorSpeedup-test.cpp src/test/Organism-test.cpp
 # Those are the MPI Test
-MPITESTS = src/mpi-test/mpi-test.cpp
+MPITESTS = src/mpi-test/mpi-test.cpp src/mpi-test/mpi-sendRec.cpp src/mpi-test/mpi-broadCast.cpp
 
 # patsubst maps the source files to their object files
 OBJSRC = $(patsubst %.cpp,build/%.o, $(SRC))
