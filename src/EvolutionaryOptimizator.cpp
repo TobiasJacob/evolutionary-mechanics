@@ -178,11 +178,9 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
     int rank, size, namelen;
     double time,maxtime,mintime,avgtime;
     
-    unique_ptr<<vector<organism>> producedGeneration;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
     
-    vector<byte> rbuffer(Organism::getSize(this->orgCols, this->orgRows) * size);
     vector<byte> buffer(Organism::getSize(this->orgCols, this->orgRows));
     size_t bufferSize = Organism::getSize(this->orgCols, this->orgRows);
 
@@ -203,7 +201,8 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
             org.loss = org.countPlanes();
 
         if(rank == 0){
-            rbuf = (unsigned char)
+            unique_ptr<<vector<organism>> producedGeneration;
+            vector<byte> rbuffer(Organism::getSize(this->orgCols, this->orgRows) * size);
         }
 
         //Node serialize the organism
