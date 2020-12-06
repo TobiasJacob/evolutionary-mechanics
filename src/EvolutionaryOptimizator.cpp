@@ -132,7 +132,8 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
 
             // Sort according to loss
             sort(globalGeneration->begin(), globalGeneration->end(), [](Organism &a, Organism &b) {return a.loss < b.loss; });
-            cout << epoch << " ALT: " << alterations << " Planes: " << (*globalGeneration)[0].loss << endl;
+            if (epoch % 10 == 0)
+                cout << epoch << " ALT: " << alterations << " Planes: " << (*globalGeneration)[0].loss << endl;
 
             // serialize bestN
             for (size_t i = 0; i < bestN; i++)
@@ -155,14 +156,15 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
 
     time = MPI_Wtime() - time;
 
-    double maxtime, mintime, avgtime;
+    double maxtime;
 
     MPI_Reduce(&time, &maxtime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-    MPI_Reduce(&time, &mintime, 1, MPI_DOUBLE, MPI_MIN, 0, MPI_COMM_WORLD);
-    MPI_Reduce(&time, &avgtime, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
     if (rank == 0) {
-        avgtime /= organismsCount;
-        cout << std::fixed << std::setprecision(2) << "Mintime: " << mintime << " Maxtime: " << maxtime << " Avgtime: " << avgtime << endl;
+        cout << std::fixed << std::setprecision(3) << "Time: " << maxtime << ", Generations: " << generations << ", Epochs per Second: " << generations / maxtime << endl;
+        cout << "Used " << size << " node(s) and " << omp_get_max_threads() << " core(s) per node " << endl;
+        cout << "Processsed " << this->orgCols << "x" << this->orgRows << " grid and " << organismsCount << " organisms per epoch, resulting in " << organismsPerNode << " organisms per node" << endl;
+        cout << "Processing speed: " << generations * organismsCount / maxtime << " organisms per second" << endl;
+        cout << "final performance is " << (*globalGeneration)[0].loss << endl;
     }
 }

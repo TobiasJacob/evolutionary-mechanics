@@ -57,7 +57,7 @@ int main(int argc, char **argv)
     int organisms = 100 - 100 % size;
     EvolutionaryOptimizator evolutionary_optimizator(support, forces, organisms, N, N);
     
-    evolutionary_optimizator.Evolve(1000, 1.f, 0.995f);
+    evolutionary_optimizator.Evolve(200, 1.f, 0.995f);
 
     MPI_Finalize();
 }
