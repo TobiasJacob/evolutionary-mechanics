@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --nodes=4
+#SBATCH --nodes=16
 #SBATCH --ntasks=112
-#SBATCH --cpus-per-task=1
-#SBATCH --time=00:10:00
+#SBATCH --cpus-per-task=4
+#SBATCH --time=01:00:00
 #SBATCH --job-name=hybrid
 cd $SLURM_SUBMIT_DIR
 
@@ -22,3 +22,11 @@ echo ""
 mpirun -print-rank-map -n $SLURM_NTASKS -genv \
  OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK -genv I_MPI_PIN_DOMAIN=omp \
  build/program 40 112 1000 0.999
+echo ""
+mpirun -print-rank-map -n $SLURM_NTASKS -genv \
+ OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK -genv I_MPI_PIN_DOMAIN=omp \
+ build/program 80 112 1000 0.999
+echo ""
+mpirun -print-rank-map -n $SLURM_NTASKS -genv \
+ OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK -genv I_MPI_PIN_DOMAIN=omp \
+ build/program 100 112 1000 0.999
