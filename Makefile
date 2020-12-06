@@ -1,4 +1,4 @@
-CXX = mpic++
+CXX = mpicxx
 CXXFLAGS = -Wall -I.. -I. -std=c++17 -O3 -fopenmp -DDEBUG
 
 # SRC are the object files, that are included by tests and by the program. Do not include src/Program.cpp here!
@@ -37,7 +37,6 @@ build/src/%.o: src/%.cpp $(OBJHEADERS) Makefile | build # Use "order-only prereq
 
 # Link all test and source objects
 build/mpi-test/%: build/src/mpi-test/%.o $(OBJSRC) Makefile
-	echo "Test"
 	$(CXX) $(CXXFLAGS) -o $@ $< $(OBJSRC)
 
 .PHONY: mpi-tests
