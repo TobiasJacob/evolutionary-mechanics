@@ -55,7 +55,7 @@ int main(int argc, char **argv)
     int size;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    int organisms = organisms - organisms % size;
+    organisms = organisms - organisms % size;
     EvolutionaryOptimizator evolutionary_optimizator(support, forces, organisms, N, N);
     
     evolutionary_optimizator.Evolve(epochs, 1.f, 0.995f);
