@@ -143,11 +143,11 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
         }
 
         MPI_Bcast(bestBuffer.data(), bestN, orgDType, 0, MPI_COMM_WORLD);
-        size_t bestNIndex = rank / 10;
         // Calculate loss for organis
         for (size_t i = 0; i < organismsPerNode; i++)
         {
-            localGeneration[i].readFromBuffer(bestBuffer.data() + orgSize * bestNIndex);
+            size_t globalIndex = rank * organismsPerNode + i;
+            localGeneration[i].readFromBuffer(bestBuffer.data() orgSize * (globalIndex % bestN));
         }
 
         // Restart from the best elected organism
