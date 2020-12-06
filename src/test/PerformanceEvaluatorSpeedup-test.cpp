@@ -40,11 +40,11 @@ void testWithSize(ostream &out, size_t N, size_t C, optional<string> debugPlot)
     }
 
     // Field defines the structural layout
-    Field field(N, N);
-    for (size_t i = 0; i < N; i++)
-        for (size_t i2 = 0; i2 < N; i2++)
-            if (i < N / 3 || i > 2 * N / 3 || i2 < N / 3)
-                field.Plane(i, i2) = true;
+    Field field(N, N, true);
+    // for (size_t i = 0; i < N; i++)
+    //     for (size_t i2 = 0; i2 < N; i2++)
+    //         if (i < N / 3 || i > 2 * N / 3 || i2 < N / 3)
+    //             field.Plane(i, i2) = true;
     
 
     PerformanceEvaluator evaluator(N, N, support, forces);
