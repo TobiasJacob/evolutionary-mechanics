@@ -1,3 +1,14 @@
+/**
+ * @file PerformanceEvaluator.hpp
+ * @author Tobias Jacob (tj75@students.uwf.edu)
+ * @brief Implements Performance Evaluator
+ * @version 1.0
+ * @date 2020-12-06
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
+
 #ifndef PERFORMANCEEVALUATOR
 #define PERFORMANCEEVALUATOR
 
@@ -10,8 +21,9 @@
 #include "VectorOperations.hpp"
 
 /**
- * @brief This class takes care of evaulating the performance of a mechanical structure.
- * 
+ * @brief This class takes care of evaulating the performance of a mechanical structure. It needs the supports that the mechanical structure can attach to
+ * and the forces that act on it. It provides a single function then, GetPerformance, which returns the maximum stress observed on a certain field. If it
+ * is above a certain threshold, it means that the structure broke.
  */
 class PerformanceEvaluator
 {
@@ -61,9 +73,39 @@ private:
      */
     void refreshCornerIndex(Field &field);
 public:
+    /**
+     * @brief Construct a new Performance Evaluator object for a certain situation, including the supports that the mechanical structure can attach to
+     * and the forces that act on it. It provides 
+     * 
+     * @param rows The rows of the field that GetPerformance will be called with
+     * @param cols The cols of the field that GetPerformance will be called with
+     * @param supports All mechanical supports the structure can attach to
+     * @param forces The forces that act on the structure
+     */
     PerformanceEvaluator(const size_t rows, const size_t cols, const Support &supports, const vector<Force> &forces);
+
+    /**
+     * @brief Calculates the maximum stress observed on the field, using the load specified by supports and forces
+     * 
+     * @param field The mechanical structure
+     * @param outputFileName An optional file to save debug output. It creates a html file that can be opend with any arbitrary browser to view the 
+     * mechanical structure and results of the evaluation.
+     * @return float The maximum stress observed. If it is above a certain threshold, the structure broke.
+     */
     float GetPerformance(Field &field, optional<string> outputFileName);
+
+    /**
+     * @brief Get the number of equations
+     * 
+     * @return size_t the number of equations
+     */
     size_t GetConditions();
+
+    /**
+     * @brief Get the time needed by the last call to GetPerformance
+     * 
+     * @return double The time needed by the last call to GetPerformance
+     */
     double GetLastSolvingTime();
 };
 

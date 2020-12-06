@@ -6,6 +6,7 @@
 #include <fstream>
 #include <algorithm>
 
+// This is the stiffness matrix for a material similar to steel.
 const static float K[6][6] = {
     { 300,  180, -240,  -60,  -60, -120},
     { 180,  300, -120,  -60,  -60, -240},
@@ -15,6 +16,7 @@ const static float K[6][6] = {
     {-120, -240,  120,    0,    0,  240}
 };
 
+// This is the deformation matrix for a rectangular triangle
 const static float ETimesB[3][6] = {
     {-240, -120,  240,    0,    0,  120},
     {-120, -240,  120,    0,    0,  240},
@@ -30,17 +32,18 @@ PerformanceEvaluator::PerformanceEvaluator(const size_t rows, const size_t cols,
     
 }
 
-
 void PerformanceEvaluator::setupEquation(Field &field)
 {
-    // Add forces to equation-> If force is not attached to model, model failed.
-    // Forces on supports are not set
-    // This one is easy to parallelize since each force HAS to be (by requirement) on a different position
+    // This adds forces to the equation system. It is easy to parallelize since each force HAS to be (by requirement) on a different position
     #pragma omp for schedule(static, 1)
     for (size_t i = 0; i < forces.size(); i++)
     {
+        // Get force i
         const Force &f = forces[i];
+
+        // Get the equation index of the corner the force is attacking on
         size_t forceIndexRow = cornerIndexRow.Value(f.attackCorner.row, f.attackCorner.col);
+        // Make sure it is attached to the structure
         #ifdef DEBUG
         if (!forceIndexRow)
         {
@@ -50,8 +53,12 @@ void PerformanceEvaluator::setupEquation(Field &field)
             throw std::runtime_error("Force not attached (row)");
         }
         #endif
+        // Add row force to the equation system
         equation->f[forceIndexRow - 1] += f.forceRow;
+
+        // Get the equation index of the corner the force is attacking on
         size_t forceIndexCol = cornerIndexCol.Value(f.attackCorner.row, f.attackCorner.col);
+        // Make sure it is attached to the structure
         #ifdef DEBUG
         if (!forceIndexCol)
         {
@@ -61,9 +68,11 @@ void PerformanceEvaluator::setupEquation(Field &field)
             throw std::runtime_error("Force not attached (col)");
         }
         #endif
+        // Add col force to the equation system
         equation->f[forceIndexCol - 1] += f.forceCol;
     }
 
+    // This one adds the stiffness values to the global equation system
     #pragma omp for schedule(static, 16)
     for (size_t r = 0; r < rows; r++)
         for (size_t c = 0; c < cols; c++)
@@ -115,7 +124,7 @@ void PerformanceEvaluator::setupEquation(Field &field)
 
 void PerformanceEvaluator::calculateStress(Field &field, const vector<float> &q)
 {
-    // For every tile
+    // For every plane
     #pragma omp for schedule(static, 16)
     for (size_t r = 0; r < rows; r++)
         for (size_t c = 0; c < cols; c++)
@@ -159,9 +168,11 @@ void PerformanceEvaluator::calculateStress(Field &field, const vector<float> &q)
                         if (targetIndicesUpper[j])
                             sigmaUpper[i] += ETimesB[i][j] * q[targetIndicesUpper[j] - 1];
 
-                // Van Mises Equation https://en.wikipedia.org/wiki/Von_Mises_yield_criterion
+                // Van Mises Equation https://en.wikipedia.org/wiki/Von_Mises_yield_criterion to get total stress
                 float squaredStressLower = sigmaLower[0] * sigmaLower[0] + sigmaLower[1] * sigmaLower[1] + sigmaLower[0] * sigmaLower[1] + 3 * sigmaLower[2] * sigmaLower[2];
                 float squaredStressUpper = sigmaUpper[0] * sigmaUpper[0] + sigmaUpper[1] * sigmaUpper[1] + sigmaUpper[0] * sigmaUpper[1] + 3 * sigmaUpper[2] * sigmaUpper[2];
+
+                // Save the stress for later
                 size_t i = planeIndex.Value(r, c);
                 (*stress)[2 * i] = squaredStressLower;
                 (*stress)[2 * i + 1] = squaredStressUpper;
@@ -170,19 +181,26 @@ void PerformanceEvaluator::calculateStress(Field &field, const vector<float> &q)
 
 void PerformanceEvaluator::refreshCornerIndex(Field &field) 
 {
+    // Helper function to detect if a corner is on a support. These corners simply get removed from the equation system.
     auto cornerRowUnused = [=](size_t r, size_t c) { return any_of(supports.RowSupports.begin(), supports.RowSupports.end(), [=](const Point &p) { return p.row == r && p.col == c; }); };
     auto cornerColUnused = [=](size_t r, size_t c) { return any_of(supports.ColSupports.begin(), supports.ColSupports.end(), [=](const Point &p) { return p.row == r && p.col == c; }); };
 
+    // Reset numbering
     cornerIndexRow.SetTo(0);
     cornerIndexCol.SetTo(0);
     conditions = 0;
     planes = 0;
 
+    // Iterate over all planes
     for (size_t r = 0; r < rows; r++)
         for (size_t c = 0; c < cols; c++)
             if (field.Plane(r, c))
             {
+                // Set and increase plane index
                 planeIndex.Value(r, c) = planes++;
+
+                // Check each of the four corners in row and col direction. If it has not been assigned an index yet, and is not a support, set and
+                // increase the index. Each corner will have a equation associated with it
                 if (!cornerIndexRow.Value(r, c) && !cornerRowUnused(r, c)) cornerIndexRow.Value(r, c) = ++conditions;
                 if (!cornerIndexCol.Value(r, c) && !cornerColUnused(r, c)) cornerIndexCol.Value(r, c) = ++conditions;
                 if (!cornerIndexRow.Value(r + 1, c) && !cornerRowUnused(r + 1, c)) cornerIndexRow.Value(r + 1, c) = ++conditions;
@@ -194,30 +212,35 @@ void PerformanceEvaluator::refreshCornerIndex(Field &field)
             }
 }
 
-// Requirements: Field must have connected Planes, and no more than one force per position, since race-condition may occur otherwise. Also, all forces have to be connected to the model.
+// Field must have connected Planes, and no more than one force per position, since race-condition may occur otherwise. Also, all forces have to be
+// connected to the model. In general this function does not perform a rank check, so the field has to be properly defined. The evolutionary algorithm
+// will take care that it only generates vaild fields. An invalid field for example would be a single plane without supports and forces. In that moment
+// the equation system becomes underdetermined.
 float PerformanceEvaluator::GetPerformance(Field &field, optional<string> outputFileName)
 {
-    // TODO: Check that structure is connected, and that supports are connected and row supports not in same column
+    // Check that field has correct size
+    #ifdef DEBUG
     if (field.Rows != rows || field.Cols != cols)
         throw new exception();
+    #endif
     
-    #pragma omp single
-    {
-        // Get corner numbering, so each corner of a tile has a determined index, starting at 1
-        refreshCornerIndex(field);
-        fTilde = make_unique<vector<float> >(conditions);
-        resids = make_unique<vector<float> >(conditions);
-        stress = make_unique<vector<float> >(planes * 2);
-        residuum = 0;
-        maxStress = 0;
-        equation = make_unique<Equation>(conditions);
-        equationRowLock = make_unique<vector<omp_lock_t> >(conditions);
-    }
-    #pragma omp barrier
+    // This part cannot be parallelized. Also, the vectors have to be shared memory. It helps therefore to join the threads after this.
+    // Update corner index
+    refreshCornerIndex(field);
 
-    // Calculate residum
+    // Pre-allocate / reset memory
+    fTilde = make_unique<vector<float> >(conditions);
+    resids = make_unique<vector<float> >(conditions);
+    stress = make_unique<vector<float> >(planes * 2);
+    residuum = 0;
+    maxStress = 0;
+    equation = make_unique<Equation>(conditions);
+    equationRowLock = make_unique<vector<omp_lock_t> >(conditions);
+
+    // Start timer
     double start = microtime();
 
+    // Spawn threads to solve equation in parallel
     #pragma omp parallel
     {
         // Generates an equation system from the field / mesh
@@ -225,28 +248,34 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         // Solve equation
         equation->SolveIterative();
 
+        // Calculate the residuum to validate accuracy of the solution
         equation->K.Multiply(equation->GetSolution(), *fTilde);
         subtract(*fTilde, equation->f, *resids);
         l2square(*resids, residuum);
 
-        // Calculate maximum stress
+        // Calculate stress
         calculateStress(field, equation->GetSolution());
 
+        // Get the maximum stress
         #pragma omp for reduction(max:maxStress) schedule(static, 32)
         for (size_t i = 0; i < planes * 2; i++)
             maxStress = max(maxStress, (*stress)[i]);
     }
 
+    // Stop timer
     lastSolvingTime = microtime() - start;
 
     // Maybe put out debug view
     #pragma omp single
     if (outputFileName.has_value())
     {
+        // This class will take care of generating the html file with all the information.
         Plotter plotter(*outputFileName);
-        plotter.plot(field, equation->GetSolution(), cornerIndexRow, cornerIndexCol, supports, forces, equation->GetSteps(), residuum, *stress, lastSolvingTime); // steps, residum, sigma
+        plotter.plot(field, equation->GetSolution(), cornerIndexRow, cornerIndexCol, supports, forces, equation->GetSteps(), residuum, *stress, lastSolvingTime);
     }
     #pragma omp barrier
+
+    // Return maximum stress
     return maxStress;
 }
 
