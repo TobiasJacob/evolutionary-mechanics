@@ -53,7 +53,7 @@ private:
      * @param q 
      * @param stress 
      */
-    void calculateStress(Field &field, const vector<float> &q, vector<float> &stress);
+    void calculateStress(Field &field, const vector<float> &q);
     void refreshCornerIndex(Field &field);
     bool isUnused(size_t equationRow);
 public:
