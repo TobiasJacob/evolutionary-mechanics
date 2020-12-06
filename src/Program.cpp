@@ -51,11 +51,11 @@ int main(int argc, char **argv)
             .forceCol = .1
         };
     }
-
     int size;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    EvolutionaryOptimizator evolutionary_optimizator(support, forces, size, N, N);
+    int organisms = 100 - 100 % size;
+    EvolutionaryOptimizator evolutionary_optimizator(support, forces, organisms, N, N);
     
     evolutionary_optimizator.Evolve(1000, 1.f, 0.995f);
 
