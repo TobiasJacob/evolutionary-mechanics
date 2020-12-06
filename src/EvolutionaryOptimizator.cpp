@@ -225,7 +225,7 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
         }
 
 
-        MPI_BCast(buffer.datA(), 1, MPI_BYTE, 0, MPI_COMM_WORLD);
+        MPI_BCast(buffer.data(), 1, MPI_BYTE, 0, MPI_COMM_WORLD);
 
         //Deserialize the organism
         
