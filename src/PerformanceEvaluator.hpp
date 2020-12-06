@@ -40,22 +40,26 @@ private:
     double lastSolvingTime = 0; // Stores the time required for the last solve
 
     /**
-     * @brief Internal function, sets up the equation system. Has to be called after refreshCornerIndex
+     * @brief Internal function, sets up the equation system that has to be solved depending on the mechanical structure. Has to be called after refreshCornerIndex
      * 
      * @param field Describing the mechanical structure
      */
     void setupEquation(Field &field);
 
     /**
-     * @brief Converts the displacement 
+     * @brief Calculates the stress on each triangle using the displacements.
      * 
-     * @param field 
-     * @param q 
-     * @param stress 
+     * @param field The mechanical structure
+     * @param q The displacements
      */
     void calculateStress(Field &field, const vector<float> &q);
+
+    /**
+     * @brief Numerates the corners and planes, so that each has a unique identifier.
+     * 
+     * @param field The mechanical structure
+     */
     void refreshCornerIndex(Field &field);
-    bool isUnused(size_t equationRow);
 public:
     PerformanceEvaluator(const size_t rows, const size_t cols, const Support &supports, const vector<Force> &forces);
     float GetPerformance(Field &field, optional<string> outputFileName);
