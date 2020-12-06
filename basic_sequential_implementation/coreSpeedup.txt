@@ -1,0 +1,12 @@
+[tj75@cs-ssh evolutionary-mechanics]$ build/program 160 8
+Solution time: 2.57808e+06      Res: 0
+1.43659
+[tj75@cs-ssh evolutionary-mechanics]$ build/program 160 4
+Solution time: 5.467e+06        Res: 0
+1.43649
+[tj75@cs-ssh evolutionary-mechanics]$ build/program 160 2
+Solution time: 9.64353e+06      Res: 0
+1.43642
+[tj75@cs-ssh evolutionary-mechanics]$ build/program 160 1
+Solution time: 2.42503e+07      Res: 0
+1.43646
