@@ -92,7 +92,9 @@ void PerformanceEvaluator::setupEquation(Field &field)
                         if (targetIndicesLower[i] && targetIndicesLower[j])
                         {
                             const size_t targetRow = targetIndicesLower[i] - 1;
-                            equation->K.Value(targetRow, targetIndicesLower[j] - 1) += K[i][j];
+                            omp_set_lock(&(*equationRowLock)[targetRow]);
+                            equation->K.GetOrAllocateValue(targetRow, targetIndicesLower[j] - 1) += K[i][j];
+                            omp_unset_lock(&(*equationRowLock)[targetRow]);
                         }
 
                 // Upper right triangle, get the index of each corner in the global equation system
@@ -111,7 +113,9 @@ void PerformanceEvaluator::setupEquation(Field &field)
                         if (targetIndicesUpper[i] && targetIndicesUpper[j])
                         {
                             const size_t targetRow = targetIndicesUpper[i] - 1;
-                            equation->K.Value(targetRow, targetIndicesUpper[j] - 1) += K[i][j];
+                            omp_set_lock(&(*equationRowLock)[targetRow]);
+                            equation->K.GetOrAllocateValue(targetRow, targetIndicesUpper[j] - 1) += K[i][j];
+                            omp_unset_lock(&(*equationRowLock)[targetRow]);
                         }
             }    
 }
@@ -228,7 +232,7 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
     residuum = 0;
     maxStress = 0;
     equation = make_unique<Equation>(conditions);
-
+    equationRowLock = make_unique<vector<omp_lock_t> >(conditions);
 
     // Start timer
     double start = microtime();

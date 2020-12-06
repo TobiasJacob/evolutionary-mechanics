@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title>Evolutionary mechanics</title>
+    <script type="text/javascript">
+      function draw() {
+        // Paste output here
+        const field = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 1, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 1, 0, 0, 0, 0], [0, 0, 0, 0, 1, 1, 0, 0, 0, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]];
+        const u = [0, 0.00271191, -0.00671575, -0.00715325, 0.00939654, 0.00877757, -0.00187143, -0.00754187, 0.015323, 0.014732, -0.00321527, -0.00815663, 0.0202095, 0.0194221, -0.00503593, -0.0090324, 0.0235616, 0.0225714, -0.0074034, -0.0101179, 0.0245081, 0.0235169, -0.0101321, -0.0111661, 0.023437, 0.0224961, -0.0128499, -0.0120835, 0.0200443, 0.0193204, -0.0153227, -0.0126234, 0.0149381, 0.0144877, -0.0172503, -0.0127864, 0.0085778, 0.00831092, -0.0185339, -0.0133378, 0.00192654, -0.0189317, 0.00383847, -0.0113297, -0.0113261, 0.00968147, -0.0110623, 0.0154771, -0.0106406, 0.0204324, -0.0102277, 0.0240536, -0.010012, 0.0248896, -0.00981246, 0.0239071, -0.00948888, 0.0202109, -0.00880762, 0.0148239, -0.00844705, 0.00877871, -0.00856953, 0.00279627, 0.00407924, -0.0161816, -0.0159096, 0.00963288, -0.014979, 0.0152026, -0.0133168, 0.0200404, -0.0110826, 0.0240711, -0.0100297, 0.0249439, -0.00894493, 0.0242582, -0.00622763, 0.0194447, -0.00455387, 0.0143057, -0.00373455, 0.00863104, -0.00360958, 0.00292124, 0.0249, -0.0100163, -0.0102928, 0.0255545, -0.0109737, 0.0262015, 0.0262263, -0.0103933, -0.0111047, 0.026992, -0.0118272, 0.027779, 0.0277902, -0.0111933, -0.0119115, 0.0284425, -0.0123879, 0.0292118, 0.029597, -0.0126493, -0.0123953, 0.0294068, -0.0122427, 0.0304537, 0.0378697, -0.0145106, 0.0378938, -0.012873, -0.0128951, 0.0360699, 0.0360871, -0.0144864, -0.0128112, 0.0340341, 0.0341586, -0.0142991, -0.0126021, 0.0319069, 0.0321407, -0.0137887, -0.0126557, 0.0302099, -0.0128524, 0.029995, -0.0130472, 0.0309462, -0.0130487, 0.0333315, 0.0333253, -0.0115243, -0.0129951, 0.0359077, 0.0359063, -0.011042, -0.0129844, 0.0384603, 0.0384204, -0.0108533, -0.0130253, 0.0408021, 0.0407356, -0.0108353, 0.0380713, -0.0113373, -0.0114807, 0.0361899, -0.0116272, 0.0341319, -0.0119408, 0.032209, -0.012503, 0.0308121, -0.0131821, 0.0306028, -0.0138635, 0.0315326, -0.0143677, 0.0336391, -0.0147032, 0.0361275, -0.0149176, 0.0386594, -0.0150788, 0.0410688, 0.0384715, -0.00963764, -0.00981466, 0.0364531, -0.0102258, 0.034491, -0.0109936, 0.0327407, -0.0121665, 0.0315274, -0.0135549, 0.0313744, -0.014918, 0.032269, -0.0159719, 0.0342033, -0.0166513, 0.0365501, -0.0170449, 0.0390015, -0.0173701, 0.041577];
+        const cornerIndexRow = [[0, 5, 9, 13, 17, 21, 25, 29, 33, 37, 0], [1, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40], [42, 45, 47, 49, 51, 53, 55, 57, 59, 61, 63], [64, 67, 69, 71, 73, 75, 77, 79, 81, 83, 85], [0, 0, 0, 0, 86, 89, 91, 0, 0, 0, 0], [0, 0, 0, 0, 92, 95, 97, 0, 0, 0, 0], [0, 0, 0, 0, 98, 101, 103, 0, 0, 0, 0], [110, 116, 120, 124, 104, 107, 109, 134, 138, 142, 146], [112, 115, 119, 123, 127, 129, 131, 133, 137, 141, 145], [148, 151, 153, 155, 157, 159, 161, 163, 165, 167, 169], [170, 173, 175, 177, 179, 181, 183, 185, 187, 189, 191]];
+        const cornerIndexCol = [[0, 6, 10, 14, 18, 22, 26, 30, 34, 38, 41], [2, 3, 7, 11, 15, 19, 23, 27, 31, 35, 39], [43, 44, 46, 48, 50, 52, 54, 56, 58, 60, 62], [65, 66, 68, 70, 72, 74, 76, 78, 80, 82, 84], [0, 0, 0, 0, 87, 88, 90, 0, 0, 0, 0], [0, 0, 0, 0, 93, 94, 96, 0, 0, 0, 0], [0, 0, 0, 0, 99, 100, 102, 0, 0, 0, 0], [111, 117, 121, 125, 105, 106, 108, 135, 139, 143, 147], [113, 114, 118, 122, 126, 128, 130, 132, 136, 140, 144], [149, 150, 152, 154, 156, 158, 160, 162, 164, 166, 168], [171, 172, 174, 176, 178, 180, 182, 184, 186, 188, 190]];
+        const supports = { RowSupports: [{ row: 0, col: 10 }, { row: 0, col: 0 }], ColSupports: [{ row: 0, col: 0 }]}
+        const forces = [{ attackCorner: { row: 10, col: 0}, forceRow: 0.1, forceCol:0}, { attackCorner: { row: 10, col: 1}, forceRow: 0.1, forceCol:0}, { attackCorner: { row: 10, col: 2}, forceRow: 0.1, forceCol:0}, { attackCorner: { row: 10, col: 3}, forceRow: 0.1, forceCol:0}, { attackCorner: { row: 10, col: 4}, forceRow: 0.1, forceCol:0}, { attackCorner: { row: 10, col: 5}, forceRow: 0.1, forceCol:0}, { attackCorner: { row: 10, col: 6}, forceRow: 0.1, forceCol:0}, { attackCorner: { row: 10, col: 7}, forceRow: 0.1, forceCol:0}, { attackCorner: { row: 10, col: 8}, forceRow: 0.1, forceCol:0}, { attackCorner: { row: 10, col: 9}, forceRow: 0.1, forceCol:0}, { attackCorner: { row: 10, col: 10}, forceRow: 0.1, forceCol:0}]
+        const solutionSteps = 185;
+        const residum = 1.00932e-08;
+        const stress = [0.1902, 0.0284724, 0.069827, 0.0350789, 0.169342, 0.0436476, 0.278513, 0.0458702, 0.348634, 0.0263585, 0.350226, 0.0194147, 0.294098, 0.0135922, 0.19356, 0.00678955, 0.104239, 0.00576995, 0.0742212, 0.217971, 0.101267, 0.0384991, 0.0358905, 0.0729237, 0.0429049, 0.106495, 0.0539114, 0.14319, 0.0438586, 0.0443487, 0.0606107, 0.0453409, 0.0712839, 0.0365466, 0.083469, 0.0601942, 0.0774038, 0.0621629, 0.0717095, 0.0737388, 0.016611, 0.0153873, 0.0207204, 0.0765781, 0.0155008, 0.22249, 0.012021, 0.619419, 0.00543038, 0.13065, 0.017148, 0.202721, 0.130666, 0.439706, 0.0570508, 0.155553, 0.039855, 0.057213, 0.0245137, 0.0121451, 0.38496, 0.0153315, 0.289899, 0.200321, 0.117213, 0.0679048, 0.0721103, 0.0901394, 0.089284, 0.0693119, 0.0684989, 0.102503, 0.145123, 0.150995, 0.0314946, 0.208626, 0.00045342, 0.000734633, 0.00419103, 0.00355887, 0.0189616, 0.01032, 0.106404, 0.0633452, 0.0739447, 0.0219958, 0.0577765, 0.0105482, 0.18887, 0.00800582, 0.03606, 0.00449556, 0.00703451, 0.00217092, 0.00069377, 0.000353893, 0.00338562, 0.00265756, 0.00821462, 0.00869799, 0.0188075, 0.0185664, 0.0180375, 0.0217524, 0.0183206, 0.00959356, 0.023073, 0.00680345, 0.0610924, 0.0128228, 0.0299837, 0.00898504, 0.0130292, 0.00450896, 0.00444468, 0.00311095, 0.00783498, 0.00276022, 0.00358627, 0.00579279, 0.00476753, 0.0184682, 0.00658253, 0.0414935, 0.00730051, 0.0567707, 0.01174, 0.0543162, 0.0227345, 0.0339114, 0.0164457, 0.0125024, 0.00934761, 0.00334147, 0.00495151, 0.00662837];
+        const time = 1402;
+        // End Paste output here
+
+        var canvas = document.getElementById('tutorial');
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const rows = field.length;
+        const cols = field[0].length;
+        const offsetX = 100;
+        const offsetY = 100;
+        
+        const rectSize = 800 / Math.max(rows, cols);
+        const movementScale = 1;
+
+        function coordsToView(x, y) {
+          return [offsetY + rectSize * y, offsetX + rectSize * x];
+        }
+
+        let stressI = 0;
+        const stressScale = 255 / Math.max(...stress);
+        ctx.strokeStyle = '#000';
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            if (field[r][c]) {
+              ctx.beginPath();
+              ctx.moveTo(...coordsToView(r + movementScale * u[cornerIndexRow[r][c]], c + movementScale * u[cornerIndexCol[r][c]]));
+              ctx.lineTo(...coordsToView((r + 1) + movementScale * u[cornerIndexRow[r + 1][c]], c + movementScale * u[cornerIndexCol[r + 1][c]]));
+              ctx.lineTo(...coordsToView((r + 1) + movementScale * u[cornerIndexRow[r + 1][c + 1]], (c + 1) + movementScale * u[cornerIndexCol[r + 1][c + 1]]));
+              ctx.lineTo(...coordsToView(r + movementScale * u[cornerIndexRow[r][c + 1]], (c + 1) + movementScale * u[cornerIndexCol[r][c + 1]]));
+              ctx.closePath();
+              ctx.stroke();
+
+              ctx.fillStyle = 'rgb(255, ' + (255 - stress[stressI] * stressScale) + ', ' + (255 - stress[stressI] * stressScale) + ')';
+              ctx.beginPath();
+              ctx.moveTo(...coordsToView(r + movementScale * u[cornerIndexRow[r][c]], c + movementScale * u[cornerIndexCol[r][c]]));
+              ctx.lineTo(...coordsToView((r + 1) + movementScale * u[cornerIndexRow[r + 1][c]], c + movementScale * u[cornerIndexCol[r + 1][c]]));
+              ctx.lineTo(...coordsToView((r + 1) + movementScale * u[cornerIndexRow[r + 1][c + 1]], (c + 1) + movementScale * u[cornerIndexCol[r + 1][c + 1]]));
+              ctx.closePath();
+              ctx.fill();
+
+              ctx.fillStyle = 'rgb(255, ' + (255 - stress[stressI + 1] * stressScale) + ', ' + (255 - stress[stressI + 1] * stressScale) + ')';
+              ctx.beginPath();
+              ctx.moveTo(...coordsToView((r + 1) + movementScale * u[cornerIndexRow[r + 1][c + 1]], (c + 1) + movementScale * u[cornerIndexCol[r + 1][c + 1]]));
+              ctx.lineTo(...coordsToView(r + movementScale * u[cornerIndexRow[r][c + 1]], (c + 1) + movementScale * u[cornerIndexCol[r][c + 1]]));
+              ctx.lineTo(...coordsToView(r + movementScale * u[cornerIndexRow[r][c]], c + movementScale * u[cornerIndexCol[r][c]]));
+              ctx.closePath();
+              ctx.fill();
+
+              stressI += 2;
+            }
+          }
+        }
+
+        ctx.strokeStyle = '#00C';
+        const supportSize = .2;
+        for (let i = 0; i < supports.RowSupports.length; i++) {
+          const rowSupport = supports.RowSupports[i];
+          ctx.beginPath();
+          ctx.moveTo(...coordsToView(rowSupport.row, rowSupport.col - supportSize));
+          ctx.lineTo(...coordsToView(rowSupport.row, rowSupport.col + supportSize));
+          ctx.closePath();
+          ctx.stroke();
+        }
+        for (let i = 0; i < supports.ColSupports.length; i++) {
+          const colSupport = supports.ColSupports[i];
+          ctx.beginPath();
+          ctx.moveTo(...coordsToView(colSupport.row - supportSize, colSupport.col));
+          ctx.lineTo(...coordsToView(colSupport.row + supportSize, colSupport.col));
+          ctx.closePath();
+          ctx.stroke();
+        }
+
+        function arrow(fromx, fromy, tox, toy) { // https://stackoverflow.com/questions/808826/draw-arrow-on-canvas-tag
+          var headlen = 10; // length of head in pixels
+          var dx = tox - fromx;
+          var dy = toy - fromy;
+          var angle = Math.atan2(dy, dx);
+          ctx.moveTo(fromx, fromy);
+          ctx.lineTo(tox, toy);
+          ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+          ctx.moveTo(tox, toy);
+          ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+        }
+
+        ctx.strokeStyle = '#00C';
+        const forceSize = 500;
+        for (let i = 0; i < forces.length; i++) {
+          const force = forces[i];
+          const r = force.attackCorner.row;
+          const c = force.attackCorner.col;
+          const [x, y] = coordsToView(r + movementScale * u[cornerIndexRow[r][c]], c + movementScale * u[cornerIndexCol[r][c]]);
+          ctx.beginPath();
+          arrow(x, y, x + force.forceCol * forceSize, y + force.forceRow * forceSize);
+          ctx.closePath();
+          ctx.stroke();
+        }
+
+        var statusP = document.getElementById('statusText');
+        statusP.innerHTML = "Converged after " + solutionSteps + " with residum " + residum + " after " + time / 1e6 + " seconds.<br />Max stress is " + Math.max(...stress);
+      }
+    </script>
+    <style type="text/css">
+    </style>
+  </head>
+  <body onload="draw();">
+    <canvas id="tutorial" width="1000" height="1000"></canvas>
+    <p id="statusText">Converged after ...</p>
+  </body>
+</html>

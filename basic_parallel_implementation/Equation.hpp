@@ -18,6 +18,7 @@
 #include <math.h>
 #include <iomanip>
 #include "Matrix.hpp"
+#include "SparseMatrix.hpp"
 #include "Microtime.hpp"
 
 using namespace std;
@@ -54,7 +55,7 @@ private:
 public:
     const size_t N; // Size of the equation system.
 
-    Matrix<float> K; // The stiffness matrix
+    SparseMatrix<float> K; // The stiffness matrix
     vector<float> f; // The forces on the mechanical structure
 
     /**

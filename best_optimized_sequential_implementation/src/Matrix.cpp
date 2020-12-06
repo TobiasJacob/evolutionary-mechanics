@@ -1,8 +1,8 @@
 /**
  * @file Matrix.cpp
- * @author your name (you@domain.com)
+ * @author Tobias Jacob - Galliera Raffaele - Ali Muddasar
  * @brief 
- * @version 0.1
+ * @version 1.0
  * @date 2020-12-06
  * 
  * @copyright Copyright (c) 2020

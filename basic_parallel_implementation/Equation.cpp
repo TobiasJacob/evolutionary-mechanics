@@ -12,7 +12,7 @@ Equation::Equation(const size_t N)
     , kTimesx_k(N, 0)
     , scaledP_K(N, 0)
     , scaledKTimesP(N, 0)
-    , N(N), K(N, N, 0), f(N, 0)
+    , N(N), K(N, N), f(N, 0)
 {
 
 }
@@ -22,6 +22,7 @@ Equation::Equation(const size_t N)
 void Equation::SolveIterative() 
 {
     // Main thread resets counter
+    #pragma omp single
     counter = 0;
 
     // Reset solution. Each thread is processing its own batch of rows
@@ -52,6 +53,8 @@ void Equation::SolveIterative()
         multiply(r_k1_squared / alpha_k, *p_k, scaledP_K);
         add(*r_k1, scaledP_K, *p_k1);
 
+        #pragma omp barrier
+        #pragma omp single
         {
             alpha_k = 0;
             r_k1_squared = 0;
@@ -61,6 +64,7 @@ void Equation::SolveIterative()
             p_k.swap(p_k1);
             counter++;
         }
+        #pragma omp barrier
     }
     
     if (counter == maxSteps) {

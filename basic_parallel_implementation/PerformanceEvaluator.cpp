@@ -35,6 +35,7 @@ PerformanceEvaluator::PerformanceEvaluator(const size_t rows, const size_t cols,
 void PerformanceEvaluator::setupEquation(Field &field)
 {
     // This adds forces to the equation system. It is easy to parallelize since each force HAS to be (by requirement) on a different position
+    #pragma omp for schedule(static, 1)
     for (size_t i = 0; i < forces.size(); i++)
     {
         // Get force i
@@ -72,6 +73,7 @@ void PerformanceEvaluator::setupEquation(Field &field)
     }
 
     // This one adds the stiffness values to the global equation system
+    #pragma omp for schedule(static, 16)
     for (size_t r = 0; r < rows; r++)
         for (size_t c = 0; c < cols; c++)
             if (field.Plane(r, c))
@@ -92,7 +94,9 @@ void PerformanceEvaluator::setupEquation(Field &field)
                         if (targetIndicesLower[i] && targetIndicesLower[j])
                         {
                             const size_t targetRow = targetIndicesLower[i] - 1;
-                            equation->K.Value(targetRow, targetIndicesLower[j] - 1) += K[i][j];
+                            omp_set_lock(&(*equationRowLock)[targetRow]);
+                            equation->K.GetOrAllocateValue(targetRow, targetIndicesLower[j] - 1) += K[i][j];
+                            omp_unset_lock(&(*equationRowLock)[targetRow]);
                         }
 
                 // Upper right triangle, get the index of each corner in the global equation system
@@ -111,7 +115,9 @@ void PerformanceEvaluator::setupEquation(Field &field)
                         if (targetIndicesUpper[i] && targetIndicesUpper[j])
                         {
                             const size_t targetRow = targetIndicesUpper[i] - 1;
-                            equation->K.Value(targetRow, targetIndicesUpper[j] - 1) += K[i][j];
+                            omp_set_lock(&(*equationRowLock)[targetRow]);
+                            equation->K.GetOrAllocateValue(targetRow, targetIndicesUpper[j] - 1) += K[i][j];
+                            omp_unset_lock(&(*equationRowLock)[targetRow]);
                         }
             }    
 }
@@ -119,6 +125,7 @@ void PerformanceEvaluator::setupEquation(Field &field)
 void PerformanceEvaluator::calculateStress(Field &field, const vector<float> &q)
 {
     // For every plane
+    #pragma omp for schedule(static, 16)
     for (size_t r = 0; r < rows; r++)
         for (size_t c = 0; c < cols; c++)
             if (field.Plane(r, c))
@@ -228,12 +235,13 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
     residuum = 0;
     maxStress = 0;
     equation = make_unique<Equation>(conditions);
-
+    equationRowLock = make_unique<vector<omp_lock_t> >(conditions);
 
     // Start timer
     double start = microtime();
 
     // Spawn threads to solve equation in parallel
+    #pragma omp parallel
     {
         // Generates an equation system from the field / mesh
         setupEquation(field);
@@ -249,6 +257,7 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         calculateStress(field, equation->GetSolution());
 
         // Get the maximum stress
+        #pragma omp for reduction(max:maxStress) schedule(static, 32)
         for (size_t i = 0; i < planes * 2; i++)
             maxStress = max(maxStress, (*stress)[i]);
     }
@@ -257,12 +266,14 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
     lastSolvingTime = microtime() - start;
 
     // Maybe put out debug view
+    #pragma omp single
     if (outputFileName.has_value())
     {
         // This class will take care of generating the html file with all the information.
         Plotter plotter(*outputFileName);
         plotter.plot(field, equation->GetSolution(), cornerIndexRow, cornerIndexCol, supports, forces, equation->GetSteps(), residuum, *stress, lastSolvingTime);
     }
+    #pragma omp barrier
 
     // Return maximum stress
     return maxStress;
