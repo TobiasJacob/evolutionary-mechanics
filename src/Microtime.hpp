@@ -12,13 +12,15 @@
 #ifndef _microtime_h_
 #define _microtime_h_
 
-extern "C" { 
+extern "C" {
+  
   /**
    * @brief this function returns the actual time in micro-seconds
    * 
    * @return double 
    */
   double    microtime(void);
+
   /**
    * @brief this function returns the difference between two time instances using microtime
    * 

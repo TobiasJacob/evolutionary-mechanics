@@ -22,7 +22,6 @@ using namespace std;
  * @param b 
  * @param result 
  */
-
 template<typename T>
 void add(const vector<T> &a, const vector<T> &b, vector<T> &result);
 
@@ -34,7 +33,6 @@ void add(const vector<T> &a, const vector<T> &b, vector<T> &result);
  * @param b 
  * @param result 
  */
-
 template<typename T>
 void subtract(const vector<T> &a, const vector<T> &b, vector<T> &result);
 
@@ -46,7 +44,6 @@ void subtract(const vector<T> &a, const vector<T> &b, vector<T> &result);
  * @param b 
  * @param result 
  */
-
 template<typename T>
 void multiply(const T a, const vector<T> &b, vector<T> &result);
 
@@ -57,7 +54,6 @@ void multiply(const T a, const vector<T> &b, vector<T> &result);
  * @param a 
  * @param resultL2Square 
  */
-
 template<typename T>
 void l2square(const vector<T> &a, T &resultL2Square); 
 
@@ -69,7 +65,6 @@ void l2square(const vector<T> &a, T &resultL2Square);
  * @param b 
  * @param resultScalar 
  */
-
 template<typename T>
 void scalarProduct(const vector<T> &a, const vector<T> &b, T &resultScalar);
 
@@ -79,7 +74,6 @@ void scalarProduct(const vector<T> &a, const vector<T> &b, T &resultScalar);
  * @tparam T 
  * @param a 
  */
-
 template<typename T>
 void printVector(const vector<T> &a); 
 
@@ -89,7 +83,6 @@ void printVector(const vector<T> &a);
  * @tparam T 
  * @param a 
  */
-
 template<typename T>
 void fillZeros(vector<T> &a); 
 
@@ -100,6 +93,5 @@ void fillZeros(vector<T> &a);
  * @param src 
  * @param dest 
  */
-
 template<typename T>
 void assign(vector<T> &src, vector<T> &dest); 
