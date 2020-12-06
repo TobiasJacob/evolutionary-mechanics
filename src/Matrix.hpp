@@ -1,3 +1,13 @@
+/**
+ * @file Matrix.hpp
+ * @author Tobias Jacob - Galliera Raffaele - Ali Muddasar
+ * @brief 
+ * @version 1.0
+ * @date 2020-12-06
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
 #ifndef MATRIX
 #define MATRIX
 
@@ -12,8 +22,12 @@ using namespace std;
 // Forward declare for marking the << operator as friend
 template<typename T> class Matrix;
 template <typename T> ostream& operator<<(ostream& os, const Matrix<T>& matrix);
-
 template<typename T>
+
+/**
+ * @brief Defines Matrix behaviour used by the construction of our Fields
+ * 
+ */
 class Matrix
 {
 private:
@@ -32,6 +46,13 @@ public:
     size_t getRows() const;
     size_t getCols() const;
 
+    /**
+     * @brief Returns the value given row and column
+     * 
+     * @param r row
+     * @param c column
+     * @return T& 
+     */
     inline T &Value(size_t r, size_t c) 
     {
         #ifdef DEBUG
@@ -40,7 +61,14 @@ public:
         return values[r * cols + c];
     }
 
-    // If this class is marked as const, this const overload method will return a const (read only) reference
+    /**
+     * @brief Returns the value given row and column
+     * If this class is marked as const, this const overload method will return a const (read only) reference
+     * 
+     * @param r 
+     * @param c 
+     * @return const T& 
+     */
     inline const T &Value(size_t r, size_t c) const
     {
         #ifdef DEBUG

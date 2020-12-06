@@ -10,14 +10,18 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
+    int size;
+
+    // Initialize the MPI environment and get size of the group
     MPI_Init(&argc, &argv);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
     if (argc != 5) 
     {
         cout << "Usage: " << argv[0] << " <N> <Organisms> <Epochs> <Decay>, recommend 20 100 1000 0.995f" << endl;
         exit(1);
     }
-    
+     
     size_t N = (size_t)stoi(argv[1]);
     size_t organisms = (size_t)stoi(argv[2]);
     size_t epochs = (size_t)stoi(argv[3]);
@@ -53,14 +57,14 @@ int main(int argc, char **argv)
             .forceCol = 1.f / (float)N
         };
     }
-    int size;
-    MPI_Comm_size(MPI_COMM_WORLD, &size);
 
+    // Define number of organisms and set Evolutionary Optimizator
     organisms = organisms - organisms % size;
     EvolutionaryOptimizator evolutionary_optimizator(support, forces, organisms, N, N);
     
+    // Run evolution
     evolutionary_optimizator.Evolve(epochs, 1.f, decay);
 
+    // Terminate MPI execution
     MPI_Finalize();
 }
-

@@ -1,3 +1,13 @@
+/**
+ * @file EvolutionaryOptimizator.cpp
+ * @author Tobias Jacob - Galliera Raffaele - Ali Muddasar
+ * @brief 
+ * @version 1.0
+ * @date 2020-12-06
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
 #include "EvolutionaryOptimizator.hpp"
 #include "PerformanceEvaluator.hpp"
 #include "Equation.hpp"
@@ -23,6 +33,7 @@ void EvolutionaryOptimizator::mutate(Organism &dest, size_t alteratedFields)
         size_t mutationCol = rand() % orgCols;
         size_t mutationRow = rand() % orgRows;
 
+        // Lambda function used to make sure to access in-bounds Planes
         auto protectedAccess = [&](size_t r, size_t c)
         {
             if (r < dest.field->Rows && c < dest.field->Cols) 
@@ -41,6 +52,7 @@ void EvolutionaryOptimizator::mutate(Organism &dest, size_t alteratedFields)
                 alterations++;
             }
         }
+        // Make sure that the col and row to be mutated are not supports or on force elements
         else
         {
             bool isSupport = false;
@@ -82,35 +94,48 @@ void EvolutionaryOptimizator::mutate(Organism &dest, size_t alteratedFields)
 
 void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxStress, const float alterationDecay)
 {
+    // MPI-related variables
     int rank, size;
     double time;
     
+    // Determining rank of the calling process and size of our process group
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
+    
+    // Set generation organisms and split by process group size 
     size_t organismsCount = globalGeneration->size();
     const size_t organismsPerNode = organismsCount / size;
+    // Number of best organisms we want to elect for the next iteration
     const size_t bestN = organismsCount / 10;
-    vector<Organism> localGeneration(organismsPerNode, Organism(orgRows, orgCols));
     
+    // Set buffers and datatype used during collective communication between processes
+    vector<Organism> localGeneration(organismsPerNode, Organism(orgRows, orgCols));
     size_t orgSize = Organism::getSize(this->orgCols, this->orgRows);
     vector<byte> localBuffer(orgSize * organismsPerNode);
     vector<byte> bestBuffer(orgSize * bestN);
     vector<byte> allBuffer(orgSize * organismsCount);
     MPI_Datatype orgDType = Organism::getDatatype(this->orgCols, this->orgRows);
 
+    // Set elapsed wall-clock time. Times are local to the node that called it.
     time = MPI_Wtime();
+
+    // Set number of alterations to be executed
     float alterations = orgRows * orgCols / 10;
+    // Produce and iterate through generations
     for (size_t epoch = 0; epoch < generations; epoch++)
     {
-        // Calculate loss for organis
+        // Calculate loss for organism
         for (size_t i = 0; i < organismsPerNode; i++) 
         {
+            // Run mutation on the organism
             mutate(localGeneration[i], alterations);
-
+            
+            // The main node set the debug file to be produced by the performance evaluator
             optional<string> debugSave = nullopt;
             if (rank == 0 && epoch % 25 == 0 && i == 0)
                 debugSave = string("debug/Debug-") + to_string(epoch) + ".html";
 
+            // Run evaluation
             float stress = evaluator.GetPerformance(*localGeneration[i].field, debugSave);
             if (stress > maxStress) // Mechanical structure broke, organism died
                 localGeneration[i].loss = INFINITY;
@@ -142,8 +167,9 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
             }
         }
 
+        // Broadcast all the best elected organisms
         MPI_Bcast(bestBuffer.data(), bestN, orgDType, 0, MPI_COMM_WORLD);
-        // Calculate loss for organis
+        // Calculate loss for organism
         for (size_t i = 0; i < organismsPerNode; i++)
         {
             size_t globalIndex = rank * organismsPerNode + i;
@@ -154,12 +180,14 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
         alterations = (alterations - 1) * alterationDecay + 1;
     }
 
+    // Calculates time elapsed for every node
     time = MPI_Wtime() - time;
 
+    // Produce the maximum amount of time taken
     double maxtime;
-
     MPI_Reduce(&time, &maxtime, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
-
+        
+    // Main node summarizes the results
     if (rank == 0) {
         cout << std::fixed << std::setprecision(3) << "Time: " << maxtime << ", Generations: " << generations << ", Epochs per Second: " << generations / maxtime << endl;
         cout << "Used " << size << " node(s) and " << omp_get_max_threads() << " core(s) per node " << endl;

@@ -1,3 +1,13 @@
+/**
+ * @file Organism.cpp
+ * @author Tobias Jacob - Raffaele Galliera - Ali Muddasar
+ * @brief 
+ * @version 1.0
+ * @date 2020-12-06
+ * 
+ * @copyright Copyright (c) 2020
+ * 
+ */
 #include "Organism.hpp"
 
 Organism::Organism(size_t rows, size_t cols)
@@ -57,9 +67,14 @@ MPI_Datatype Organism::getDatatype(size_t rows, size_t cols)
 {
     if (!mpiDatatype)
     {
-        int lengths[2] = {1, (int)rows * (int)cols};
-        MPI_Aint displacements[2] = {0, sizeof(float)};
+        // Define types used from the derived datatype
         MPI_Datatype types[2] = {MPI_FLOAT, MPI_C_BOOL};
+        // Define lenght of the datatypes
+        int lengths[2] = {1, (int)rows * (int)cols};
+        // Describe relative position of the datatypes
+        MPI_Aint displacements[2] = {0, sizeof(float)};
+        
+        // Create and commit custom datatype
         MPI_Type_create_struct(2, lengths, displacements, types, &mpiDatatype);
         MPI_Type_commit(&mpiDatatype);
     }

@@ -9,7 +9,7 @@ void add(const vector<T> &a, const vector<T> &b, vector<T> &result)
     #endif
     #pragma omp for schedule(static, 32)
     for (size_t r = 0; r < a.size(); r++)
-        result[r] = a[r] + b[r];
+        result[r] = a[r] + b[r]; //the result vector is filled with the sum of the values of vectors a and b 
 }
 
 template<typename T>
@@ -21,7 +21,7 @@ void subtract(const vector<T> &a, const vector<T> &b, vector<T> &result)
     #endif
     #pragma omp for schedule(static, 32)
     for (size_t r = 0; r < a.size(); r++)
-        result[r] = a[r] - b[r];
+        result[r] = a[r] - b[r]; //the result vector is filled with the difference of the values of vectors a and b 
 }
 
 template<typename T>
@@ -32,7 +32,7 @@ void multiply(const T a, const vector<T> &b, vector<T> &result)
     #endif
     #pragma omp for schedule(static, 32)
     for (size_t r = 0; r < b.size(); r++)
-        result[r] = a * b[r];
+        result[r] = a * b[r]; //the result vector is filled with the multiplication of the values of vectors a and b 
 }
 
 template<typename T>
@@ -40,7 +40,7 @@ void l2square(const vector<T> &a, T &resultL2Square)
 {
     #pragma omp for reduction(+: resultL2Square) schedule(static, 32)
     for (size_t r = 0; r < a.size(); r++)
-        resultL2Square += a[r] * a[r];
+        resultL2Square += a[r] * a[r]; //the summation of the square values of the vector a is saved in resultL2Square
 }
 
 template<typename T>
@@ -51,7 +51,7 @@ void scalarProduct(const vector<T> &a, const vector<T> &b, T &resultScalar)
     #endif
     #pragma omp for reduction(+: resultScalar) schedule(static, 32)
     for (size_t r = 0; r < a.size(); r++)
-        resultScalar += a[r] * b[r];
+        resultScalar += a[r] * b[r]; //the summation of the multiplication of values of vector a and b is saved in resultScalar
 }
 
 template<typename T>
@@ -59,7 +59,7 @@ void printVector(const vector<T> &a)
 {
     #pragma omp for
     for (size_t r = 0; r < a.size(); r++)
-        cout << a[r] << " ";
+        cout << a[r] << " "; //all the values of the vector a are printed
     cout << endl;
 }
 
@@ -68,7 +68,7 @@ void fillZeros(vector<T> &a)
 {
     #pragma omp for schedule(static, 32)
     for (size_t r = 0; r < a.size(); r++)
-        a[r] = 0;
+        a[r] = 0; //the vector a is filled with 0 
 }
 
 template<typename T>
@@ -79,7 +79,7 @@ void assign(vector<T> &src, vector<T> &dest)
     #endif
     #pragma omp for schedule(static, 32)
     for (size_t r = 0; r < src.size(); r++)
-        dest[r] = src[r];
+        dest[r] = src[r]; //all the values of vector src are copied in the vector dest
 }
 
 template void add(const vector<int> &a, const vector<int> &b, vector<int> &result);
