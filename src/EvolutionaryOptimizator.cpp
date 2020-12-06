@@ -7,57 +7,6 @@
 #include <random>
 #include <iterator>
 
-EvolutionaryOptimizator::Organism::Organism(size_t rows, size_t cols)
-    : field(new Field(rows, cols, true))
-{
-    
-}
-
-EvolutionaryOptimizator::Organism::Organism(Organism const &other)
-    : loss(other.loss), field(new Field(other.field->Rows, other.field->Cols))
-{
-    for (size_t r = 0; r < field->Rows; r++)
-        for (size_t c = 0; c < field->Cols; c++)
-            field->Plane(r, c) = other.field->Plane(r, c);    
-}
-
-EvolutionaryOptimizator::Organism &EvolutionaryOptimizator::Organism::operator= (Organism const &other)
-{
-    #ifdef DEBUG
-    if (field->Rows != other.field->Rows || field->Cols != other.field->Cols) throw "Fields have different sizes";
-    #endif
-    loss = other.loss;
-    for (size_t r = 0; r < field->Rows; r++)
-        for (size_t c = 0; c < field->Cols; c++)
-            field->Plane(r, c) = other.field->Plane(r, c);    
-    return *this;
-}
-
-EvolutionaryOptimizator::Organism::Organism(Organism &&other) 
-{
-    field = move(other.field);
-    loss = other.loss;
-}
-
-EvolutionaryOptimizator::Organism& EvolutionaryOptimizator::Organism::operator= (Organism &&other) 
-{
-    if (this != &other) 
-    {
-        field = move(other.field);
-        loss = other.loss;
-    }
-    return *this;
-}
-
-size_t EvolutionaryOptimizator::Organism::countPlanes() 
-{
-    size_t count = 0;
-    for (size_t r = 0; r < field->Rows; r++)
-        for (size_t c = 0; c < field->Cols; c++)
-            if (field->Plane(r, c)) count++;
-    return count;
-}
-
 EvolutionaryOptimizator::EvolutionaryOptimizator(const Support &supports, const vector<Force> &forces, const size_t organismsCount, const size_t orgRows, const size_t orgCols)
     : supports(supports), forces(forces), orgRows(orgRows), orgCols(orgCols)
     , evaluator(orgRows, orgCols, supports, forces)
