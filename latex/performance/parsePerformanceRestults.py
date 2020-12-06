@@ -36,7 +36,7 @@ plt.legend(loc='upper left')
 
 # plt.grid(True)
 
-tikzplotlib.save("../report/graphs/mechanicsSolverResults.tex", axis_width="\\textwidth", axis_height="0.618\\textwidth")
+tikzplotlib.save("../report/graphs/mechanicsSolverResults.tex", axis_width="\\textwidth", axis_height="0.5\\textwidth")
 # %% Create latex table
 
 Ns = df.N.unique()
@@ -45,16 +45,17 @@ Cs = df.C.unique()
 Cs
 
 # %%
-executionSpeedTable = pd.DataFrame(index=['Problem size'] + list(Cs), columns=Ns, dtype=int)
+executionSpeedTable = pd.DataFrame(index=['Equations'] + list(Cs), columns=Ns, dtype=int)
 
 for (i, (N, C, Time, EquationSize)) in df.iterrows():
     executionSpeedTable.loc[C, N] = Time / 1000
-    executionSpeedTable.loc['Problem size', N] = EquationSize
+    executionSpeedTable.loc['Equations', N] = EquationSize
+
+executionSpeedTable.index = ['Equations'] + [f"$C = {C}$" for C in Cs]
+executionSpeedTable.columns = [f"$N = {N}$" for N in Ns]
 
 latex = executionSpeedTable.to_latex(
             escape = False,
-            index_names=['Problem size'] + [f"$C = {C}$" for C in Cs], 
-            header=[f"$N = {N}$" for N in Ns],
             float_format="%.0f"
             )
 
