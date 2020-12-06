@@ -233,25 +233,22 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
     // Start timer
     double start = microtime();
 
-    // Spawn threads to solve equation in parallel
-    {
-        // Generates an equation system from the field / mesh
-        setupEquation(field);
-        // Solve equation
-        equation->SolveIterative();
+    // Generates an equation system from the field / mesh
+    setupEquation(field);
+    // Solve equation
+    equation->SolveIterative();
 
-        // Calculate the residuum to validate accuracy of the solution
-        equation->K.Multiply(equation->GetSolution(), *fTilde);
-        subtract(*fTilde, equation->f, *resids);
-        l2square(*resids, residuum);
+    // Calculate the residuum to validate accuracy of the solution
+    equation->K.Multiply(equation->GetSolution(), *fTilde);
+    subtract(*fTilde, equation->f, *resids);
+    l2square(*resids, residuum);
 
-        // Calculate stress
-        calculateStress(field, equation->GetSolution());
+    // Calculate stress
+    calculateStress(field, equation->GetSolution());
 
-        // Get the maximum stress
-        for (size_t i = 0; i < planes * 2; i++)
-            maxStress = max(maxStress, (*stress)[i]);
-    }
+    // Get the maximum stress
+    for (size_t i = 0; i < planes * 2; i++)
+        maxStress = max(maxStress, (*stress)[i]);
 
     // Stop timer
     lastSolvingTime = microtime() - start;
