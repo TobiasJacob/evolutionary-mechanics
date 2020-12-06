@@ -1,5 +1,6 @@
 \documentclass[12pt]{article}
 \usepackage[utf8]{inputenc}
+\usepackage{booktabs}
 \usepackage{listings}
 \usepackage{color}
 \usepackage{siunitx}
@@ -62,6 +63,13 @@ Nevertheless, the Equation Solver is a powerful solver, that scales well with co
     \caption{Speedup of the equation solver for different proplem sizes $N$.}
     \label{fig:Speedup}
 \end{figure}
+
+\begin{table}[t]
+    \centering
+    \include{tables/executionSpeedTable}
+    \caption{Execution time for the equation solver}
+    \label{tab:Speedup}
+\end{table}
 
 \subsection{Speeding up the evolutionary algorithm}
 
