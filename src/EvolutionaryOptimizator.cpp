@@ -147,7 +147,7 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
         for (size_t i = 0; i < organismsPerNode; i++)
         {
             size_t globalIndex = rank * organismsPerNode + i;
-            localGeneration[i].readFromBuffer(bestBuffer.data() orgSize * (globalIndex % bestN));
+            localGeneration[i].readFromBuffer(bestBuffer.data() + orgSize * (globalIndex % bestN));
         }
 
         // Restart from the best elected organism
