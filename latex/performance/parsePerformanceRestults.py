@@ -68,8 +68,8 @@ executionSpeedTable
 # %%
 
 evoSpeedup = pd.DataFrame([
-    [33.667, 16.263, 9.399, 5.432, 2.950, 4.256],
-    [296.997, 196.137, 91.958, 43.114, 25.199, 29.429],
+    [33.667, 18.519, 9.399, 5.432, 2.950, 4.256],
+    [296.997, 164.875, 91.958, 43.114, 25.199, 29.429],
     [2686.816, 1343.408, 671.704, 335.852, 200.529, 164.243]
 ], index=[10, 20, 40], columns=[7, 14, 28, 56, 112, 224])
 evoSpeedup
@@ -84,3 +84,5 @@ plt.ylabel("Speedup")
 plt.legend(loc='upper left')
 tikzplotlib.save("../report/graphs/evolutionResults.tex", axis_width="\\textwidth", axis_height="0.5\\textwidth")
 
+
+# %%
