@@ -12,14 +12,15 @@ int main(int argc, char **argv)
 {
     MPI_Init(&argc, &argv);
 
-    if (argc != 3) 
+    if (argc != 4) 
     {
-        cout << "Usage: " << argv[0] << " <N> <Epochs>" << endl;
+        cout << "Usage: " << argv[0] << " <N> <Epochs> <Organisms>" << endl;
         exit(1);
     }
     
     size_t N = (size_t)stoi(argv[1]);
     size_t epochs = (size_t)stoi(argv[2]);
+    size_t organisms = (size_t)stoi(argv[3]);
 
     // Support and Forces should remain unchanged during the remaining part of the program
     Support support = {
@@ -54,7 +55,7 @@ int main(int argc, char **argv)
     int size;
     MPI_Comm_size(MPI_COMM_WORLD, &size);
 
-    int organisms = 100 - 100 % size;
+    int organisms = organisms - organisms % size;
     EvolutionaryOptimizator evolutionary_optimizator(support, forces, organisms, N, N);
     
     evolutionary_optimizator.Evolve(epochs, 1.f, 0.995f);
