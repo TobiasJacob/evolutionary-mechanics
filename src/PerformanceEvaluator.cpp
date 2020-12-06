@@ -225,23 +225,23 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         throw new exception();
     #endif
     
-    #pragma omp single
-    {
-        // Get corner numbering, so each corner of a tile has a determined index, starting at 1
-        refreshCornerIndex(field);
-        fTilde = make_unique<vector<float> >(conditions);
-        resids = make_unique<vector<float> >(conditions);
-        stress = make_unique<vector<float> >(planes * 2);
-        residuum = 0;
-        maxStress = 0;
-        equation = make_unique<Equation>(conditions);
-        equationRowLock = make_unique<vector<omp_lock_t> >(conditions);
-    }
-    #pragma omp barrier
+    // This part cannot be parallelized. Also, the vectors have to be shared memory. It helps therefore to join the threads after this.
+    // Update corner index
+    refreshCornerIndex(field);
 
-    // Calculate residum
+    // Pre-allocate / reset memory
+    fTilde = make_unique<vector<float> >(conditions);
+    resids = make_unique<vector<float> >(conditions);
+    stress = make_unique<vector<float> >(planes * 2);
+    residuum = 0;
+    maxStress = 0;
+    equation = make_unique<Equation>(conditions);
+    equationRowLock = make_unique<vector<omp_lock_t> >(conditions);
+
+    // Start timer
     double start = microtime();
 
+    // Spawn threads to solve equation in parallel
     #pragma omp parallel
     {
         // Generates an equation system from the field / mesh
@@ -249,28 +249,34 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         // Solve equation
         equation->SolveIterative();
 
+        // Calculate the residuum to validate accuracy of the solution
         equation->K.Multiply(equation->GetSolution(), *fTilde);
         subtract(*fTilde, equation->f, *resids);
         l2square(*resids, residuum);
 
-        // Calculate maximum stress
+        // Calculate stress
         calculateStress(field, equation->GetSolution());
 
+        // Get the maximum stress
         #pragma omp for reduction(max:maxStress) schedule(static, 32)
         for (size_t i = 0; i < planes * 2; i++)
             maxStress = max(maxStress, (*stress)[i]);
     }
 
+    // Stop timer
     lastSolvingTime = microtime() - start;
 
     // Maybe put out debug view
     #pragma omp single
     if (outputFileName.has_value())
     {
+        // This class will take care of generating the html file with all the information.
         Plotter plotter(*outputFileName);
-        plotter.plot(field, equation->GetSolution(), cornerIndexRow, cornerIndexCol, supports, forces, equation->GetSteps(), residuum, *stress, lastSolvingTime); // steps, residum, sigma
+        plotter.plot(field, equation->GetSolution(), cornerIndexRow, cornerIndexCol, supports, forces, equation->GetSteps(), residuum, *stress, lastSolvingTime);
     }
     #pragma omp barrier
+
+    // Return maximum stress
     return maxStress;
 }
 
