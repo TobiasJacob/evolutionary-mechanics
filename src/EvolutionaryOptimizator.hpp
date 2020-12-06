@@ -20,7 +20,6 @@ class EvolutionaryOptimizator
         PerformanceEvaluator evaluator;
 
         unique_ptr<vector<Organism> > currentGeneration;
-
         unique_ptr<Organism> currentOrganism;
 
         void mutate(Organism &dest, size_t alteratedFields);

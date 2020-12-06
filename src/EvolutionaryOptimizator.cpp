@@ -11,6 +11,7 @@ EvolutionaryOptimizator::EvolutionaryOptimizator(const Support &supports, const 
     : supports(supports), forces(forces), orgRows(orgRows), orgCols(orgCols)
     , evaluator(orgRows, orgCols, supports, forces)
     , currentGeneration(new vector<Organism>(organismsCount, Organism(orgRows, orgCols)))
+    , currentOrganism(new Organism(orgRows, orgCols))
 {
 
 }
@@ -94,35 +95,33 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
     MPI_Datatype orgDType = Organism::getDatatype(this->orgCols, this->orgRows);
 
     time = MPI_Wtime();
-
     float alterations = orgRows * orgCols / 10;
     for (size_t epoch = 0; epoch < generations; epoch++)
     {
         // Calculate loss for organis
-        Organism &org = *currentOrganism;
-        mutate(org, alterations);
+        mutate(*currentOrganism, alterations);
 
         optional<string> debugSave = nullopt;
         if (rank == 0 && epoch % 10 == 0)
             debugSave = string("debug/Debug-") + to_string(epoch) + ".html";
 
-        float stress = evaluator.GetPerformance(*org.field, debugSave);
+        float stress = evaluator.GetPerformance(*currentOrganism->field, debugSave);
         if (stress > maxStress) // Mechanical structure broke, organism died
-            org.loss = INFINITY;
+            currentOrganism->loss = INFINITY;
         else
-            org.loss = org.countPlanes();
+            currentOrganism->loss = currentOrganism->countPlanes();
 
         //Node serialize the organism
-        org.writeIntoBuffer(singleBuffer.data());
+        currentOrganism->writeIntoBuffer(singleBuffer.data());
 
         //Gather all the organisms
-        MPI_Gather(singleBuffer.data(), 1, orgDType, allBuffer.data(), organismsCount, orgDType, 0, MPI_COMM_WORLD);
+        MPI_Gather(singleBuffer.data(), 1, orgDType, allBuffer.data(), 1, orgDType, 0, MPI_COMM_WORLD);
 
         if (rank == 0)
         {
             //deserialize and populate vector
             for (size_t i = 0; i < organismsCount; i++)
-                (*currentGeneration)[i].readFromBuffer(singleBuffer.data() + i * orgSize);
+                (*currentGeneration)[i].readFromBuffer(allBuffer.data() + i * orgSize);
 
             // Sort according to loss
             sort(currentGeneration->begin(), currentGeneration->end(), [](Organism &a, Organism &b) {return a.loss < b.loss; });
@@ -136,7 +135,6 @@ void EvolutionaryOptimizator::Evolve(const size_t generations, const float maxSt
         currentOrganism->readFromBuffer(singleBuffer.data());
 
         // Restart from the best elected organism
-        mutate(*currentOrganism, alterations);
         alterations *= alterationDecay;
     }
 

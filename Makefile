@@ -37,7 +37,6 @@ build/src/%.o: src/%.cpp $(OBJHEADERS) Makefile | build # Use "order-only prereq
 
 # Link all test and source objects
 build/mpi-test/%: build/src/mpi-test/%.o $(OBJSRC) Makefile
-	echo "Test"
 	$(CXX) $(CXXFLAGS) -o $@ $< $(OBJSRC)
 
 .PHONY: mpi-tests
