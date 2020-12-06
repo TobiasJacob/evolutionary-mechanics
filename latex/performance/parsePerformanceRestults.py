@@ -66,3 +66,21 @@ with open('../report/tables/executionSpeedTable.tex', 'w') as f:
     f.write(latex)
 executionSpeedTable
 # %%
+
+evoSpeedup = pd.DataFrame([
+    [33.667, 16.263, 9.399, 5.432, 2.950, 4.256],
+    [296.997, 196.137, 91.958, 43.114, 25.199, 29.429],
+    [2686.816, 1343.408, 671.704, 335.852, 200.529, 164.243]
+], index=[10, 20, 40], columns=[7, 14, 28, 56, 112, 224])
+evoSpeedup
+# %%
+
+plt.figure(figsize=(8.27, 5.83))
+# plt.plot(evoSpeedup.columns, evoSpeedup.columns, '--', color='gray', label='ideal')
+for (N, runTimes) in reversed(list(evoSpeedup.iterrows())):
+    plt.plot(evoSpeedup.columns, runTimes.max() / runTimes, color=cmap((1 - N / 200) ** 3), label='$N = ' + str(N) + '$')
+plt.xlabel("Core count")
+plt.ylabel("Speedup")
+plt.legend(loc='upper left')
+tikzplotlib.save("../report/graphs/evolutionResults.tex", axis_width="\\textwidth", axis_height="0.5\\textwidth")
+
