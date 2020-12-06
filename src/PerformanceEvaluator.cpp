@@ -113,7 +113,7 @@ void PerformanceEvaluator::setupEquation(Field &field)
             }    
 }
 
-void PerformanceEvaluator::calculateStress(Field &field, const vector<float> &q, vector<float> &stress)
+void PerformanceEvaluator::calculateStress(Field &field, const vector<float> &q)
 {
     // For every tile
     #pragma omp for schedule(static, 16)
@@ -163,8 +163,8 @@ void PerformanceEvaluator::calculateStress(Field &field, const vector<float> &q,
                 float squaredStressLower = sigmaLower[0] * sigmaLower[0] + sigmaLower[1] * sigmaLower[1] + sigmaLower[0] * sigmaLower[1] + 3 * sigmaLower[2] * sigmaLower[2];
                 float squaredStressUpper = sigmaUpper[0] * sigmaUpper[0] + sigmaUpper[1] * sigmaUpper[1] + sigmaUpper[0] * sigmaUpper[1] + 3 * sigmaUpper[2] * sigmaUpper[2];
                 size_t i = planeIndex.Value(r, c);
-                stress[2 * i] = squaredStressLower;
-                stress[2 * i + 1] = squaredStressUpper;
+                (*stress)[2 * i] = squaredStressLower;
+                (*stress)[2 * i + 1] = squaredStressUpper;
             }
 }
 
@@ -230,7 +230,7 @@ float PerformanceEvaluator::GetPerformance(Field &field, optional<string> output
         l2square(*resids, residuum);
 
         // Calculate maximum stress
-        calculateStress(field, equation->GetSolution(), *stress);
+        calculateStress(field, equation->GetSolution());
 
         #pragma omp for reduction(max:maxStress) schedule(static, 32)
         for (size_t i = 0; i < planes * 2; i++)
