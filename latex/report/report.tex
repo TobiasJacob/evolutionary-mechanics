@@ -99,6 +99,23 @@ Evolutionary algoirthms are very parallel by nature. Each organism can be evalua
 We typically simulate grid sizes of 20, meaning the message has a size of 404 bytes. Since all processes will be initialized with the same field size it has not to be stored in the message. Our evolution works like shown in algorith~\ref{alg:Evolution}. The result of the finished evolution is shown on figure~\ref{fig:Evolution}.
 
 
+\begin{table}[t]
+    \centering
+    \begin{tabular}{llrrrrrr}
+        \toprule
+        Cores & 7 & 14 & 28 & 56 & 112 & 224 \\
+        Cores per Task & 1 & 1 & 1 & 1 & 1 & 2 \\
+        Tasks & 7 & 14 & 28 & 56 & 112 & 112 \\
+        Nodes & 1 & 1 & 1 & 2 & 4 & 8 \\
+        \midrule
+        N = 10 & 33.667     & 37.810 & 9.399 & 5.432 \\
+        N = 20 & 296.997    & 302.330 & 91.958 & 43.114 \\
+        N = 40 & -          & - & - \\
+        \bottomrule
+    \end{tabular}
+    \caption{Execution time for the evoultion for different field sizes $N$ and cores $C$. The generation size is set fixed to 112.}
+    \label{tab:Speedup}
+\end{table}
 
 \begin{figure}[p]
     \begin{subfigure}[b]{0.5\textwidth}
