@@ -40,12 +40,12 @@ const T& SparseMatrix<T>::GetValue(size_t row, size_t col) const
     if (row >= rows || col >= cols) throw new out_of_range("SparseMatrix");
     #endif
 
-    list<pair<size_t, T>> &rowVals = values[row];
+    const list<pair<size_t, T>> &rowVals = values[row];
 
     auto cursorIterator = rowVals.begin();
     while (cursorIterator != rowVals.end())
     {
-        pair<size_t, T> &cursor = *cursorIterator;
+        const pair<size_t, T> &cursor = *cursorIterator;
         if (cursor.first == col) return cursor.second;
         cursorIterator++;
     }

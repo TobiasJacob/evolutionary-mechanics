@@ -37,7 +37,7 @@ private:
     const size_t rows; // Rows of the sparse matrix
     const size_t cols; // Cols of the sparse matrix
     const T defaultValue; // The value to return if the matrix cell has no entry (typicall 0)
-    vector<list<pair<size_t, T> > > values; // An array of 
+    vector<list<pair<size_t, T> > > values; // An vector of lists for each row
 
 public:
     SparseMatrix(size_t rows, size_t cols);
