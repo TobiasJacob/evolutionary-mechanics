@@ -1,16 +1,13 @@
 #include "SparseMatrix.hpp"
 
 template<typename T>
-SparseMatrix<T>::SparseMatrix(size_t rows, size_t cols) : rows(rows), cols(cols), defaultValue(0)
+SparseMatrix<T>::SparseMatrix(size_t rows, size_t cols) : rows(rows), cols(cols), defaultValue(0), values(rows)
 {
-    values = (list<pair<size_t, T>> *)malloc(rows * sizeof(list<pair<size_t, T>>));
-    new (values) list<pair<size_t, T>>[rows]; // Use replacement new to construct vectors in already allocated (and later also aligned) memory
 }
 
 template<typename T>
 SparseMatrix<T>::~SparseMatrix() 
 {
-    free(values);
 }
 
 template<typename T>
@@ -20,16 +17,19 @@ void SparseMatrix<T>::SetValue(size_t row, size_t col, T value)
     if (row >= rows || col >= cols) throw new out_of_range("SparseMatrix");
     #endif
 
+    // Get row
     list<pair<size_t, T>> &rowVals = values[row];
 
-    // Find end or first value bigger than cursor
+    // Find end or first value greater or equal to cursor
     auto cursorIterator = rowVals.begin();
     while (cursorIterator != rowVals.end())
     {
+        // If index of cell is greater than col break
         if (cursorIterator->first >= col) break;
         cursorIterator++;
     }
-
+    
+    // Check if cell with that col index is found
     if (cursorIterator != rowVals.end() && cursorIterator->first == col)
         cursorIterator->second = value; // Set this value
     else
@@ -43,16 +43,22 @@ const T& SparseMatrix<T>::GetValue(size_t row, size_t col) const
     if (row >= rows || col >= cols) throw new out_of_range("SparseMatrix");
     #endif
 
-    list<pair<size_t, T>> &rowVals = values[row];
+    // Get row
+    const list<pair<size_t, T>> &rowVals = values[row];
 
+    // Iterate through the row
     auto cursorIterator = rowVals.begin();
     while (cursorIterator != rowVals.end())
     {
-        pair<size_t, T> &cursor = *cursorIterator;
+        const pair<size_t, T> &cursor = *cursorIterator;
+        // If curser is the current value, return it
         if (cursor.first == col) return cursor.second;
+        // If index of cell is greater than col break
+        if (cursorIterator->first > col) break;
         cursorIterator++;
     }
 
+    // If nothing is found, return the default value
     return defaultValue;
 }
 
@@ -63,9 +69,10 @@ T& SparseMatrix<T>::GetOrAllocateValue(size_t row, size_t col)
     if (row >= rows || col >= cols) throw new out_of_range("SparseMatrix");
     #endif
 
+    // Get row
     list<pair<size_t, T>> &rowVals = values[row];
 
-    // Find end or first value bigger than cursor
+    // Find end or first value greater or equal to cursor
     auto cursorIterator = rowVals.begin();
     while (cursorIterator != rowVals.end())
     {
@@ -73,12 +80,13 @@ T& SparseMatrix<T>::GetOrAllocateValue(size_t row, size_t col)
         cursorIterator++;
     }
 
+    // Check if the actual value is found
     if (cursorIterator != rowVals.end() && cursorIterator->first == col)
-        return cursorIterator->second; // Get this value
+        return cursorIterator->second; // Return the value
     else
     {
         rowVals.insert(cursorIterator, pair<size_t, T>(col, 0)); // Insert new value before cursorIterator
-        return (--cursorIterator)->second;
+        return (--cursorIterator)->second; // Return the new value
     }
 }
 
@@ -89,10 +97,12 @@ void SparseMatrix<T>::Multiply(const vector<T> &vec, vector<T> &result)
     if (vec.size() != cols) {cerr << "Invalid sparse matrix multiplication, has " << cols << " cols and vector has " << vec.size() << " rows" << endl; throw new invalid_argument("Vector size"); }
     if (rows != result.size()) {cerr << "Invalid sparse matrix multiplication, result has " << result.size() << " cols and matrix has " << rows << " rows" << endl; throw new invalid_argument("Result size"); }
     #endif
+    // Each thread processes its own chunk rows
     #pragma omp for schedule(static, 32)
     for (size_t r = 0; r < rows; r++)
-        for (pair<size_t, T> &element: values[r])
+        for (pair<size_t, T> &element: values[r]) // Iterate over all elements in that row
         {
+            // Perform the matrix multiplication (element.first is cell index, element.second is cell value)
             result[r] += element.second * vec[element.first];
         }
 }
@@ -100,6 +110,7 @@ void SparseMatrix<T>::Multiply(const vector<T> &vec, vector<T> &result)
 template<typename T>
 ostream& operator<<(ostream& os, const SparseMatrix<T>& matrix)
 {
+    // Print each row
     for (size_t r = 0; r < matrix.rows; r++)
     {
         os << "[";
