@@ -23,12 +23,12 @@
 \maketitle
 
 \begin{abstract}
-    We developed an application that is able to develop mechanical structures using an evolutionary algorithm. This approach can be scaled efficiently across many different nodes.
+    We developed an application that is able to develop mechanical structures using an evolutionary algorithm. This approach can be scaled efficiently across many different nodes. It is able to evolve 1000 generations of 112 organisms of a $80 \times 80$ structure on 256 cores on bridges in $36.05$ minutes.
 \end{abstract}
 
 \section{Introduction}
 
-With increasing computing power available, a new approach is becoming more relevant in engineering: Evolutionary algorithms. Instead of developing a mechanical structure for a problem, an engineer just specifies the problem and lets the computer come up with a solution. The hope is that the computer will come up with a better solution the engineer did not think of.
+With increasing computing power available, a new approach is becoming more relevant in engineering: Evolutionary algorithms. Instead of developing a mechanical structure for a problem, an engineer just specifies the forces it has to withstand and lets the computer come up with a solution. The hope is that the computer will come up with a better solution the engineer did not think of. The computer uses a try-and-error approach by making random altertations and only keeping the best mechanical structure. ``Best'' means, that it uses the least material possible while still withstanding the force. Figure~\ref{fig:Evolution} shows the outcome of such a process.
 
 \begin{figure}[h]
     \centering
@@ -39,10 +39,10 @@ With increasing computing power available, a new approach is becoming more relev
 
 \section{Method}
 
-Our project is divided in two sections and corresponding layers of parallelism. The first one is solving the mechanical equations to check if a mechanical structure can withstand a force. Figure~\ref{fig:Mechanical_Simulation} shows the result of such a simulation. The shape of a figure is approximated through squares. A detailed introduction on how to use the finite element method can be found at~\cite{Nikishkov2004}. We used \texttt{OpenMP} for this part.
+Our project is divided in two sections and corresponding layers of parallelism. The first one is solving the mechanical equations to check if a mechanical structure can withstand a force. Figure~\ref{fig:Mechanical_Simulation} shows the result of such a simulation. The shape of a figure is approximated through squares consisting of two triangles. A detailed introduction on how to use the finite element method can be found at~\cite{Nikishkov2004}. We used OpenMP for this part.
 
 
-The second stage is the evolutionary algorithm. The best 10\% survive in each round. The structures mutate and are simulated again. We used \texttt{MPI} for this part.
+The second stage is the evolutionary algorithm. The best 10\% survive in each round. The structures mutate and are simulated again. We used MPI for this part.
 
 \subsection{Speeding up the equation solver}
 
@@ -56,7 +56,7 @@ The second stage is the evolutionary algorithm. The best 10\% survive in each ro
 \begin{table}[p]
     \centering
     \include{tables/executionSpeedTable}
-    \caption{Execution time for the equation solver for different field sizes $N$ and cores $C$}
+    \caption{Execution time for the equation solver for different field sizes $N$ and cores $C$.}
     \label{tab:SpeedupSimulation}
 \end{table}
 
@@ -70,14 +70,14 @@ The second stage is the evolutionary algorithm. The best 10\% survive in each ro
     \label{alg:Simulation}
 \end{algorithm}
 
-The reason for using \texttt{OpenMP} is the tight coupling between the data in the sparse matrix multiplication. \texttt{gprof} revealed that the equation solver spends most of it's time in the sparse matrix multiplication, however the whole equation solver class works parallelized. The concept of the simulation is visualized in algorithm~\ref{alg:Simulation}.
+The reason for using OpenMP is the tight coupling between the data in the sparse matrix multiplication. \texttt{gprof} revealed that the equation solver spends most of it's time in the sparse matrix multiplication, however the whole equation solver class works parallelized. Algorithm~\ref{alg:Simulation} shows the the approach.
 
 \begin{itemize}
     \item \textbf{Threads are spawned at the highest level} of the \texttt{PerformanceEvaluator} class. Subsequent calls to the equation setup, equation solver or linear algrabra operations will not spawn new threads. They require the threads to be set up already, and process only their their chunk using the \texttt{omp for} directive. All for loops are executed in chunks to \textbf{prevent false sharing}.
     \item The \textbf{equation setup} process adds the local element stiffness matrix into the global equation system. Depending on the mechanical structure, the position of different planes appears rather random. Therefore, a lock is needed to prevent a race condition. Because the matrix is sparse and each thread works on its own plane, that typically are not directly connected, it is unprobable that two threads operate on the same equation row at the same time. A global lock would introduce an unnecessary penalty, therefore each row uses it's own \textbf{lock}.
     \item \textbf{All linear algebra operations of the equation solver work in parallel}, we can divide these in two types:
     
-    For addition, scalar multiplication, matrix multiplication or assigning a constant value, each thread processes its \textbf{own chunk of rows}. These operations do not require an implicit or explicit barrier. If for example, a vector addition follows a scalar multiplication, it is fine if the first thread begins with the scalar multiplication before the second thread has finished the vector addition, since each of them operates on its own set of rows.
+    For addition, scalar multiplication, matrix multiplication or assigning a constant value, each thread processes its \textbf{own chunk of rows}. These operations do not require an implicit or explicit barrier. If for example, a scalar multiplication follows a vector addition, it is fine if the first thread begins with the scalar multiplication before the second thread has finished the vector addition, since each of them operates on its own set of rows.
     
     However, in the conjugate gradient method there are also operations like the scalar product or the norm of the vector. These operations require a \textbf{reduction} and have an implicit barrier.
     \item In the beginning, a unique index has to be assigned to each Plane and corner. This is not parallelizable, as the total number of planes and corners is unkown and does not follow a predictable pattern.
@@ -103,7 +103,7 @@ for a sufficiently large $N$. The efficency is
     E = \frac{O_\mathit{seqSolve}}{O_\mathit{parSolve} C} = O\left(\frac{N^3}{N^3 + C^2}\right)
 \end{equation}
 
-As the efficency remains only if $N \propto C$, we can asses that the equation solver has Weak Scalibality. However, there is a significant overhead due to creating the threads. The speedup becomes only notable for problem sizes $N > 100$.
+As the efficency remains only if $N \propto C$, we can asses that the equation solver has weak scalibality. However, there is a significant overhead due to creating the threads. The speedup becomes only notable for problem sizes $N > 100$.
 
 The Equation Solver is still a powerful solver. It is able to solve a mechanical structure with 80600 equations in \SI{2.732}{\second} using 28 cores on bridges. It also showcases OpenMP and locks well. The speedup of the execution time of table~\ref{fig:SpeedupSimulation} are shown in figure~\ref{tab:SpeedupSimulation}.
 
@@ -151,7 +151,7 @@ The Equation Solver is still a powerful solver. It is able to solve a mechanical
     \label{fig:SpeedupEvolution}
 \end{figure}
 
-Evolutionary algoirthms are easily parallelizable by nature. Each organism can be evaluated independently by each node, while the results will be gathered by a single node in charge of sorting them. The best 10\% get broadcasted to the other nodes again. This is visualized in algorithm~\ref{alg:Evolution}.
+Evolutionary algorithms are easily parallelizable by nature. Each organism can be evaluated independently by each node, while the results will be gathered by a single node in charge of sorting them. The best 10\% get broadcasted to the other nodes again. This is visualized in algorithm~\ref{alg:Evolution}.
 
 A MPI Message for an evaluated board consisits of
 
@@ -190,7 +190,7 @@ so this algorithm has also a weak scalability. Table~\ref{tab:SpeedupEvolution} 
 
 \subsection{Implementation differences}
 
-As requested from the requirements, our submission containes three different implementations of our solution.
+As requested from the requirements, our submission containes four different implementations of our solution.
 
 \begin{itemize}
     \item The basic sequential implementation is the unoptimized version of the program.
@@ -200,8 +200,7 @@ As requested from the requirements, our submission containes three different imp
 \end{itemize}
 
 \section{Summary and learning outcomes}
-
-All of us learned a lot during the project. None of us used did a finite element simulation, conjugate gradient method or evolutionary algoirthm before. The project provided several challenges for us, for example using locks, combining OpenMP with MPI, seperating \texttt{omp parallel} from \texttt{omp for}. We improved our development technique a lot by using test-driven development, no-push-to-master and code reviews. 
+All of us learned a lot during the project. We have never experimented with finite element simulation, conjugate gradient method or evolutionary algorithms before. The project provided several challenges for us, for example using locks, combining OpenMP with MPI, separeting \texttt{omp parallel} from \texttt{omp for}. We improved our development technique a lot by using test-driven development, no-push-to-master and code reviews.
 
 \bibliographystyle{unsrt}
 \bibliography{sources}
