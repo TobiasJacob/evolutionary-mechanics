@@ -70,13 +70,14 @@ executionSpeedTable
 evoSpeedup = pd.DataFrame([
     [33.667, 18.519, 9.399, 5.432, 2.950, 4.256],
     [296.997, 164.875, 91.958, 43.114, 25.199, 29.429],
-    [2686.816, 1343.408, 671.704, 335.852, 200.529, 164.243]
-], index=[10, 20, 40], columns=[7, 14, 28, 56, 112, 224])
+    [2686.816, 1343.408, 671.704, 335.852, 200.529, 164.243],
+    [55177.240, 19588.620, 14045.210, 7105.495, 3729.680, 2163.535]
+], index=[10, 20, 40, 80], columns=[7, 14, 28, 56, 112, 224])
 evoSpeedup
 # %%
 
 plt.figure(figsize=(8.27, 5.83))
-# plt.plot(evoSpeedup.columns, evoSpeedup.columns, '--', color='gray', label='ideal')
+plt.plot(evoSpeedup.columns, evoSpeedup.columns / 7, '--', color='gray', label='ideal')
 for (N, runTimes) in reversed(list(evoSpeedup.iterrows())):
     plt.plot(evoSpeedup.columns, runTimes.max() / runTimes, color=cmap((1 - N / 200) ** 3), label='$N = ' + str(N) + '$')
 plt.xlabel("Core count")
