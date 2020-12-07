@@ -28,11 +28,11 @@
 
 \section{Introduction}
 
-With increasing computing power available, a new approach is becomeing more relevant in engineering: Evolutionary algorithms.
+With increasing computing power available, a new approach is becomeing more relevant in engineering: Evolutionary algorithms. Instead of developing a structure for a problem, an engineer just specifies the structure of the problem and lets the computer come up with a solution. The hope is that the computer will come up with a better solution the engineer did not think of.
 
 \section{Method}
 
-Our project is divided in two sections and corresponding layers of parallelism. The first one is solving the mechanical equations to check if a mechanical structure can withstand a force. Figure~\ref{fig:Mechanical_Simulation} shows the result of such a simulation. The shape of a figure is approximated through squares. We used \texttt{OpenMP} for this part.
+Our project is divided in two sections and corresponding layers of parallelism. The first one is solving the mechanical equations to check if a mechanical structure can withstand a force. Figure~\ref{fig:Mechanical_Simulation} shows the result of such a simulation. The shape of a figure is approximated through squares. A detailed introduction on how to use the fininte element method can be found at~\cite{Nikishkov2004}. We used \texttt{OpenMP} for this part.
 
 \begin{figure}[h]
     \centering
@@ -60,17 +60,29 @@ The second stage is the evolutionary algorithm. The best 10\% survive in each ro
     \label{tab:SpeedupSimulation}
 \end{table}
 
-The reason for using \texttt{OpenMP} is the tight coupling between the data in the sparse matrix multiplication. \texttt{gprof} revealed that the equation solver spends most of it's time in the sparse matrix multiplication, however the whole equation solver class works parallelized.
+\begin{algorithm}[p]
+    \caption{Simulate}
+    \begin{algorithmic}
+        \STATE Setup the equation system
+        \STATE Solve the equation system with the conjugate gradient method
+        \STATE Calculate the stress using the Van-Mieses-Equation
+    \end{algorithmic}
+    \label{alg:Simulation}
+\end{algorithm}
+
+The reason for using \texttt{OpenMP} is the tight coupling between the data in the sparse matrix multiplication. \texttt{gprof} revealed that the equation solver spends most of it's time in the sparse matrix multiplication, however the whole equation solver class works parallelized. The concept of the simulation is visualized in algorithm~\ref{alg:Simulation}.
 
 \begin{itemize}
     \item \textbf{Threads are spawned at the highest level} of the \texttt{PerformanceEvaluator} class. Subsequent calls to the equation setup, equation solver or linear algrabra operations will not spawn new threads. They require the threads to be set up already, and process only their their chunk using the \texttt{omp for} directive. All for loops are executed in chunks to \textbf{prevent false sharing}.
     \item The \textbf{equation setup} process adds the local element stiffness matrix into the global equation system. Depending on the mechanical structure, the position of different planes appears rather random. Therefore, a lock is needed to prevent a race condition. Because the matrix is sparse and each thread works on its own plane, that typically are not directly connected, it is unprobable that two threads operate on the same equation row at the same time. A global lock would introduce an unnecessary penalty, therefore each row uses it's own \textbf{lock}.
-    \item All linear algebra operations of the \textbf{equation solver} work in parallel, we can divide these in two types:
+    \item \textbf{All linear algebra operations of the equation solver work in parallel}, we can divide these in two types:
     
     For addition, scalar multiplication, matrix multiplication or assigning a constant value, each thread processes its \textbf{own chunk of rows}. These operations do not require an implicit or explicit barrier. If for example, a vector addition follows a scalar multiplication, it is fine if the first thread begins with the scalar multiplication before the second thread has finished the vector addition, since each of them operates on its own set of rows.
     
     However, in the conjugate gradient method there are also operations like the scalar product or the norm of the vector. These operations require a \textbf{reduction} and have an implicit barrier.
     \item In the beginning, a unique index has to be assigned to each Plane and corner. This is not parallelizable, as the total number of planes and corners is unkown and does not follow a predictable pattern.
+    \item Using the \textbf{conjuage gradient method} reduced the time complexity by $O(N)$~\cite{ProgressReport}.
+    \item Using a \textbf{sparse matrix multiplication} reduced the the time complexity by $O(N^2)$~\cite{ProgressReport}. 
 \end{itemize}
 
 The time complexity of the sequential equation solver is dominated by the sparse matrix multiplication, having a complexity of 
@@ -79,7 +91,7 @@ The time complexity of the sequential equation solver is dominated by the sparse
     O_\mathit{seqSolve}(N) = O(N^3) 
 \end{equation}
 
-as explained in the progress report. The sparse matrix multiplication has been fully parallelized. The indexing of the equation requires $O(N^2)$. Leaving the overhead for thread creation aside, the runtime complexity is 
+as explained in the progress report~\cite{ProgressReport}. The sparse matrix multiplication has been fully parallelized. The indexing of the equation requires $O(N^2)$. Leaving the overhead for thread creation aside, the runtime complexity is 
 
 \begin{equation}
     O_\mathit{parSolve}(N, C) = O \left(\frac{N^3}{C}\right) + O(N^2)
@@ -132,6 +144,10 @@ with $O (\frac{N^3 G A}{C} )$ being the work for solving the equation system per
 
 so this algorithm has also a weak scalability. Table~\ref{tab:SpeedupEvolution} shows the execution times of the program. They are visualized in figure~\ref{fig:SpeedupEvolution}. The algorihm scales well for small core counts $C < 112$. Each generation has 112 organisims, so up to this part, the evolution scales very well. For $C > 112$, the mechanical solver starts to parallelize. This gives a speedup only if the problem size $N > 100$ is sufficient. The actual execution time starts to reach into hours for that problem size, but this is a typical for a evolutionary algorithm. The result of the finished evolution is shown on figure~\ref{fig:Evolution}.
 
+\medskip
+
+\bibliographystyle{unsrt}
+\bibliography{sources}
 
 \begin{algorithm}[p]
     \caption{Evolute on node}
