@@ -3,18 +3,21 @@
 Following the [Project Description](latex/sources/ProjectDescription.md)
 
 ## Instructions
+
 In order to run in Bridges, due to the dependency on C++17, make sure you run `module load gcc/9.2.0` first.
 
 - The latest, distributed, parallelized and most optimized version is contained on the root folder, and the follow steps must be followed:
     1. Make sure you have the MPI module available using `mpi/gcc/openmpi-1.6.4` using `module add mpi/openmpi-x86_64`
     2. `make`
-    3. `mpirun -np X build/program <N> <Organisms> <Epochs> <Decay>` (recommend 10 100 1000 0.995f)
-            
+    3. `mkdir debug` in case you want to see the output of the program
+    4. `mpirun -np X build/program <N> <Organisms> <Epochs> <Decay>` (recommend 10 100 1000 0.995f)
+
 - The sequential implementations and the basic parallelized implementation are all contained in their own folder. Please, use the following steps:
     1. `cd version_to_execute`
     2. `make`
-    3. `build/program <N> <Organisms> <Epochs> <Decay>` (recommend 10 100 1000 0.995f)
-    
+    3. `mkdir debug` in case you want to see the output of the program
+    4. `build/program <N> <Organisms> <Epochs> <Decay>` (recommend 10 100 1000 0.995f)
+
 ## Directory Structure
 
 ```batch
