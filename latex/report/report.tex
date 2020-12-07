@@ -26,6 +26,10 @@
     We developed an application that is able to develop mechanical structures using an evolutionary algorithm. This approach can be scaled efficiently across many different nodes.
 \end{abstract}
 
+\section{Introduction}
+
+With increasing computing power available, a new approach is becomeing more relevant in engineering: Evolutionary algorithms.
+
 \section{Method}
 
 Our project is divided in two sections and corresponding layers of parallelism. The first one is solving the mechanical equations to check if a mechanical structure can withstand a force. Figure~\ref{fig:Mechanical_Simulation} shows the result of such a simulation. The shape of a figure is approximated through squares. We used \texttt{OpenMP} for this part.
@@ -56,12 +60,14 @@ The second stage is the evolutionary algorithm. The best 10\% survive in each ro
     \label{tab:SpeedupSimulation}
 \end{table}
 
-The reason for usign \texttt{OpenMP} is the tight coupeling between the data in the sparse matrix multiplication. \texttt{gprof} revealed that the equation solver spends most of it's time in the sparse matrix multiplication, however the whole equation solver class works parallelized.
+The reason for using \texttt{OpenMP} is the tight coupling between the data in the sparse matrix multiplication. \texttt{gprof} revealed that the equation solver spends most of it's time in the sparse matrix multiplication, however the whole equation solver class works parallelized.
 
 \begin{itemize}
     \item \textbf{Threads are spawned at the highest level} of the \texttt{PerformanceEvaluator} class. Subsequent calls to the equation setup, equation solver or linear algrabra operations will not spawn new threads. They require the threads to be set up already, and process only their their chunk using the \texttt{omp for} directive. All for loops are executed in chunks to \textbf{prevent false sharing}.
-    \item The \textbf{equation setup} process adds the local element striffness matrix into the global equation system. Depending on the mechanical structure, the position of different planes appears rather random. Therefore, a lock is needed to prevent a race condition. Because the matrix is sparse and each thread works on its own plane, that typically are not directly connected, it is unprobable that two threads operate on the same equation row at the same time. A global lock would introduce an unnecessary penalty, therefore each row uses it's own \textbf{lock}.
-    \item All linear algebra operations of the \textbf{equation solver} work in parallel. There are two types of these operations. For addition, scalar multiplication, matrix multiplication or assigning a constant value, each thread processes its \textbf{own chunk of rows}. These operations do not require an implicit or explicit barrier. If for example, a vector addtion follows a scalar multiplication, it is fine if the first thread begins with the scalar multiplication before the second thread has finished the vector addition, since each of them operates on its own set of rows.
+    \item The \textbf{equation setup} process adds the local element stiffness matrix into the global equation system. Depending on the mechanical structure, the position of different planes appears rather random. Therefore, a lock is needed to prevent a race condition. Because the matrix is sparse and each thread works on its own plane, that typically are not directly connected, it is unprobable that two threads operate on the same equation row at the same time. A global lock would introduce an unnecessary penalty, therefore each row uses it's own \textbf{lock}.
+    \item All linear algebra operations of the \textbf{equation solver} work in parallel, we can divide these in two types:
+    
+    For addition, scalar multiplication, matrix multiplication or assigning a constant value, each thread processes its \textbf{own chunk of rows}. These operations do not require an implicit or explicit barrier. If for example, a vector addition follows a scalar multiplication, it is fine if the first thread begins with the scalar multiplication before the second thread has finished the vector addition, since each of them operates on its own set of rows.
     
     However, in the conjugate gradient method there are also operations like the scalar product or the norm of the vector. These operations require a \textbf{reduction} and have an implicit barrier.
     \item In the beginning, a unique index has to be assigned to each Plane and corner. This is not parallelizable, as the total number of planes and corners is unkown and does not follow a predictable pattern.
@@ -73,7 +79,7 @@ The time complexity of the sequential equation solver is dominated by the sparse
     O_\mathit{seqSolve}(N) = O(N^3) 
 \end{equation}
 
-as explained in the progress report. The sparse matrix multiplication is fully parallel. The indexing of the equation requires $O(N^2)$. Leaving the overhead for thread creation aside, the runtime complexity is 
+as explained in the progress report. The sparse matrix multiplication has been fully parallelized. The indexing of the equation requires $O(N^2)$. Leaving the overhead for thread creation aside, the runtime complexity is 
 
 \begin{equation}
     O_\mathit{parSolve}(N, C) = O \left(\frac{N^3}{C}\right) + O(N^2)
@@ -85,13 +91,13 @@ for a sufficiently large $N$. The efficency is
     E = \frac{O_\mathit{seqSolve}}{O_\mathit{parSolve} C} = O\left(\frac{N^3}{N^3 + C^2}\right)
 \end{equation}
 
-The equation solver has weak scalability, because efficency remains only at the same level if $N \propto C$. In practice however, there is a significant overhead in creating the threads. The speedup becomes only notable for problem sizes $N > 100$.
+As the efficency remains only if $N \propto C$, we can asses that the equation solver has Weak Scalibality. However, there is a significant overhead due to creating the threads. The speedup becomes only notable for problem sizes $N > 100$.
 
 The Equation Solver is still a powerful solver. It is able to solve a mechanical structure with 80600 equations in \SI{2.732}{\second} using 28 cores on bridges. It also showcases OpenMP and locks well. The speedup of the execution time of table~\ref{fig:SpeedupSimulation} are shown in figure~\ref{tab:SpeedupSimulation}.
 
 \subsection{Speeding up the evolutionary algorithm}
 
-Evolutionary algoirthms are very parallel by nature. Each organism can be evaluated independent. Then they have to be sorted. We do the sorting on a node 0. \texttt{Gather} is used in that process. The best 10\% get redistributed using \texttt{Bcast}. This is visualized in algorithm~\ref{alg:Evolution}.
+Evolutionary algoirthms are easily parallelizable by nature. Each organism can be evaluated independently by each node, while the results will be gathered by a single node in charge of sorting them. The best 10\% get broadcasted to the other nodes again. This is visualized in algorithm~\ref{alg:Evolution}.
 
 A MPI Message for an evaluated board consisits of
 
@@ -154,11 +160,11 @@ so this algorithm has also a weak scalability. Table~\ref{tab:SpeedupEvolution} 
         \midrule
         N = 10 & 33.667     & 18.519 & 9,399 & 5.432 & 2.950 & 4.256 \\
         N = 20 & 296.997    & 164.875 & 91.958 & 43.114 & 25.199 & 29.429 \\
-        N = 40 & (2029.938) & (1343.408) & (631.448) & 335.852 & 200.529 & 164.243 \\
-        N = 80 & - & - & - & - & (3729.680) & 2163.535 \\
+        N = 40 & *2029.938 & *1343.408 & *631.448 & 335.852 & 200.529 & 164.243 \\
+        N = 80 & - & - & - & - & *3729.680 & 2163.535 \\
         \bottomrule
     \end{tabular}
-    \caption{Execution time in seconds for the evoultion for different field sizes $N$ and cores $C$. The generation size is set fixed to 112 and 1000 epochs are simulated. Values in brackets are extrapolated from a run with less epochs.}
+    \caption{Execution time in seconds for the evoultion for different field sizes $N$ and cores $C$. The generation size is set fixed to 112 and 1000 epochs are simulated. Values marked with * are extrapolated from a run with less epochs.}
     \label{tab:SpeedupEvolution}
 \end{table}
 
