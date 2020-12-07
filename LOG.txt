@@ -4,11 +4,11 @@
 Nov 14, 2020: Created the project description.
 Nov 15, 2020: Created the readme file.
 Nov 15, 2020: Developed the class Field.
-Nov 15, 2020: Developed the class equation.
+Nov 15, 2020: Developed the class Equation.
 Nov 15, 2020: Created the PerformanceEvaluator class.
 Nov 15, 2020: Structured algorithm for matrix generation.
 Nov 16, 2020: Implemented testing framework.
-Nov 18, 2020: Developed the coniugateGradiant method.
+Nov 18, 2020: Developed the coniugate gradiant method.
 Nov 18, 2020: First working version of PerformanceEvaluator.
 Nov 20, 2020: Improved build time.
 Nov 22, 2020: Added the evolve function.
@@ -16,7 +16,7 @@ Nov 22, 2020: Developed SpareMatrix class.
 Nov 22, 2020: Added testcases for some classes.
 Dec 02, 2020: Added operations to the plotter.
 Dec 03, 2020: First evolutionary algorithm.
-Dec 03, 2020: Added Generative Optimizator.
+Dec 03, 2020: Added evolutionary Optimizator.
 Dec 04, 2020: Introduced OpenMP.
 Dec 04, 2020: Achieved parallelization.
 Dec 04, 2020: Parallelized Equation.
