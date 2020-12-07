@@ -13,7 +13,7 @@ In order to run in Bridges, due to the dependency on C++17, make sure you run `m
 - The sequential implementations and the basic parallelized implementation are all contained in their own folder. Please, use the following steps:
     1. `cd version_to_execute`
     2. `make`
-    3. `build/program <N> <Organisms> <Epochs> <Decay>` (recommend 20 100 1000 0.995f)
+    3. `build/program <N> <Organisms> <Epochs> <Decay>` (recommend 10 100 1000 0.995f)
     
 ## Directory Structure
 
