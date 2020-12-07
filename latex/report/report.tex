@@ -74,7 +74,7 @@ The reason for using OpenMP is the tight coupling between the data in the sparse
 
 \begin{itemize}
     \item \textbf{Threads are spawned at the highest level} of the \texttt{PerformanceEvaluator} class. Subsequent calls to the equation setup, equation solver or linear algrabra operations will not spawn new threads. They require the threads to be set up already, and process only their their chunk using the \texttt{omp for} directive. All for loops are executed in chunks to \textbf{prevent false sharing}.
-    \item The \textbf{equation setup} process adds the local element stiffness matrix into the global equation system. Depending on the mechanical structure, the position of different planes appears rather random. Therefore, a lock is needed to prevent a race condition. Because the matrix is sparse and each thread works on its own plane, that typically are not directly connected, it is unprobable that two threads operate on the same equation row at the same time. A global lock would introduce an unnecessary penalty, therefore each row uses it's own \textbf{lock}.
+    \item The \textbf{equation setup} process adds the local element stiffness matrix into the global equation system. Depending on the mechanical structure, the position of different planes appears rather random. Therefore, a lock is needed to prevent a race condition. Because the matrix is sparse and each thread works on its own plane, that typically are not directly connected, it is unprobable that two threads operate on the same equation row at the same time. A global lock would introduce an unnecessary penalty, therefore each row uses it's own \textbf{local lock}.
     \item \textbf{All linear algebra operations of the equation solver work in parallel}, we can divide these in two types:
     
     For addition, scalar multiplication, matrix multiplication or assigning a constant value, each thread processes its \textbf{own chunk of rows}. These operations do not require an implicit or explicit barrier. If for example, a scalar multiplication follows a vector addition, it is fine if the first thread begins with the scalar multiplication before the second thread has finished the vector addition, since each of them operates on its own set of rows.
@@ -105,7 +105,7 @@ for a sufficiently large $N$. The efficency is
 
 As the efficency remains only if $N \propto C$, we can asses that the equation solver has weak scalibality. However, there is a significant overhead due to creating the threads. The speedup becomes only notable for problem sizes $N > 100$.
 
-The Equation Solver is still a powerful solver. It is able to solve a mechanical structure with 80600 equations in \SI{2.732}{\second} using 28 cores on bridges. It also showcases OpenMP and locks well. The speedup of the execution time of table~\ref{fig:SpeedupSimulation} are shown in figure~\ref{tab:SpeedupSimulation}.
+The Equation Solver is still a powerful solver. It is able to solve a $200 \times 200$ mechanical structure with 80600 equations in \SI{2.732}{\second} using 28 cores on bridges. The speedup of the execution time of table~\ref{fig:SpeedupSimulation} are shown in figure~\ref{tab:SpeedupSimulation}.
 
 \subsection{Speeding up the evolutionary algorithm}
 
@@ -186,7 +186,7 @@ with $O (\frac{N^3 G A}{C} )$ being the work for solving the equation system per
     E = O \left(\frac{N^3 + N^2}{N^3+C N^2}\right)
 \end{equation}
 
-so this algorithm has also a weak scalability. Table~\ref{tab:SpeedupEvolution} shows the execution times of the program. They are visualized in figure~\ref{fig:SpeedupEvolution}. The algorihm scales well for small core counts $C < 112$. Each generation has 112 organisims, so up to this part, the evolution scales very well. For $C > 112$, the mechanical solver starts to parallelize. This gives a speedup only if the problem size $N > 100$ is sufficient. The actual execution time starts to reach into hours for that problem size, but this is a typical for a evolutionary algorithm. The result of the finished evolution is shown on figure~\ref{fig:Evolution}.
+so this algorithm has also a weak scalability. Table~\ref{tab:SpeedupEvolution} shows the execution times of the program. They are visualized in figure~\ref{fig:SpeedupEvolution}. The algorihm scales well for small core counts $C < 112$, because each generation has 112 organisims. This allows each core to work on it's own organism. For $C > 112$, multiple cores process one organism, so the mechanical solver starts to parallelize. This gives a speedup only if the problem size $N$ is sufficient. The result of the finished evolution is shown on figure~\ref{fig:Evolution}.
 
 \subsection{Implementation differences}
 
@@ -200,7 +200,7 @@ As requested from the requirements, our submission containes four different impl
 \end{itemize}
 
 \section{Summary and learning outcomes}
-All of us learned a lot during the project. We have never experimented with finite element simulation, conjugate gradient method or evolutionary algorithms before. The project provided several challenges for us, for example using locks, combining OpenMP with MPI, separeting \texttt{omp parallel} from \texttt{omp for}. We improved our development technique a lot by using test-driven development, no-push-to-master and code reviews.
+All of us learned a lot during the project. We have never experimented with finite element simulation, conjugate gradient method or evolutionary algorithms before. The project provided several challenges for us, for example using locks, combining OpenMP with MPI or separeting \texttt{omp parallel} from \texttt{omp for}. We improved our development technique a lot by using test-driven development, no-push-to-master and code reviews.
 
 \bibliographystyle{unsrt}
 \bibliography{sources}
