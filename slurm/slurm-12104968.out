@@ -1,0 +1,366 @@
+(r398:0,1,2,3,4,5,6,7,8,9,10,11,12,13)
+
+0 ALT: 10 Planes: 90
+10 ALT: 9.91041 Planes: 62
+20 ALT: 9.8217 Planes: 58
+30 ALT: 9.73388 Planes: 52
+40 ALT: 9.64694 Planes: 44
+50 ALT: 9.56085 Planes: 40
+60 ALT: 9.47563 Planes: 38
+70 ALT: 9.39125 Planes: 40
+80 ALT: 9.30772 Planes: 40
+90 ALT: 9.22502 Planes: 38
+100 ALT: 9.14314 Planes: 40
+110 ALT: 9.06207 Planes: 40
+120 ALT: 8.98181 Planes: 41
+130 ALT: 8.90235 Planes: 39
+140 ALT: 8.82368 Planes: 41
+150 ALT: 8.7458 Planes: 39
+160 ALT: 8.66869 Planes: 39
+170 ALT: 8.59235 Planes: 37
+180 ALT: 8.51676 Planes: 37
+190 ALT: 8.44193 Planes: 35
+200 ALT: 8.36785 Planes: 39
+210 ALT: 8.2945 Planes: 39
+220 ALT: 8.22189 Planes: 37
+230 ALT: 8.15 Planes: 37
+240 ALT: 8.07882 Planes: 37
+250 ALT: 8.00835 Planes: 37
+260 ALT: 7.93858 Planes: 34
+270 ALT: 7.86951 Planes: 38
+280 ALT: 7.80113 Planes: 38
+290 ALT: 7.73342 Planes: 34
+300 ALT: 7.66639 Planes: 34
+310 ALT: 7.60003 Planes: 36
+320 ALT: 7.53432 Planes: 36
+330 ALT: 7.46927 Planes: 34
+340 ALT: 7.40487 Planes: 36
+350 ALT: 7.34111 Planes: 34
+360 ALT: 7.27799 Planes: 34
+370 ALT: 7.21549 Planes: 34
+380 ALT: 7.15361 Planes: 34
+390 ALT: 7.09235 Planes: 34
+400 ALT: 7.0317 Planes: 34
+410 ALT: 6.97166 Planes: 35
+420 ALT: 6.91221 Planes: 35
+430 ALT: 6.85335 Planes: 35
+440 ALT: 6.79508 Planes: 33
+450 ALT: 6.73739 Planes: 35
+460 ALT: 6.68028 Planes: 33
+470 ALT: 6.62373 Planes: 33
+480 ALT: 6.56775 Planes: 33
+490 ALT: 6.51232 Planes: 35
+500 ALT: 6.45745 Planes: 33
+510 ALT: 6.40312 Planes: 35
+520 ALT: 6.34933 Planes: 33
+530 ALT: 6.29608 Planes: 35
+540 ALT: 6.24336 Planes: 33
+550 ALT: 6.19116 Planes: 33
+560 ALT: 6.13948 Planes: 33
+570 ALT: 6.08832 Planes: 35
+580 ALT: 6.03766 Planes: 33
+590 ALT: 5.98751 Planes: 32
+600 ALT: 5.93786 Planes: 32
+610 ALT: 5.88871 Planes: 32
+620 ALT: 5.84004 Planes: 32
+630 ALT: 5.79186 Planes: 34
+640 ALT: 5.74415 Planes: 32
+650 ALT: 5.69693 Planes: 32
+660 ALT: 5.65017 Planes: 32
+670 ALT: 5.60387 Planes: 32
+680 ALT: 5.55804 Planes: 32
+690 ALT: 5.51267 Planes: 34
+700 ALT: 5.46774 Planes: 34
+710 ALT: 5.42327 Planes: 32
+720 ALT: 5.37923 Planes: 30
+730 ALT: 5.33564 Planes: 32
+740 ALT: 5.29248 Planes: 32
+750 ALT: 5.24975 Planes: 34
+760 ALT: 5.20744 Planes: 32
+770 ALT: 5.16556 Planes: 32
+780 ALT: 5.12409 Planes: 34
+790 ALT: 5.08303 Planes: 32
+800 ALT: 5.04239 Planes: 30
+810 ALT: 5.00214 Planes: 32
+820 ALT: 4.9623 Planes: 32
+830 ALT: 4.92286 Planes: 32
+840 ALT: 4.88381 Planes: 30
+850 ALT: 4.84514 Planes: 32
+860 ALT: 4.80686 Planes: 34
+870 ALT: 4.76896 Planes: 34
+880 ALT: 4.73144 Planes: 32
+890 ALT: 4.6943 Planes: 32
+900 ALT: 4.65752 Planes: 30
+910 ALT: 4.62111 Planes: 30
+920 ALT: 4.58506 Planes: 30
+930 ALT: 4.54938 Planes: 32
+940 ALT: 4.51404 Planes: 32
+950 ALT: 4.47906 Planes: 32
+960 ALT: 4.44443 Planes: 34
+970 ALT: 4.41014 Planes: 32
+980 ALT: 4.37619 Planes: 34
+990 ALT: 4.34258 Planes: 32
+Time: 18.519, Generations: 1000, Epochs per Second: 53.997
+Used 14 node(s) and 1 core(s) per node 
+Processsed 10x10 grid and 112 organisms per epoch, resulting in 8 organisms per node. Best 11 were broadcasted.
+Processing speed: 6047.687 organisms per second
+Final performance is 32.000
+
+(r398:0,1,2,3,4,5,6,7,8,9,10,11,12,13)
+
+0 ALT: 40 Planes: 360
+10 ALT: 39.6118 Planes: 282
+20 ALT: 39.2274 Planes: 276
+30 ALT: 38.8468 Planes: 267
+40 ALT: 38.4701 Planes: 273
+50 ALT: 38.0971 Planes: 269
+60 ALT: 37.7278 Planes: 267
+70 ALT: 37.3621 Planes: 261
+80 ALT: 37.0001 Planes: 265
+90 ALT: 36.6418 Planes: 259
+100 ALT: 36.2869 Planes: 265
+110 ALT: 35.9357 Planes: 261
+120 ALT: 35.5879 Planes: 265
+130 ALT: 35.2436 Planes: 265
+140 ALT: 34.9027 Planes: 258
+150 ALT: 34.5652 Planes: 254
+160 ALT: 34.231 Planes: 256
+170 ALT: 33.9002 Planes: 256
+180 ALT: 33.5727 Planes: 260
+190 ALT: 33.2484 Planes: 262
+200 ALT: 32.9274 Planes: 265
+210 ALT: 32.6095 Planes: 261
+220 ALT: 32.2949 Planes: 267
+230 ALT: 31.9833 Planes: 256
+240 ALT: 31.6749 Planes: 254
+250 ALT: 31.3695 Planes: 254
+260 ALT: 31.0672 Planes: 252
+270 ALT: 30.7679 Planes: 246
+280 ALT: 30.4715 Planes: 252
+290 ALT: 30.1782 Planes: 246
+300 ALT: 29.8877 Planes: 244
+310 ALT: 29.6001 Planes: 250
+320 ALT: 29.3154 Planes: 244
+330 ALT: 29.0335 Planes: 246
+340 ALT: 28.7544 Planes: 247
+350 ALT: 28.4781 Planes: 245
+360 ALT: 28.2046 Planes: 243
+370 ALT: 27.9338 Planes: 248
+380 ALT: 27.6656 Planes: 248
+390 ALT: 27.4002 Planes: 250
+400 ALT: 27.1374 Planes: 248
+410 ALT: 26.8772 Planes: 251
+420 ALT: 26.6196 Planes: 239
+430 ALT: 26.3645 Planes: 243
+440 ALT: 26.112 Planes: 235
+450 ALT: 25.862 Planes: 241
+460 ALT: 25.6145 Planes: 241
+470 ALT: 25.3695 Planes: 239
+480 ALT: 25.1269 Planes: 237
+490 ALT: 24.8867 Planes: 240
+500 ALT: 24.6489 Planes: 246
+510 ALT: 24.4135 Planes: 250
+520 ALT: 24.1804 Planes: 246
+530 ALT: 23.9497 Planes: 247
+540 ALT: 23.7212 Planes: 243
+550 ALT: 23.495 Planes: 237
+560 ALT: 23.2711 Planes: 235
+570 ALT: 23.0494 Planes: 231
+580 ALT: 22.8299 Planes: 227
+590 ALT: 22.6125 Planes: 227
+600 ALT: 22.3974 Planes: 219
+610 ALT: 22.1844 Planes: 215
+620 ALT: 21.9735 Planes: 221
+630 ALT: 21.7647 Planes: 227
+640 ALT: 21.558 Planes: 229
+650 ALT: 21.3533 Planes: 233
+660 ALT: 21.1507 Planes: 237
+670 ALT: 20.9501 Planes: 242
+680 ALT: 20.7515 Planes: 240
+690 ALT: 20.5549 Planes: 238
+700 ALT: 20.3602 Planes: 244
+710 ALT: 20.1675 Planes: 240
+720 ALT: 19.9767 Planes: 238
+730 ALT: 19.7878 Planes: 238
+740 ALT: 19.6007 Planes: 234
+750 ALT: 19.4156 Planes: 230
+760 ALT: 19.2322 Planes: 228
+770 ALT: 19.0507 Planes: 220
+780 ALT: 18.871 Planes: 224
+790 ALT: 18.6931 Planes: 220
+800 ALT: 18.517 Planes: 220
+810 ALT: 18.3426 Planes: 220
+820 ALT: 18.17 Planes: 216
+830 ALT: 17.999 Planes: 211
+840 ALT: 17.8298 Planes: 211
+850 ALT: 17.6623 Planes: 211
+860 ALT: 17.4964 Planes: 205
+870 ALT: 17.3322 Planes: 203
+880 ALT: 17.1696 Planes: 203
+890 ALT: 17.0086 Planes: 209
+900 ALT: 16.8493 Planes: 209
+910 ALT: 16.6915 Planes: 209
+920 ALT: 16.5353 Planes: 209
+930 ALT: 16.3806 Planes: 207
+940 ALT: 16.2275 Planes: 201
+950 ALT: 16.0759 Planes: 195
+960 ALT: 15.9258 Planes: 196
+970 ALT: 15.7772 Planes: 194
+980 ALT: 15.6301 Planes: 186
+990 ALT: 15.4845 Planes: 182
+Time: 164.875, Generations: 1000, Epochs per Second: 6.065
+Used 14 node(s) and 1 core(s) per node 
+Processsed 20x20 grid and 112 organisms per epoch, resulting in 8 organisms per node. Best 11 were broadcasted.
+Processing speed: 679.303 organisms per second
+Final performance is 183.000
+
+(r398:0,1,2,3,4,5,6,7,8,9,10,11,12,13)
+
+0 ALT: 160 Planes: 1446
+10 ALT: 158.417 Planes: 1170
+20 ALT: 156.85 Planes: 1167
+30 ALT: 155.299 Planes: 1166
+40 ALT: 153.763 Planes: 1155
+50 ALT: 152.242 Planes: 1162
+60 ALT: 150.736 Planes: 1169
+70 ALT: 149.246 Planes: 1165
+80 ALT: 147.77 Planes: 1170
+90 ALT: 146.309 Planes: 1159
+100 ALT: 144.862 Planes: 1158
+110 ALT: 143.43 Planes: 1156
+120 ALT: 142.012 Planes: 1157
+130 ALT: 140.608 Planes: 1160
+140 ALT: 139.219 Planes: 1146
+150 ALT: 137.843 Planes: 1161
+160 ALT: 136.48 Planes: 1165
+170 ALT: 135.132 Planes: 1164
+180 ALT: 133.796 Planes: 1166
+190 ALT: 132.474 Planes: 1166
+200 ALT: 131.166 Planes: 1169
+210 ALT: 129.87 Planes: 1160
+220 ALT: 128.587 Planes: 1170
+230 ALT: 127.317 Planes: 1166
+240 ALT: 126.059 Planes: 1164
+250 ALT: 124.814 Planes: 1156
+260 ALT: 123.582 Planes: 1152
+270 ALT: 122.361 Planes: 1166
+280 ALT: 121.153 Planes: 1168
+290 ALT: 119.957 Planes: 1162
+300 ALT: 118.773 Planes: 1172
+310 ALT: 117.6 Planes: 1152
+320 ALT: 116.44 Planes: 1153
+330 ALT: 115.291 Planes: 1170
+340 ALT: 114.153 Planes: 1164
+350 ALT: 113.026 Planes: 1169
+360 ALT: 111.911 Planes: 1170
+370 ALT: 110.807 Planes: 1172
+380 ALT: 109.714 Planes: 1159
+390 ALT: 108.632 Planes: 1157
+400 ALT: 107.56 Planes: 1148
+410 ALT: 106.499 Planes: 1157
+420 ALT: 105.449 Planes: 1167
+430 ALT: 104.409 Planes: 1159
+440 ALT: 103.38 Planes: 1162
+450 ALT: 102.361 Planes: 1159
+460 ALT: 101.352 Planes: 1158
+470 ALT: 100.353 Planes: 1161
+480 ALT: 99.3636 Planes: 1164
+490 ALT: 98.3844 Planes: 1147
+500 ALT: 97.4149 Planes: 1154
+510 ALT: 96.4551 Planes: 1160
+520 ALT: 95.5049 Planes: 1152
+530 ALT: 94.5641 Planes: 1165
+540 ALT: 93.6326 Planes: 1159
+550 ALT: 92.7105 Planes: 1147
+560 ALT: 91.7975 Planes: 1152
+570 ALT: 90.8936 Planes: 1156
+580 ALT: 89.9987 Planes: 1157
+590 ALT: 89.1127 Planes: 1149
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 0 PID 2207 RUNNING AT r398
+=   KILLED BY SIGNAL: 9 (Killed)
+===================================================================================
+
+srun: error: r398: task 0: Out Of Memory
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 1 PID 2208 RUNNING AT r398
+=   KILLED BY SIGNAL: 9 (Killed)
+===================================================================================
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 2 PID 2209 RUNNING AT r398
+=   KILLED BY SIGNAL: 9 (Killed)
+===================================================================================
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 3 PID 2210 RUNNING AT r398
+=   KILLED BY SIGNAL: 9 (Killed)
+===================================================================================
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 4 PID 2211 RUNNING AT r398
+=   KILLED BY SIGNAL: 9 (Killed)
+===================================================================================
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 5 PID 2212 RUNNING AT r398
+=   KILLED BY SIGNAL: 9 (Killed)
+===================================================================================
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 6 PID 2213 RUNNING AT r398
+=   KILLED BY SIGNAL: 9 (Killed)
+===================================================================================
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 7 PID 2214 RUNNING AT r398
+=   KILLED BY SIGNAL: 9 (Killed)
+===================================================================================
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 8 PID 2215 RUNNING AT r398
+=   KILLED BY SIGNAL: 9 (Killed)
+===================================================================================
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 9 PID 2216 RUNNING AT r398
+=   KILLED BY SIGNAL: 9 (Killed)
+===================================================================================
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 10 PID 2217 RUNNING AT r398
+=   KILLED BY SIGNAL: 9 (Killed)
+===================================================================================
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 11 PID 2218 RUNNING AT r398
+=   KILLED BY SIGNAL: 9 (Killed)
+===================================================================================
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 12 PID 2219 RUNNING AT r398
+=   KILLED BY SIGNAL: 9 (Killed)
+===================================================================================
+
+===================================================================================
+=   BAD TERMINATION OF ONE OF YOUR APPLICATION PROCESSES
+=   RANK 13 PID 2220 RUNNING AT r398
+=   KILLED BY SIGNAL: 9 (Killed)
+===================================================================================
+slurmstepd: error: Detected 2 oom-kill event(s) in step 12104968.2 cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
+I_MPI_JOB_TIMEOUT = -1 second(s): job ending due to startup timeout
+slurmstepd: error: Detected 2 oom-kill event(s) in step 12104968.batch cgroup. Some of your processes may have been killed by the cgroup out-of-memory handler.
