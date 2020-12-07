@@ -1,9 +1,10 @@
 % This file was created by tikzplotlib v0.9.6.
 \begin{tikzpicture}
 
-\definecolor{color0}{rgb}{1,0.81999231064975,0}
-\definecolor{color1}{rgb}{1,0.456286043829296,0}
-\definecolor{color2}{rgb}{1,0.238062283737024,0}
+\definecolor{color0}{rgb}{0.431372549019608,0.649134948096886,0}
+\definecolor{color1}{rgb}{1,0.81999231064975,0}
+\definecolor{color2}{rgb}{1,0.456286043829296,0}
+\definecolor{color3}{rgb}{1,0.238062283737024,0}
 
 \begin{axis}[
 height=0.5\textwidth,
@@ -18,10 +19,30 @@ xmin=-3.85, xmax=234.85,
 xtick style={color=black},
 y grid style={white!69.0196078431373!black},
 ylabel={Speedup},
-ymin=0.232060727093392, ymax=17.1267247310388,
+ymin=-0.55, ymax=33.55,
 ytick style={color=black}
 ]
+\addplot [semithick, white!50.1960784313725!black, dashed]
+table {%
+7 1
+14 2
+28 4
+56 8
+112 16
+224 32
+};
+\addlegendentry{ideal}
 \addplot [semithick, color0]
+table {%
+7 1
+14 2.81680077514394
+28 3.92854503421451
+56 7.76543224645151
+112 14.7940949357586
+224 25.5032805108307
+};
+\addlegendentry{$N = 80$}
+\addplot [semithick, color1]
 table {%
 7 1
 14 2
@@ -31,20 +52,20 @@ table {%
 224 16.3587854581322
 };
 \addlegendentry{$N = 40$}
-\addplot [semithick, color1]
+\addplot [semithick, color2]
 table {%
 7 1
-14 1.51423239878248
+14 1.80134647460197
 28 3.22970269035864
 56 6.88864405993413
 112 11.7860629390055
 224 10.091984097319
 };
 \addlegendentry{$N = 20$}
-\addplot [semithick, color2]
+\addplot [semithick, color3]
 table {%
 7 1
-14 2.07015925720962
+14 1.81797073276095
 28 3.5819768060432
 56 6.19790132547864
 112 11.4125423728814

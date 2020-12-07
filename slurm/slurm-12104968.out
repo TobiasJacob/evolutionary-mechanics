@@ -213,9 +213,3 @@ Used 14 node(s) and 1 core(s) per node
 Processsed 20x20 grid and 112 organisms per epoch, resulting in 8 organisms per node. Best 11 were broadcasted.
 Processing speed: 679.303 organisms per second
 Final performance is 183.000
-
-(r398:0,1,2,3,4,5,6,7,8,9,10,11,12,13)
-
-0 ALT: 160 Planes: 1446
-10 ALT: 158.417 Planes: 1170
-20 ALT: 156.85 Planes: 1167
