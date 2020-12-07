@@ -2,55 +2,18 @@
 
 Following the [Project Description](latex/sources/ProjectDescription.md)
 
-## Compile on bridges
+## Instructions
 
-    module load gcc/9.2.0 
+For all the versions, due to the dependency on C++17, make sure you run `module load gcc/9.2.0` first.
 
-## Todo
-
-- Use catch2 as testing framework
-- Raffaele implements evolutionary algorithm
-- Tobi: Make heavier use of move semantics for vector calculations
-- Tobi: Make sure that in equation checker all planes are connected, and not two disting bodies can emerge.
-- Tobi: Try out hashmap or BST instead of list container.
-- Tobi: Check the indexes of supports and forces to make sure they are valid
-- Tobi: Use unsigned int as index for corners, as is uses half space of size_t
-- Tobi: Introduce exponentially decaying mutation rate
-- Create a overload for const Matrix::Value, so that it can be used as a const reference in if type is const Matrix.
-- Create a Sparse Matrix implementation / class
-- Use a floodfilling algorithm to make sure that the planes are connected
-
-## Rules
-
-- Public variables / methods use PascalCase, private variables / methods use camelCase.
-- Standard library headers are imported before local imports.
-- Remeber to include `#include "catch/catch.hpp"` on your test files
-
-## Timeline
-
-- `Nov 22 2020`: **Progress report**, single core version should be done
-- `Nov 29 2020`: Multi core version should be done, just documentation left
-- `Dec 6 2020`: **Deadline**
-
-## LOG
-
-- `Nov 16 2020`: Added Catch2 testing framework
-
-data backup
-    \begin{table}[h]
-        \centering
-        \small
-        \begin{tabular}{rrrrrr}
-            $n$ & Equations & Steps for solution & Equation setup time & Reduction time & solving time \\
-            - & $O(n^2)$ & $O(n)$ & $O(n^2)$ & $O(n^4)$ & $O(n^3)$\\
-            200 & 80799 & 6555 & 98695 & 7454400 & 22344100 \\
-            100 & 23187 & 2146 & 23187 & 425889 & 1726910 \\
-            50 & 5199 & 1039 & 6203 & 278603 & 154818 \\
-            25 & 1349 & 449 & 1626 & 20503 & 17768 \\
-            12 & 335 & 210 & 361 & 1347 & 1786
-        \end{tabular}
-        \caption{Execution time for matrix solver}
-        \label{tab:profiling}
-    \end{table}
+- The latest, distributed, parallelized and most optimized version is contained on the root folder, and the follow steps must be followed:
+    1. Make sure you have the MPI module available using `mpi/gcc/openmpi-1.6.4`
+    2. `make build/program`
+    3. `mpirun -np X build/program <N> <Organisms> <Epochs> <Decay>` (recommend 20 100 1000 0.995f)`
+            
+- The sequential implementations and the basic parallelized implementation are all contained in their own folder. Please, use the following steps:
+    1. `cd version_to_execute`
+    2. `make build/program`
+    3. `build/program <N> <Organisms> <Epochs> <Decay>` (recommend 20 100 1000 0.995f)
 
 
