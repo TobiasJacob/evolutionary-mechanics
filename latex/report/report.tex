@@ -16,7 +16,7 @@
 \usepackage{graphicx}
 
 \title{Evolutionary Mechanics}
-\author{Tobias Jacob, Raffaele Guillera, Ali Muddasar}
+\author{Tobias Jacob, Raffaele Galliera, Ali Muddasar}
 
 \begin{document}
 
@@ -28,18 +28,18 @@
 
 \section{Introduction}
 
-With increasing computing power available, a new approach is becomeing more relevant in engineering: Evolutionary algorithms. Instead of developing a structure for a problem, an engineer just specifies the structure of the problem and lets the computer come up with a solution. The hope is that the computer will come up with a better solution the engineer did not think of.
-
-\section{Method}
-
-Our project is divided in two sections and corresponding layers of parallelism. The first one is solving the mechanical equations to check if a mechanical structure can withstand a force. Figure~\ref{fig:Mechanical_Simulation} shows the result of such a simulation. The shape of a figure is approximated through squares. A detailed introduction on how to use the fininte element method can be found at~\cite{Nikishkov2004}. We used \texttt{OpenMP} for this part.
+With increasing computing power available, a new approach is becoming more relevant in engineering: Evolutionary algorithms. Instead of developing a mechanical structure for a problem, an engineer just specifies the problem and lets the computer come up with a solution. The hope is that the computer will come up with a better solution the engineer did not think of.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.5\textwidth, trim={0pt 0pt 0pt 5em}, clip]{images/MechaincalStructure.png}
-    \caption{Result of a mechanical simulation}
+    \caption{Result of a mechanical simulation and the evolutionary algorithm.}
     \label{fig:Mechanical_Simulation}
 \end{figure}
+
+\section{Method}
+
+Our project is divided in two sections and corresponding layers of parallelism. The first one is solving the mechanical equations to check if a mechanical structure can withstand a force. Figure~\ref{fig:Mechanical_Simulation} shows the result of such a simulation. The shape of a figure is approximated through squares. A detailed introduction on how to use the finite element method can be found at~\cite{Nikishkov2004}. We used \texttt{OpenMP} for this part.
 
 
 The second stage is the evolutionary algorithm. The best 10\% survive in each round. The structures mutate and are simulated again. We used \texttt{MPI} for this part.
@@ -114,6 +114,8 @@ Evolutionary algoirthms are easily parallelizable by nature. Each organism can b
 A MPI Message for an evaluated board consisits of
 
 \begin{itemize}
+    \setlength{\parskip}{0pt}
+    \setlength\itemsep{0pt}
     \item 1 float for the score
     \item $R \times C$ bytes, each containing the boolean value of the field.
 \end{itemize}
@@ -144,7 +146,20 @@ with $O (\frac{N^3 G A}{C} )$ being the work for solving the equation system per
 
 so this algorithm has also a weak scalability. Table~\ref{tab:SpeedupEvolution} shows the execution times of the program. They are visualized in figure~\ref{fig:SpeedupEvolution}. The algorihm scales well for small core counts $C < 112$. Each generation has 112 organisims, so up to this part, the evolution scales very well. For $C > 112$, the mechanical solver starts to parallelize. This gives a speedup only if the problem size $N > 100$ is sufficient. The actual execution time starts to reach into hours for that problem size, but this is a typical for a evolutionary algorithm. The result of the finished evolution is shown on figure~\ref{fig:Evolution}.
 
-\medskip
+\subsection{Implementation differences}
+
+As requested from the requirements, our submission containes three different implementations of our solution.
+
+\begin{itemize}
+    \item The basic sequential implementation is the unoptimized version of the program.
+    \item The best optimized sequential implementation differs from the previous version by the introduction of the SparseMatrix class. This class is able to perform sparse matrix - vector multiplications.
+    \item The basic parallel implementation introduces the usage of OpenMP, which revelead to be a turning point in improving the time taken by solving the equation systems.
+    \item The best optimized parallel implementation adds the usage of MPI for the evolutionary implementation. We decided to distribute the seeking of the best organism through different nodes. The nodes will collaborate in this reasearch finding the best solution in the amount of iterations given. This takes out solution on a new level, forming a distributed, collaborative and parallelized solution.
+\end{itemize}
+
+\section{Summary and learning outcomes}
+
+All of us learned a lot during the project. None of us used did a finite element simulation, conjugate gradient method or evolutionary algoirthm before. The project provided several challenges for us, for example using locks, combining OpenMP with MPI, seperating \texttt{omp parallel} from \texttt{omp for}. We improved our development technique a lot by using test-driven development, no-push-to-master and code reviews. 
 
 \bibliographystyle{unsrt}
 \bibliography{sources}
