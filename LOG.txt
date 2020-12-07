@@ -1,0 +1,45 @@
+ Development log: Evolutionary-Mechanics
+   Group: Tobias Jacob - Galliera Raffaele - Alì Muddasar
+
+Nov 14, 2020: created the project description.
+Nov 15, 2020: created the readme file.
+Nov 15, 2020: structured the class Field.
+Nov 15, 2020: structured the class equation.
+Nov 15, 2020: created the PerformanceEvaluator class.
+Nov 15, 2020: structured algorithm for matrix generation.
+Nov 16, 2020: implemented testing framework.
+Nov 18, 2020: developed the coniugateGradiant method.
+Nov 18, 2020: first working version of PerformanceEvaluator.
+Nov 20, 2020: improved build time.
+Nov 22, 2020: added the evolve function.
+Nov 22, 2020: structured SpareMatrix class.
+Nov 22, 2020: added testcases for some classes.
+Dec 02, 2020: added operations to the plotter.
+Dec 03, 2020: first evolutionary algorithm.
+Dec 03, 2020: added Generative Optimizator.
+Dec 04, 2020: introduced OpenMP.
+Dec 04, 2020: achieved parallelization.
+Dec 04, 2020: parallelized Equation.
+Dec 04, 2020: New Evolution Algorithm.
+Dec 05, 2020: Made equation solver faster.
+Dec 05, 2020: parallelized perfEval, solver and force part.
+Dec 05, 2020: Created testcases for Performance evaluaion.
+Dec 05, 2020: started the report.
+Dec 05, 2020: Introduced MPI.
+Dec 05, 2020: created MPI datatype.
+Dec 05, 2020: added tests for MPI.
+Dec 05, 2020: wrote testcase for bufferencode decode.
+Dec 05, 2020: Implemented MPI broadcast.
+Dec 05, 2020: Introducede multiple organisms per node.
+Dec 05, 2020: added performance results.
+Dec 05, 2020: did configuration for bridges.
+Dec 05, 2020: added progress output.
+Dec 06, 2020: Documented code.
+Dec 06, 2020: created plot for execution time.
+Dec 06, 2020: created table with execution speeds.
+Dec 06, 2020: got the first Performanceevaluation from bridges.
+Dec 06, 2020: added graph for evolution speedup.
+Dec 06, 2020: added basic sequenatial implementation.
+Dec 06, 2020: added optimized sequenatial implementation.
+Dec 06, 2020: added parallel implementation.
+Dec 06, 2020: Report completed.
