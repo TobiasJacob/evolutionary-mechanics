@@ -124,10 +124,7 @@ with $O (\frac{N^3 G A}{C} )$ being the work for solving the equation system per
     E = O \left(\frac{N^3 + N^2}{N^3+C N^2}\right)
 \end{equation}
 
-so this algorithm has also a weak scalability. Table~\ref{tab:SpeedupEvolution} shows the execution times of the program. They are visualized in figure~\ref{fig:SpeedupEvolution}. The algorihm scales well for small core counts $C < 112$. Each generation has 112 organisims, so up to this part, the evolution scales very well. For $C > 112$, the mechanical solver starts to parallelize. This gives a speedup only if the problem size $N > 100$ is sufficient. The execution time 
-
-
-The result of the finished evolution is shown on figure~\ref{fig:Evolution}.
+so this algorithm has also a weak scalability. Table~\ref{tab:SpeedupEvolution} shows the execution times of the program. They are visualized in figure~\ref{fig:SpeedupEvolution}. The algorihm scales well for small core counts $C < 112$. Each generation has 112 organisims, so up to this part, the evolution scales very well. For $C > 112$, the mechanical solver starts to parallelize. This gives a speedup only if the problem size $N > 100$ is sufficient. The actual execution time starts to reach into hours for that problem size, but this is a typical for a evolutionary algorithm. The result of the finished evolution is shown on figure~\ref{fig:Evolution}.
 
 
 \begin{algorithm}[p]
