@@ -91,7 +91,7 @@ The Equation Solver is still a powerful solver. It is able to solve a mechanical
 
 \subsection{Speeding up the evolutionary algorithm}
 
-Evolutionary algoirthms are very parallel by nature. Each organism can be evaluated independent. Then they have to be sorted. We do the sorting on a node 0. \texttt{Gather} is used in that process. The best 10\% get redistributed using \texttt{Bcast}.
+Evolutionary algoirthms are very parallel by nature. Each organism can be evaluated independent. Then they have to be sorted. We do the sorting on a node 0. \texttt{Gather} is used in that process. The best 10\% get redistributed using \texttt{Bcast}. This is visualized in algorithm~\ref{alg:Evolution}.
 
 A MPI Message for an evaluated board consisits of
 
@@ -99,6 +99,36 @@ A MPI Message for an evaluated board consisits of
     \item 1 float for the score
     \item $R \times C$ bytes, each containing the boolean value of the field.
 \end{itemize}
+
+We typically simulate grid sizes of 20, meaning the message has a size of 404 bytes. Since all processes will be initialized with the same field size it has not to be stored in the message. The message size grows with 
+
+\begin{equation}
+    O_{msgSize} = O(N^2)
+\end{equation}
+
+The runtime complexity of the single thread evolutionary algorithm is
+
+\begin{equation}
+    O_\mathit{evolSeq}(N, G, A) = O_\textit{seqSolve} \cdot O(G A)
+\end{equation}
+
+with generations size $G$ and $A$ epochs. The parallel version has
+
+\begin{equation}
+    O_\mathit{evolPar}(N, C, G, A) = O \left( \frac{N^3 G A}{C} + N^2 G A\right)
+\end{equation}
+
+with $O (\frac{N^3 G A}{C} )$ being the work for solving the equation system per core and $O(N^2 G A)$ being the communcation cost for sending $O(G)$ bytes of data over the network each epoch~$A$. The efficency is
+
+\begin{equation}
+    E = O(\frac{N^3 + N^2}{N^3+C N^2})
+\end{equation}
+
+so this algorithm has also a weak scalability. The execution times for 
+
+
+The result of the finished evolution is shown on figure~\ref{fig:Evolution}.
+
 
 \begin{algorithm}[p]
     \caption{Evolute on node}
@@ -116,9 +146,6 @@ A MPI Message for an evaluated board consisits of
     \label{alg:Evolution}
 \end{algorithm}
 
-We typically simulate grid sizes of 20, meaning the message has a size of 404 bytes. Since all processes will be initialized with the same field size it has not to be stored in the message. Our evolution works like shown in algorithm~\ref{alg:Evolution}. The result of the finished evolution is shown on figure~\ref{fig:Evolution}.
-
-
 \begin{table}[p]
     \centering
     \begin{tabular}{lrrrrrr}
@@ -130,7 +157,8 @@ We typically simulate grid sizes of 20, meaning the message has a size of 404 by
         \midrule
         N = 10 & 33.667     & 18.519 & 9,399 & 5.432 & 2.950 & 4.256 \\
         N = 20 & 296.997    & 164.875 & 91.958 & 43.114 & 25.199 & 29.429 \\
-        N = 40 & (2686.816)          & (1343.408) & (671.704) & 335.852 & 200.529 & 164.243 \\
+        N = 40 & (2686.816) & (1343.408) & (671.704) & 335.852 & 200.529 & 164.243 \\
+        N = 80 & - & - & - & - & - & 2163.535 \\
         \bottomrule
     \end{tabular}
     \caption{Execution time in seconds for the evoultion for different field sizes $N$ and cores $C$. The generation size is set fixed to 112 and 1000 epochs are simulated.}
