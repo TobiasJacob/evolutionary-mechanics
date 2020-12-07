@@ -1,0 +1,18 @@
+(r359:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27)
+(r361:28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55)
+
+0 ALT: 640 Planes: 5806
+10 ALT: 633.639 Planes: 4800
+20 ALT: 627.341 Planes: 4779
+30 ALT: 621.106 Planes: 4771
+40 ALT: 614.932 Planes: 4773
+50 ALT: 608.821 Planes: 4780
+60 ALT: 602.77 Planes: 4773
+70 ALT: 596.779 Planes: 4790
+80 ALT: 590.848 Planes: 4774
+90 ALT: 584.977 Planes: 4769
+Time: 715.952, Generations: 100, Epochs per Second: 0.140
+Used 56 node(s) and 1 core(s) per node 
+Processsed 80x80 grid and 112 organisms per epoch, resulting in 2 organisms per node. Best 11 were broadcasted.
+Processing speed: 15.644 organisms per second
+Final performance is 4787.000

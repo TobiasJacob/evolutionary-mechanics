@@ -34,5 +34,3 @@ In order to run in Bridges, due to the dependency on C++17, make sure you run `m
 |   |-- /report
 |   |-- /sources
 ```
-
-

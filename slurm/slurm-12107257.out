@@ -1,0 +1,57 @@
+(r225:0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27)
+
+0 ALT: 160 Planes: 1446
+10 ALT: 158.417 Planes: 1174
+20 ALT: 156.85 Planes: 1171
+30 ALT: 155.299 Planes: 1160
+40 ALT: 153.763 Planes: 1163
+50 ALT: 152.242 Planes: 1172
+60 ALT: 150.736 Planes: 1169
+70 ALT: 149.246 Planes: 1161
+80 ALT: 147.77 Planes: 1170
+90 ALT: 146.309 Planes: 1163
+100 ALT: 144.862 Planes: 1172
+110 ALT: 143.43 Planes: 1164
+120 ALT: 142.012 Planes: 1163
+130 ALT: 140.608 Planes: 1160
+140 ALT: 139.219 Planes: 1160
+150 ALT: 137.843 Planes: 1163
+160 ALT: 136.48 Planes: 1153
+170 ALT: 135.132 Planes: 1158
+180 ALT: 133.796 Planes: 1170
+190 ALT: 132.474 Planes: 1162
+200 ALT: 131.166 Planes: 1165
+210 ALT: 129.87 Planes: 1172
+220 ALT: 128.587 Planes: 1168
+230 ALT: 127.317 Planes: 1160
+240 ALT: 126.059 Planes: 1154
+250 ALT: 124.814 Planes: 1160
+260 ALT: 123.582 Planes: 1160
+270 ALT: 122.361 Planes: 1172
+280 ALT: 121.153 Planes: 1168
+290 ALT: 119.957 Planes: 1164
+300 ALT: 118.773 Planes: 1154
+310 ALT: 117.6 Planes: 1162
+320 ALT: 116.44 Planes: 1159
+330 ALT: 115.291 Planes: 1160
+340 ALT: 114.153 Planes: 1162
+350 ALT: 113.026 Planes: 1159
+360 ALT: 111.911 Planes: 1164
+370 ALT: 110.807 Planes: 1158
+380 ALT: 109.714 Planes: 1149
+390 ALT: 108.632 Planes: 1155
+400 ALT: 107.56 Planes: 1160
+410 ALT: 106.499 Planes: 1149
+420 ALT: 105.449 Planes: 1155
+430 ALT: 104.409 Planes: 1155
+440 ALT: 103.38 Planes: 1154
+450 ALT: 102.361 Planes: 1163
+460 ALT: 101.352 Planes: 1158
+470 ALT: 100.353 Planes: 1157
+480 ALT: 99.3636 Planes: 1164
+490 ALT: 98.3844 Planes: 1149
+Time: 315.724, Generations: 500, Epochs per Second: 1.584
+Used 28 node(s) and 1 core(s) per node 
+Processsed 40x40 grid and 112 organisms per epoch, resulting in 4 organisms per node. Best 11 were broadcasted.
+Processing speed: 177.370 organisms per second
+Final performance is 1159.000
