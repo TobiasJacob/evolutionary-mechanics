@@ -35,22 +35,3 @@ Following the [Project Description](latex/sources/ProjectDescription.md)
 ## LOG
 
 - `Nov 16 2020`: Added Catch2 testing framework
-
-data backup
-    \begin{table}[h]
-        \centering
-        \small
-        \begin{tabular}{rrrrrr}
-            $n$ & Equations & Steps for solution & Equation setup time & Reduction time & solving time \\
-            - & $O(n^2)$ & $O(n)$ & $O(n^2)$ & $O(n^4)$ & $O(n^3)$\\
-            200 & 80799 & 6555 & 98695 & 7454400 & 22344100 \\
-            100 & 23187 & 2146 & 23187 & 425889 & 1726910 \\
-            50 & 5199 & 1039 & 6203 & 278603 & 154818 \\
-            25 & 1349 & 449 & 1626 & 20503 & 17768 \\
-            12 & 335 & 210 & 361 & 1347 & 1786
-        \end{tabular}
-        \caption{Execution time for matrix solver}
-        \label{tab:profiling}
-    \end{table}
-
-

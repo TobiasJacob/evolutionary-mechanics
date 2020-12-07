@@ -22,6 +22,7 @@ export I_MPI_JOB_RESPECT_PROCESS_PLACEMENT=0
 # mpirun -print-rank-map -n $SLURM_NTASKS -genv \
 #  OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK -genv I_MPI_PIN_DOMAIN=omp \
 #  build/program 40 112 1000 0.999
+# echo ""
 mpirun -print-rank-map -n $SLURM_NTASKS -genv \
  OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK -genv I_MPI_PIN_DOMAIN=omp \
- build/program 80 112 200 0.999
+ build/program 80 112 100 0.999
