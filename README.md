@@ -1,6 +1,8 @@
 # Evolutionary Mechanics
 
-Following the [Project Description](latex/sources/ProjectDescription.md)
+Following the [Project Description](latex/sources/ProjectDescription.md). It uses an evolutionary algorithm to develop ideal mechanical structures and runs in a distributed manner using OpenMP and MPI.
+
+![Demo image](latex/description/images/finiteElements.png)
 
 ## Instructions
 
